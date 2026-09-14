@@ -1,0 +1,24 @@
+generated: '2026-09-14'
+method: searched
+source: openapi/microburbs-openapi.json (info.description) ; https://www.microburbs.com.au/developers/api-docs
+note: >-
+  The API advertises "predictable rate limits" and documents 429 as a coded
+  response, but does not publish numeric per-window limits. The dominant runtime
+  control is a prepaid spend wallet, not a request-count quota: every metered
+  response carries cost/spend/balance headers and calls stop when credit reaches
+  zero. Exact rate-limit response headers (X-RateLimit-*/RateLimit-*/Retry-After)
+  are not documented, so limit_count is recorded honestly as 0.
+limit_count: 0
+enforcement:
+  model: prepaid-wallet + per-key rate limit
+  exhaustion_status: 429
+  credit_exhaustion_status: 402
+metering_headers:
+- X-Cost-Cents
+- X-Spent-Cents
+- X-Remaining-Cents
+- X-Balance-Cents
+- X-Period-End
+- X-Rate-Card-Version
+- X-Request-Id
+limits: []

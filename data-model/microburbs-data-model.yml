@@ -1,0 +1,80 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/microburbs-openapi.json path parameters + profile chains ; llms/microburbs-llms.txt
+note: >-
+  Entity-relationship graph for the Microburbs geography. The data model is the
+  ABS Australian Statistical Geography Standard hierarchy plus a G-NAF-keyed
+  Property node. Relationships are derived from the profile endpoints that walk
+  each entity's upward admin chain (properties_profile, suburbs_profile,
+  mbs_profile, lga_profile, sa4_profile) and from the path parameters that key
+  each surface. 442 response schemas exist in the spec; they are per-endpoint
+  payloads hung off these core entities and are not enumerated individually here.
+entities:
+- name: Property
+  key: gnaf_id
+  key_format: G-NAF persistent identifier (e.g. GANSW704074813)
+  note: Finest grain -- a single addressable parcel. Carries valuation, basics, history, comparables, risks, schools, amenities, surroundings.
+- name: MeshBlock
+  key: mesh_block_code
+  note: Smallest ABS geography ("microburb"). Aggregation unit for per-mesh-block maps (income, yield, vacancy, crime).
+- name: Suburb
+  key: sal_name
+  key_format: Canonical ABS SAL string (e.g. "St Kilda (Vic.)")
+  note: Primary reporting unit -- market, demographics, risk, lifestyle, development, forecasts.
+- name: SA1
+  key: sa1_code
+- name: SA2
+  key: sa2_code
+- name: SA3
+  key: sa3_code
+- name: SA4
+  key: sa4_code
+- name: LGA
+  key: lga_code
+  note: Local Government Area; not strictly nested in the SA chain.
+- name: GCCSA
+  key: gccsa_code
+  note: Greater Capital City Statistical Area.
+- name: State
+  key: state_code
+relationships:
+- from: Property
+  to: Suburb
+  type: belongs_to
+  via: sal (resolved by properties_profile / geocode_address)
+- from: Property
+  to: MeshBlock
+  type: belongs_to
+  via: mesh_block_code (properties_profile)
+- from: Suburb
+  to: MeshBlock
+  type: has_many
+  via: sal (mbs_list, suburbs_shapes_mesh_blocks)
+- from: MeshBlock
+  to: SA1
+  type: belongs_to
+  via: mbs_profile upward chain
+- from: Suburb
+  to: SA3
+  type: belongs_to
+  via: suburbs_profile
+- from: Suburb
+  to: SA4
+  type: belongs_to
+  via: suburbs_profile
+- from: Suburb
+  to: LGA
+  type: belongs_to
+  via: suburbs_profile
+- from: SA4
+  to: GCCSA
+  type: belongs_to
+  via: sa4_profile
+- from: LGA
+  to: State
+  type: belongs_to
+  via: lga_profile
+- from: Suburb
+  to: State
+  type: belongs_to
+  via: suburbs_profile

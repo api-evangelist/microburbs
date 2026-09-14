@@ -1,0 +1,51 @@
+generated: '2026-09-14'
+method: searched
+source: openapi/microburbs-openapi.json (info.description "Try it now" + securitySchemes) ; https://www.microburbs.com.au/developers/api-docs
+note: >-
+  Microburbs ships a public sandbox keyed by the literal bearer token `test`.
+  It unlocks one sample suburb (SAL) and one sample property (GNAF) in every
+  state and territory, and every call made with it is billed at 0 cents. Any GNAF
+  or SAL outside the allowlist returns 403 under the test key. All values below
+  are published verbatim by the provider; none are invented.
+sandbox:
+  live_vs_test: single static key -- `test` for sandbox, `mib_live_...` for production.
+  test_key: test
+  cost_under_test_key: 0
+  auth_header: 'Authorization: Bearer test'
+  sample_properties:
+  - state: NSW
+    gnaf_id: GANSW704074813
+    address: 27 Arlington St, Belmont North
+  - state: VIC
+    gnaf_id: GAVIC419929404
+    address: 12A Chaucer St, St Kilda
+  - state: QLD
+    gnaf_id: GAQLD162849753
+    address: 305/41 Robertson St, Fortitude Valley
+  - state: WA
+    gnaf_id: GAWA_146662014
+    address: 36 Olive St, Subiaco
+  - state: SA
+    gnaf_id: GASA_422266490
+    address: 53 Marion St, Unley
+  - state: TAS
+    gnaf_id: GATAS702292990
+    address: 85 Lord St, Sandy Bay
+  - state: ACT
+    gnaf_id: GAACT714845944
+    address: 9 McDowall Pl, Kambah
+  - state: NT
+    gnaf_id: GANT_703835649
+    address: 16 Jacksonia Cct, Nightcliff
+  sample_suburbs:
+  - Belmont North
+  - Bondi
+  - St Kilda (Vic.)
+  - Fortitude Valley
+  - Subiaco
+  - Unley
+  - Sandy Bay
+  - Kambah
+  - Nightcliff
+  out_of_allowlist_status: 403
+  full_access: Mint a production key at https://www.microburbs.com.au/developers/keys

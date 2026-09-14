@@ -1,0 +1,25 @@
+generated: '2026-09-14'
+method: searched
+source: openapi/microburbs-openapi.json ; https://www.microburbs.com.au/developers/api-docs
+note: >-
+  Versioning and reliability posture for the Microburbs API. No dated deprecation
+  policy, Sunset/Deprecation (RFC 8594) headers, SLA document or public status
+  page was found. One backward-compatibility signal exists in the spec:
+  X-Balance-Cents is documented as a retained alias of X-Remaining-Cents for
+  clients built during the prepaid-wallet preview.
+versioning:
+  scheme: url-path
+  current_version: v1
+  base_path: /v1
+  api_version: 1.0.0
+  rate_card_version_header: X-Rate-Card-Version
+deprecation:
+  policy_published: false
+  sunset_header: not-observed
+  deprecated_operations: []
+  compatibility_note: X-Balance-Cents retained as an alias of X-Remaining-Cents for prepaid-wallet-preview clients.
+sla:
+  published: false
+status_page:
+  published: false
+  healthcheck: GET /v1/ping (unauthenticated liveness probe) and HEAD ping_head over MCP.

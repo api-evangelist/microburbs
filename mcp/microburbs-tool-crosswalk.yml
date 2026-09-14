@@ -1,0 +1,1062 @@
+generated: '2026-09-14'
+method: derived
+source: mcp/microburbs-tools-list.json (live tools/list) bound to openapi/microburbs-openapi.json
+note: Each MCP tool name is the REST path (v1 and {path params} dropped, hyphens as underscores), so every
+  tool binds to exactly one OpenAPI operationId by path identity. The tool inherits that operation parameters
+  and response schema as its real inputSchema/outputSchema. Live tools/list was fetched anonymously.
+surfaces:
+  openapi: openapi/microburbs-openapi.json
+  mcp: https://mcp.microburbs.com.au/sse (SSE); https://api.microburbs.com.au/mcp (streamable HTTP)
+  gated: tools/list is anonymous; calling a tool requires a Bearer key and is metered per call.
+coverage:
+  tools: 174
+  operations: 173
+  mapped: 174
+  mcp_only: 0
+  rest_only: 0
+crosswalk:
+- tool: ping
+  category: Account
+  rest:
+  - ping
+  binding: path-identity
+  confidence: high
+- tool: ping_head
+  category: Account
+  rest:
+  - ping
+  binding: head-variant
+  confidence: high
+  note: HEAD healthcheck variant; shares the ping operation.
+- tool: me
+  category: Account
+  rest:
+  - me_v1_me_get
+  binding: path-identity
+  confidence: high
+- tool: properties_valuation_avm
+  category: Property - Valuation
+  rest:
+  - get_property_avm_v1_properties__gnaf_id__valuation_avm_get
+  binding: path-identity
+  confidence: high
+- tool: properties_basics_bed_count
+  category: Property - Basics
+  rest:
+  - get_property_bed_count_v1_properties__gnaf_id__basics_bed_count_get
+  binding: path-identity
+  confidence: high
+- tool: properties_basics_bath_count
+  category: Property - Basics
+  rest:
+  - get_property_bath_count_v1_properties__gnaf_id__basics_bath_count_get
+  binding: path-identity
+  confidence: high
+- tool: properties_basics_parking_count
+  category: Property - Basics
+  rest:
+  - get_property_parking_count_v1_properties__gnaf_id__basics_parking_count_get
+  binding: path-identity
+  confidence: high
+- tool: properties_basics_dwelling_type
+  category: Property - Basics
+  rest:
+  - get_property_dwelling_type_v1_properties__gnaf_id__basics_dwelling_type_get
+  binding: path-identity
+  confidence: high
+- tool: properties_basics_land_area_sqm
+  category: Property - Basics
+  rest:
+  - get_property_land_area_sqm_v1_properties__gnaf_id__basics_land_area_sqm_get
+  binding: path-identity
+  confidence: high
+- tool: properties_profile
+  category: Property - Profile
+  rest:
+  - get_property_profile_v1_properties__gnaf_id__profile_get
+  binding: path-identity
+  confidence: high
+- tool: properties_sale_history
+  category: Property - History
+  rest:
+  - get_property_sale_history_v1_properties__gnaf_id__sale_history_get
+  binding: path-identity
+  confidence: high
+- tool: properties_sale_history_latest
+  category: Property - History
+  rest:
+  - get_property_sale_history_latest_v1_properties__gnaf_id__sale_history_latest_get
+  binding: path-identity
+  confidence: high
+- tool: properties_rent_history
+  category: Property - History
+  rest:
+  - get_property_rent_history_v1_properties__gnaf_id__rent_history_get
+  binding: path-identity
+  confidence: high
+- tool: properties_rent_history_latest
+  category: Property - History
+  rest:
+  - get_property_rent_history_latest_v1_properties__gnaf_id__rent_history_latest_get
+  binding: path-identity
+  confidence: high
+- tool: properties_neighbours
+  category: Property - Title
+  rest:
+  - get_property_neighbours_v1_properties__gnaf_id__neighbours_get
+  binding: path-identity
+  confidence: high
+- tool: properties_comparables_cma_comp_set
+  category: Property - Comparables
+  rest:
+  - get_property_cma_comp_set_v1_properties__gnaf_id__comparables_cma_comp_set_get
+  binding: path-identity
+  confidence: high
+- tool: properties_comparables_cma_single_comp
+  category: Property - Comparables
+  rest:
+  - get_property_cma_single_comp_v1_properties__gnaf_id__comparables_cma_single_comp_get
+  binding: path-identity
+  confidence: high
+- tool: properties_comparables_recent_sales_nearby
+  category: Property - Comparables
+  rest:
+  - get_property_recent_sales_nearby_v1_properties__gnaf_id__comparables_recent_sales_nearby_get
+  binding: path-identity
+  confidence: high
+- tool: properties_development_zoning_code
+  category: Property - Development
+  rest:
+  - get_property_zoning_code_v1_properties__gnaf_id__development_zoning_code_get
+  binding: path-identity
+  confidence: high
+- tool: properties_development_zoning_overlays
+  category: Property - Development
+  rest:
+  - get_property_zoning_overlays_v1_properties__gnaf_id__development_zoning_overlays_get
+  binding: path-identity
+  confidence: high
+- tool: properties_schools_nearby
+  category: Property - Schools
+  rest:
+  - get_property_schools_nearby_v1_properties__gnaf_id__schools_nearby_get
+  binding: path-identity
+  confidence: high
+- tool: properties_schools_ranking
+  category: Property - Schools
+  rest:
+  - get_property_schools_ranking_v1_properties__gnaf_id__schools_ranking_get
+  binding: path-identity
+  confidence: high
+- tool: properties_amenities_nearby
+  category: Property - Amenities
+  rest:
+  - get_property_amenities_nearby_v1_properties__gnaf_id__amenities_nearby_get
+  binding: path-identity
+  confidence: high
+- tool: properties_transport_nearby
+  category: Property - Amenities
+  rest:
+  - get_property_transport_nearby_v1_properties__gnaf_id__transport_nearby_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_bushfire
+  category: Property - Risks
+  rest:
+  - get_property_risk_bushfire_v1_properties__gnaf_id__risks_bushfire_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_flood
+  category: Property - Risks
+  rest:
+  - get_property_risk_flood_v1_properties__gnaf_id__risks_flood_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_historical_flood
+  category: Property - Risks
+  rest:
+  - get_property_risk_historical_flood_v1_properties__gnaf_id__risks_historical_flood_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_heritage
+  category: Property - Risks
+  rest:
+  - get_property_risk_heritage_v1_properties__gnaf_id__risks_heritage_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_public_housing
+  category: Property - Risks
+  rest:
+  - get_property_risk_public_housing_v1_properties__gnaf_id__risks_public_housing_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_landslide
+  category: Property - Risks
+  rest:
+  - get_property_risk_landslide_v1_properties__gnaf_id__risks_landslide_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_erosion
+  category: Property - Risks
+  rest:
+  - get_property_risk_erosion_v1_properties__gnaf_id__risks_erosion_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_environment
+  category: Property - Risks
+  rest:
+  - get_property_risk_environment_v1_properties__gnaf_id__risks_environment_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_hv_power_line
+  category: Property - Risks
+  rest:
+  - get_property_risk_hv_power_line_v1_properties__gnaf_id__risks_hv_power_line_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_mobile_black_spot
+  category: Property - Risks
+  rest:
+  - get_property_risk_mobile_black_spot_v1_properties__gnaf_id__risks_mobile_black_spot_get
+  binding: path-identity
+  confidence: high
+- tool: properties_risks_all
+  category: Property - Risks
+  rest:
+  - get_property_risks_all_v1_properties__gnaf_id__risks_all_get
+  binding: path-identity
+  confidence: high
+- tool: properties_valuation_all
+  category: Property - Valuation
+  rest:
+  - get_property_valuation_all_v1_properties__gnaf_id__valuation_all_get
+  binding: path-identity
+  confidence: high
+- tool: properties_basics_all
+  category: Property - Basics
+  rest:
+  - get_property_basics_all_v1_properties__gnaf_id__basics_all_get
+  binding: path-identity
+  confidence: high
+- tool: properties_history_all
+  category: Property - History
+  rest:
+  - get_property_history_all_v1_properties__gnaf_id__history_all_get
+  binding: path-identity
+  confidence: high
+- tool: properties_comparables_all
+  category: Property - Comparables
+  rest:
+  - get_property_comparables_all_v1_properties__gnaf_id__comparables_all_get
+  binding: path-identity
+  confidence: high
+- tool: properties_development_all
+  category: Property - Development
+  rest:
+  - get_property_planning_all_v1_properties__gnaf_id__development_all_get
+  binding: path-identity
+  confidence: high
+- tool: properties_schools_all
+  category: Property - Schools
+  rest:
+  - get_property_schools_all_v1_properties__gnaf_id__schools_all_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_profile
+  category: Suburb - Profile
+  rest:
+  - get_suburb_profile_v1_suburbs__suburb_name__profile_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_list
+  category: Suburb - Profile
+  rest:
+  - get_suburb_list_v1_suburbs_list_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_median_sale_price
+  category: Suburb - Market
+  rest:
+  - get_suburb_median_sale_price_v1_suburbs__suburb_name__market_median_sale_price_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_median_sale_price_series
+  category: Suburb - Market
+  rest:
+  - get_suburb_median_sale_price_series_v1_suburbs__suburb_name__market_median_sale_price_series_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_median_rent
+  category: Suburb - Market
+  rest:
+  - get_suburb_median_rent_v1_suburbs__suburb_name__market_median_rent_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_median_rent_series
+  category: Suburb - Market
+  rest:
+  - get_suburb_median_rent_series_v1_suburbs__suburb_name__market_median_rent_series_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_price_growth_5y
+  category: Suburb - Market
+  rest:
+  - get_suburb_price_growth_5y_v1_suburbs__suburb_name__market_price_growth_5y_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_price_growth
+  category: Suburb - Market
+  rest:
+  - get_suburb_price_growth_v1_suburbs__suburb_name__market_price_growth_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_yield_pct
+  category: Suburb - Market
+  rest:
+  - get_suburb_yield_pct_v1_suburbs__suburb_name__market_yield_pct_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_days_on_market
+  category: Suburb - Market
+  rest:
+  - get_suburb_days_on_market_v1_suburbs__suburb_name__market_days_on_market_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_transaction_volume
+  category: Suburb - Market
+  rest:
+  - get_suburb_transaction_volume_v1_suburbs__suburb_name__market_transaction_volume_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_forecast_sale
+  category: Suburb - Forecast
+  rest:
+  - get_suburb_forecast_sale_v1_suburbs__suburb_name__forecast_sale_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_listings_for_sale
+  category: Suburb - Listings
+  rest:
+  - get_suburb_listings_for_sale_v1_suburbs__suburb_name__listings_for_sale_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_age
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_demographics_age_v1_suburbs__suburb_name__demographics_age_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_income
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_demographics_income_v1_suburbs__suburb_name__demographics_income_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_ethnicity_ancestry
+  category: Suburb - Ethnicity
+  rest:
+  - get_suburb_ethnicity_ancestry_v1_suburbs__suburb_name__ethnicity_ancestry_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_ethnicity_birthplace
+  category: Suburb - Ethnicity
+  rest:
+  - get_suburb_ethnicity_birthplace_v1_suburbs__suburb_name__ethnicity_birthplace_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_schools_catchment
+  category: Suburb - Schools
+  rest:
+  - get_suburb_schools_catchment_v1_suburbs__suburb_name__schools_catchment_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_schools_nearby
+  category: Suburb - Schools
+  rest:
+  - get_suburb_schools_nearby_v1_suburbs__suburb_name__schools_nearby_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_da_count
+  category: Suburb - Development
+  rest:
+  - get_suburb_planning_da_count_v1_suburbs__suburb_name__development_da_count_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_da_list
+  category: Suburb - Development
+  rest:
+  - get_suburb_planning_da_list_v1_suburbs__suburb_name__development_da_list_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_bushfire
+  category: Suburb - Risks
+  rest:
+  - get_suburb_risk_bushfire_v1_suburbs__suburb_name__risks_bushfire_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_flood
+  category: Suburb - Risks
+  rest:
+  - get_suburb_risk_flood_v1_suburbs__suburb_name__risks_flood_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_similar
+  category: Suburb - Similar
+  rest:
+  - get_suburb_similar_v1_suburbs__suburb_name__similar_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_all
+  category: Suburb - Market
+  rest:
+  - get_suburb_market_all_v1_suburbs__suburb_name__market_all_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_all
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_demographics_all_v1_suburbs__suburb_name__demographics_all_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_ethnicity_all
+  category: Suburb - Ethnicity
+  rest:
+  - get_suburb_ethnicity_all_v1_suburbs__suburb_name__ethnicity_all_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_schools_all
+  category: Suburb - Schools
+  rest:
+  - get_suburb_schools_all_v1_suburbs__suburb_name__schools_all_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_all
+  category: Suburb - Development
+  rest:
+  - get_suburb_planning_all_v1_suburbs__suburb_name__development_all_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_all
+  category: Suburb - Risks
+  rest:
+  - get_suburb_risks_all_v1_suburbs__suburb_name__risks_all_get
+  binding: path-identity
+  confidence: high
+- tool: mbs_list
+  category: Mesh Block - Profile
+  rest:
+  - list_mbs_v1_mbs_list_get
+  binding: path-identity
+  confidence: high
+- tool: mbs_profile
+  category: Mesh Block - Profile
+  rest:
+  - get_mb_profile_v1_mbs__mb_code__profile_get
+  binding: path-identity
+  confidence: high
+- tool: lga_list
+  category: LGA - Profile
+  rest:
+  - list_lgas_v1_lga_list_get
+  binding: path-identity
+  confidence: high
+- tool: lga_profile
+  category: LGA - Profile
+  rest:
+  - get_lga_profile_v1_lga__lga_name__profile_get
+  binding: path-identity
+  confidence: high
+- tool: sa4_list
+  category: SA4 - Profile
+  rest:
+  - list_sa4s_v1_sa4_list_get
+  binding: path-identity
+  confidence: high
+- tool: sa4_profile
+  category: SA4 - Profile
+  rest:
+  - get_sa4_profile_v1_sa4__sa4_name__profile_get
+  binding: path-identity
+  confidence: high
+- tool: geocode_address
+  category: Geocode
+  rest:
+  - geocode_address_v1_geocode_address_get
+  binding: path-identity
+  confidence: high
+- tool: geocode_suburb
+  category: Geocode
+  rest:
+  - geocode_suburb_v1_geocode_suburb_get
+  binding: path-identity
+  confidence: high
+- tool: area_stats_fields
+  category: Area Statistics
+  rest:
+  - area_stats_fields_v1_area_stats_fields_get
+  binding: path-identity
+  confidence: high
+- tool: area_stats_regions
+  category: Area Statistics
+  rest:
+  - area_stats_regions_v1_area_stats_regions_get
+  binding: path-identity
+  confidence: high
+- tool: area_stats_values
+  category: Area Statistics
+  rest:
+  - area_stats_values_v1_area_stats__region_level___region__values_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_hero_summary
+  category: Suburb - Hero
+  rest:
+  - get_suburb_hero_summary_v1_suburbs__suburb_name__hero_summary_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_hero_neighbours
+  category: Suburb - Hero
+  rest:
+  - get_suburb_hero_neighbours_v1_suburbs__suburb_name__hero_neighbours_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_hero_price_growth_12mo
+  category: Suburb - Hero
+  rest:
+  - get_suburb_hero_price_growth_12mo_v1_suburbs__suburb_name__hero_price_growth_12mo_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_mortgage_stress
+  category: Suburb - Market
+  rest:
+  - get_suburb_mortgage_stress_v1_suburbs__suburb_name__market_mortgage_stress_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_investor_concentration
+  category: Suburb - Market
+  rest:
+  - get_suburb_investor_concentration_v1_suburbs__suburb_name__market_investor_concentration_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_built_year
+  category: Suburb - Market
+  rest:
+  - get_suburb_built_year_v1_suburbs__suburb_name__market_built_year_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_vacancy_map
+  category: Suburb - Market
+  rest:
+  - get_suburb_vacancy_map_v1_suburbs__suburb_name__market_vacancy_map_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_land_values
+  category: Suburb - Market
+  rest:
+  - get_suburb_land_values_v1_suburbs__suburb_name__market_land_values_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_strata_levies
+  category: Suburb - Market
+  rest:
+  - get_suburb_strata_levies_v1_suburbs__suburb_name__market_strata_levies_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_affordability
+  category: Suburb - Market
+  rest:
+  - get_suburb_affordability_v1_suburbs__suburb_name__market_affordability_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_bedroom_stats
+  category: Suburb - Market
+  rest:
+  - get_suburb_bedroom_stats_v1_suburbs__suburb_name__market_bedroom_stats_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_repeat_sales
+  category: Suburb - Market
+  rest:
+  - get_suburb_repeat_sales_v1_suburbs__suburb_name__market_repeat_sales_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_supply_pressure
+  category: Suburb - Market
+  rest:
+  - get_suburb_supply_pressure_v1_suburbs__suburb_name__market_supply_pressure_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_days_on_market_benchmark
+  category: Suburb - Market
+  rest:
+  - get_suburb_dom_benchmark_v1_suburbs__suburb_name__market_days_on_market_benchmark_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_comparable_suburbs
+  category: Suburb - Market
+  rest:
+  - get_suburb_comparable_suburbs_v1_suburbs__suburb_name__market_comparable_suburbs_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_rent_map
+  category: Suburb - Market
+  rest:
+  - get_suburb_market_rent_map_v1_suburbs__suburb_name__market_rent_map_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_yield_map
+  category: Suburb - Market
+  rest:
+  - get_suburb_market_yield_map_v1_suburbs__suburb_name__market_yield_map_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_lifestyle_livability_map
+  category: Suburb - Lifestyle
+  rest:
+  - get_suburb_lifestyle_livability_map_v1_suburbs__suburb_name__lifestyle_livability_map_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_sales_recent
+  category: Suburb - Sales
+  rest:
+  - get_suburb_recent_sales_v1_suburbs__suburb_name__sales_recent_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_sales_summary
+  category: Suburb - Sales
+  rest:
+  - get_suburb_sales_summary_v1_suburbs__suburb_name__sales_summary_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_crime_summary
+  category: Suburb - Crime
+  rest:
+  - get_suburb_crime_summary_v1_suburbs__suburb_name__crime_summary_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_crime_breakdown
+  category: Suburb - Crime
+  rest:
+  - get_suburb_crime_breakdown_v1_suburbs__suburb_name__crime_breakdown_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_crime_by_mesh_block
+  category: Suburb - Crime
+  rest:
+  - get_suburb_crime_by_mesh_block_v1_suburbs__suburb_name__crime_by_mesh_block_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_property_hazard_counts
+  category: Suburb - Risks
+  rest:
+  - get_suburb_property_hazard_counts_v1_suburbs__suburb_name__risks_property_hazard_counts_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_extras
+  category: Suburb - Risks
+  rest:
+  - get_suburb_risk_extras_v1_suburbs__suburb_name__risks_extras_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_counts
+  category: Suburb - Risks
+  rest:
+  - get_suburb_risk_counts_v1_suburbs__suburb_name__risks_counts_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_slope
+  category: Suburb - Risks
+  rest:
+  - get_suburb_risk_slope_v1_suburbs__suburb_name__risks_slope_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_heritage_share
+  category: Suburb - Risks
+  rest:
+  - get_suburb_risk_heritage_share_v1_suburbs__suburb_name__risks_heritage_share_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_lifestyle_summary
+  category: Suburb - Lifestyle
+  rest:
+  - get_suburb_lifestyle_summary_v1_suburbs__suburb_name__lifestyle_summary_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_lifestyle_poi_impacts
+  category: Suburb - Lifestyle
+  rest:
+  - get_suburb_lifestyle_poi_impacts_v1_suburbs__suburb_name__lifestyle_poi_impacts_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_lifestyle_livability
+  category: Suburb - Lifestyle
+  rest:
+  - get_suburb_lifestyle_livability_v1_suburbs__suburb_name__lifestyle_livability_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_lifestyle_pois
+  category: Suburb - Lifestyle
+  rest:
+  - get_suburb_lifestyle_pois_v1_suburbs__suburb_name__lifestyle_pois_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_lifestyle_landmarks
+  category: Suburb - Lifestyle
+  rest:
+  - get_suburb_lifestyle_landmarks_v1_suburbs__suburb_name__lifestyle_landmarks_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_lifestyle_narrative
+  category: Suburb - Lifestyle
+  rest:
+  - get_suburb_lifestyle_narrative_v1_suburbs__suburb_name__lifestyle_narrative_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_lifestyle_cbd
+  category: Suburb - Lifestyle
+  rest:
+  - get_suburb_lifestyle_cbd_v1_suburbs__suburb_name__lifestyle_cbd_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_zoning_map
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_zoning_map_v1_suburbs__suburb_name__development_zoning_map_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_building_controls
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_building_controls_v1_suburbs__suburb_name__development_building_controls_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_construction_activity
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_construction_activity_v1_suburbs__suburb_name__development_construction_activity_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_supply
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_supply_v1_suburbs__suburb_name__development_supply_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_profile
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_profile_v1_suburbs__suburb_name__development_profile_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_council_rates
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_council_rates_v1_suburbs__suburb_name__development_council_rates_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_applications
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_applications_v1_suburbs__suburb_name__development_applications_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_population_history
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_population_history_v1_suburbs__suburb_name__demographics_population_history_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_business
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_business_v1_suburbs__suburb_name__demographics_business_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_voting
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_voting_v1_suburbs__suburb_name__demographics_voting_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_ancestry_map
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_ancestry_map_v1_suburbs__suburb_name__demographics_ancestry_map_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_cultural_integration
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_cultural_integration_v1_suburbs__suburb_name__demographics_cultural_integration_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_tenure
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_tenure_v1_suburbs__suburb_name__demographics_tenure_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_cohorts
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_cohorts_v1_suburbs__suburb_name__demographics_cohorts_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_income_map
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_income_map_v1_suburbs__suburb_name__demographics_income_map_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_street_forecasts
+  category: Suburb - Street Forecasts
+  rest:
+  - get_suburb_street_forecasts_v1_suburbs__suburb_name__street_forecasts_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_shapes_boundary
+  category: Suburb - Shapes
+  rest:
+  - get_suburb_shapes_boundary_v1_suburbs__suburb_name__shapes_boundary_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_shapes_neighbours
+  category: Suburb - Shapes
+  rest:
+  - get_suburb_shapes_neighbours_v1_suburbs__suburb_name__shapes_neighbours_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_shapes_mesh_blocks
+  category: Suburb - Shapes
+  rest:
+  - get_suburb_shapes_mesh_blocks_v1_suburbs__suburb_name__shapes_mesh_blocks_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_shapes_hazards
+  category: Suburb - Shapes
+  rest:
+  - get_suburb_shapes_hazards_v1_suburbs__suburb_name__shapes_hazards_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_shapes_public_housing_sa1
+  category: Suburb - Shapes
+  rest:
+  - get_suburb_shapes_public_housing_sa1_v1_suburbs__suburb_name__shapes_public_housing_sa1_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_shapes_noise_heatmap
+  category: Suburb - Shapes
+  rest:
+  - get_suburb_shapes_noise_heatmap_v1_suburbs__suburb_name__shapes_noise_heatmap_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_shapes_easements
+  category: Suburb - Shapes
+  rest:
+  - get_suburb_shapes_easements_v1_suburbs__suburb_name__shapes_easements_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_shapes_busy_roads
+  category: Suburb - Shapes
+  rest:
+  - get_suburb_shapes_busy_roads_v1_suburbs__suburb_name__shapes_busy_roads_get
+  binding: path-identity
+  confidence: high
+- tool: properties_valuation_land_values
+  category: Property - Valuation
+  rest:
+  - get_property_land_values_v1_properties__gnaf_id__valuation_land_values_get
+  binding: path-identity
+  confidence: high
+- tool: properties_valuation_value_series
+  category: Property - Valuation
+  rest:
+  - get_property_value_series_v1_properties__gnaf_id__valuation_value_series_get
+  binding: path-identity
+  confidence: high
+- tool: properties_valuation_negative_gearing
+  category: Property - Valuation
+  rest:
+  - get_property_negative_gearing_v1_properties__gnaf_id__valuation_negative_gearing_get
+  binding: path-identity
+  confidence: high
+- tool: properties_valuation_agent_quoting
+  category: Property - Valuation
+  rest:
+  - get_property_agent_quoting_v1_properties__gnaf_id__valuation_agent_quoting_get
+  binding: path-identity
+  confidence: high
+- tool: properties_surroundings_properties
+  category: Property - Surroundings
+  rest:
+  - get_property_surrounding_properties_v1_properties__gnaf_id__surroundings_properties_get
+  binding: path-identity
+  confidence: high
+- tool: properties_surroundings_tenure
+  category: Property - Surroundings
+  rest:
+  - get_property_surrounding_tenure_v1_properties__gnaf_id__surroundings_tenure_get
+  binding: path-identity
+  confidence: high
+- tool: properties_surroundings_public_housing
+  category: Property - Surroundings
+  rest:
+  - get_property_surrounding_public_housing_v1_properties__gnaf_id__surroundings_public_housing_get
+  binding: path-identity
+  confidence: high
+- tool: properties_surroundings_parcels
+  category: Property - Surroundings
+  rest:
+  - get_property_surrounding_parcels_v1_properties__gnaf_id__surroundings_parcels_get
+  binding: path-identity
+  confidence: high
+- tool: properties_surroundings_listing_history_signals
+  category: Property - Surroundings
+  rest:
+  - get_property_surrounding_listing_signals_v1_properties__gnaf_id__surroundings_listing_history_signals_get
+  binding: path-identity
+  confidence: high
+- tool: properties_context_mesh_blocks
+  category: Property - Context
+  rest:
+  - get_property_context_mesh_blocks_v1_properties__gnaf_id__context_mesh_blocks_get
+  binding: path-identity
+  confidence: high
+- tool: properties_context_street_bedroom_series
+  category: Property - Context
+  rest:
+  - get_property_context_street_bedroom_series_v1_properties__gnaf_id__context_street_bedroom_series_get
+  binding: path-identity
+  confidence: high
+- tool: properties_context_nearby_for_sale
+  category: Property - Context
+  rest:
+  - get_property_context_nearby_for_sale_v1_properties__gnaf_id__context_nearby_for_sale_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_stock_on_market
+  category: Suburb - Market
+  rest:
+  - get_suburb_stock_on_market_v1_suburbs__suburb_name__market_stock_on_market_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_months_of_supply
+  category: Suburb - Market
+  rest:
+  - get_suburb_months_of_supply_v1_suburbs__suburb_name__market_months_of_supply_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_vacancy_rate
+  category: Suburb - Market
+  rest:
+  - get_suburb_vacancy_rate_v1_suburbs__suburb_name__market_vacancy_rate_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_yield_pct_series
+  category: Suburb - Market
+  rest:
+  - get_suburb_yield_series_v1_suburbs__suburb_name__market_yield_pct_series_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_vacancy_rate_series
+  category: Suburb - Market
+  rest:
+  - get_suburb_vacancy_rate_series_v1_suburbs__suburb_name__market_vacancy_rate_series_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_recent_price_movement
+  category: Suburb - Market
+  rest:
+  - get_suburb_recent_price_movement_v1_suburbs__suburb_name__market_recent_price_movement_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_hv_power_lines
+  category: Suburb - Risks
+  rest:
+  - get_suburb_hv_power_lines_v1_suburbs__suburb_name__risks_hv_power_lines_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_risks_capital_growth_impact
+  category: Suburb - Risks
+  rest:
+  - get_suburb_risk_capital_growth_impact_v1_suburbs__suburb_name__risks_capital_growth_impact_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_growth_drivers
+  category: Suburb - Market
+  rest:
+  - get_suburb_growth_drivers_v1_suburbs__suburb_name__market_growth_drivers_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_underclass_drag
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_underclass_drag_v1_suburbs__suburb_name__demographics_underclass_drag_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_unemployment
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_unemployment_v1_suburbs__suburb_name__demographics_unemployment_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_single_parents
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_single_parents_v1_suburbs__suburb_name__demographics_single_parents_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_demographics_private_school
+  category: Suburb - Demographics
+  rest:
+  - get_suburb_private_school_v1_suburbs__suburb_name__demographics_private_school_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_density
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_density_v1_suburbs__suburb_name__development_density_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_development_council_intelligence
+  category: Suburb - Development
+  rest:
+  - get_suburb_development_council_intelligence_v1_suburbs__suburb_name__development_council_intelligence_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_market_median_price_map
+  category: Suburb - Market
+  rest:
+  - get_suburb_market_median_price_map_v1_suburbs__suburb_name__market_median_price_map_get
+  binding: path-identity
+  confidence: high
+- tool: properties_street_profile
+  category: Property - Context
+  rest:
+  - get_property_street_profile_v1_properties__gnaf_id__street_profile_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_finder_fields
+  category: Suburb - Finder
+  rest:
+  - get_finder_fields_v1_suburbs_finder_fields_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_finder_regions
+  category: Suburb - Finder
+  rest:
+  - get_finder_regions_v1_suburbs_finder_regions_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_finder_count
+  category: Suburb - Finder
+  rest:
+  - get_finder_count_v1_suburbs_finder_count_get
+  binding: path-identity
+  confidence: high
+- tool: suburbs_finder_search
+  category: Suburb - Finder
+  rest:
+  - get_finder_search_v1_suburbs_finder_search_get
+  binding: path-identity
+  confidence: high

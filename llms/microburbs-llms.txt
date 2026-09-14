@@ -1,0 +1,57 @@
+# Microburbs
+
+> Microburbs publishes street-level property and suburb data for Australia:
+> growth analysis, livability and risk scores, demographics, school and
+> transport access, and comparable sales — built from 25 years of sales
+> history and ABS data, aggregated to suburb (ABS SAL) and mesh-block
+> ("microburb") level.
+
+Reports are web pages that re-generate as new data lands, not static PDFs.
+Some report content is behind a paid plan; the previews, research and
+reference pages linked below are open.
+
+## Start here
+
+- [Homepage](https://www.microburbs.com.au/): what Microburbs is and who it is for.
+- [About](https://www.microburbs.com.au/about): the company, the team and the methodology.
+- [Pricing](https://www.microburbs.com.au/pricing): plans and what each one includes.
+- [FAQs](https://www.microburbs.com.au/faqs): 50+ answers on reports, data, billing and access.
+- [Contact](https://www.microburbs.com.au/contact): email, phone and Sydney office address.
+
+## Products
+
+- [Suburb reports](https://www.microburbs.com.au/suburb-reports): per-suburb analysis — growth,
+  demographics, lifestyle, risk, real estate.
+- [Property reports](https://www.microburbs.com.au/property-reports): per-address valuation
+  context, comparables and neighbourhood detail.
+- [Suburb Finder](https://www.microburbs.com.au/suburb-finder): screen every Australian suburb
+  on 20+ variables across real estate, amenity, risk and gentrification.
+- [Property Finder](https://www.microburbs.com.au/property-finder): filter listings on the same
+  underlying data.
+
+## Research
+
+- [Research hub](https://www.microburbs.com.au/research): every study, whitepaper and podcast in
+  one index. Growth-signal validation, market intelligence and methodology
+  work, each tested against historical sales.
+
+## For developers and agents
+
+- [API access](https://www.microburbs.com.au/api-access): what the public API covers and how it
+  is priced.
+- [API documentation](https://www.microburbs.com.au/developers/api-docs): interactive reference.
+- [OpenAPI specification](https://www.microburbs.com.au/openapi.json): machine-readable spec for
+  the public API.
+- [MCP server](https://www.microburbs.com.au/developers/mcp): the same data as MCP tools, at
+  https://mcp.microburbs.com.au/sse (SSE transport, not /mcp).
+- The API is metered and requires a bearer token. There is no unauthenticated
+  route to paid report data — please do not attempt to reach it by scraping
+  report pages.
+
+## Terms
+
+- [Terms of service](https://www.microburbs.com.au/terms)
+- [Privacy policy](https://www.microburbs.com.au/privacy)
+- [Disclaimer](https://www.microburbs.com.au/disclaimer): our data informs decisions, it is not
+  financial or investment advice. If you quote Microburbs figures, please say
+  so and link the page they came from.

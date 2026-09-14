@@ -1,0 +1,41 @@
+generated: '2026-09-14'
+method: searched
+source: openapi/microburbs-openapi.json (info.description "Pricing") ; live MCP tool descriptions ; https://www.microburbs.com.au/api-access
+note: >-
+  Microburbs prices the API per endpoint, not per subscription tier. There are no
+  named monthly plans for API access -- it is a metered, prepaid pay-per-call
+  model. Every response returns X-Cost-Cents matching the exact cents billed;
+  bulk/"all" endpoints ship at a flat bundle price. Prepaid credit is tracked in a
+  wallet (X-Remaining-Cents) and calls stop at zero. The public marketing
+  /pricing and /api-access pages are JS-rendered and expose no server-side plan
+  text; the authoritative pricing is the per-call rate card in the contract
+  itself. Per-endpoint cents below are read verbatim from live tool descriptions.
+plan_count: 0
+pricing_model: metered-pay-per-call
+currency: AUD
+billing: prepaid wallet (cents); credits do not expire at X-Period-End (start of next UTC month)
+free_tier:
+  key: test
+  cost: 0
+  scope: One sample suburb (SAL) and one sample property (GNAF) per state/territory; discovery endpoints (e.g. area_stats_fields, ping) are 0 cents.
+rate_card_sample:
+  unit: cents_per_call
+  observed_range: 0 - 105
+  examples:
+  - endpoint: /v1/ping
+    cents: 0
+  - endpoint: /v1/sa4/{code}/profile
+    cents: 3
+  - endpoint: /v1/properties/{gnaf_id}/basics/bed-count
+    cents: 5
+  - endpoint: /v1/properties/{gnaf_id}/valuation/avm
+    cents: 10
+  - endpoint: /v1/properties/{gnaf_id}/sale-history
+    cents: 30
+  - endpoint: /v1/properties/{gnaf_id}/risks/all
+    cents: 48
+  - endpoint: /v1/properties/{gnaf_id}/schools/all
+    cents: 105
+  note: Bundle ("all") endpoints are a flat price cheaper than the sum of their parts.
+signup: https://www.microburbs.com.au/api-access
+keys: https://www.microburbs.com.au/developers/keys

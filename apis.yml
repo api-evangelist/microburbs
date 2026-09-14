@@ -1,6 +1,8 @@
 name: Microburbs
-description: Australian property and location data API -- 173 operations covering suburb, demographic and property
-  intelligence, with a hosted MCP server.
+description: 'Microburbs is an Australian property and location-intelligence API: 173 read-only operations spanning
+  property valuations (AVM), sale and rent history, comparable sales, environmental and neighbourhood risk overlays,
+  zoning and development, schools, transport, demographics and suburb screening -- keyed to ABS statistical geography
+  and G-NAF addresses, and mirrored as a hosted MCP server of 174 tools with per-call cent metering.'
 url: https://raw.githubusercontent.com/api-evangelist/microburbs/refs/heads/main/apis.yml
 created: '2026-09-14'
 modified: '2026-09-14'
@@ -13,6 +15,9 @@ tags:
 - Location Intelligence
 apis:
 - name: Microburbs API
+  description: 'The Microburbs Property Data API: 173 metered, read-only REST operations for Australian property
+    and suburb intelligence -- AVM valuations, sale/rent history, comparables, risk overlays, zoning, schools, transport
+    and demographics -- with a matching 174-tool hosted MCP server.'
   humanURL: https://www.microburbs.com.au/developers/api-docs
   baseURL: https://api.microburbs.com.au
   tags:
@@ -21,22 +26,71 @@ apis:
   - Australia
   properties:
   - type: OpenAPI
+    url: openapi/microburbs-openapi.json
+  - type: OpenAPI
+    name: Microburbs Property Data API (provider-hosted)
     url: https://api.microburbs.com.au/openapi.json
   - type: Documentation
     url: https://www.microburbs.com.au/developers/api-docs
   - type: LLMsTxt
     url: https://www.microburbs.com.au/llms.txt
-  - type: WellKnown
-    url: https://www.microburbs.com.au/.well-known/mcp.json
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
   - type: MCPServer
-    url: https://api.microburbs.com.au/mcp
+    url: mcp/microburbs-mcp.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Overlay
+    url: overlays/microburbs-openapi-overlay.yaml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+  - type: AgentSkill
+    url: skills/_index.yml
 common:
+- type: DomainSecurity
+  url: security/microburbs-domain-security.yml
+- type: Authentication
+  url: authentication/microburbs-authentication.yml
 - type: Website
   url: https://www.microburbs.com.au
+- type: WellKnown
+  url: well-known/microburbs-well-known.yml
+- type: DeveloperPortal
+  url: https://www.microburbs.com.au/developers/api-docs
+- type: Pricing
+  url: https://www.microburbs.com.au/api-access
+- type: SignUp
+  url: https://www.microburbs.com.au/developers/keys
+- type: Support
+  url: https://www.microburbs.com.au/contact
+- type: TermsOfService
+  url: https://www.microburbs.com.au/terms
+- type: PrivacyPolicy
+  url: https://www.microburbs.com.au/privacy
+- type: FAQ
+  url: https://www.microburbs.com.au/faqs
 maintainers:
 - FN: Microburbs
   url: https://www.microburbs.com.au
+  email: david@microburbs.com.au
 x-source:
   via: api-search/inbox#32 (David-Mib)
   fetched: '2026-09-14'
   note: 173-path OpenAPI 3.1; hosted MCP where initialize/tools-list work keyless. Every pointer probed before writing.
+x-enrichment:
+  date: '2026-09-14'
+  status: enriched
+  artifacts_added: 22
+  pass: local-v3

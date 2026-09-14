@@ -1,0 +1,36 @@
+generated: '2026-09-14'
+method: searched
+source: https://www.microburbs.com.au/.well-known/mcp.json ; https://www.microburbs.com.au/developers/mcp ; live initialize + tools/list
+name: Microburbs MCP Server
+description: >-
+  Australian property and suburb data as native MCP tools -- valuations, sale and rent
+  history, comparables, risk overlays, zoning, schools, transport and demographics for
+  every Australian address (GNAF) and locality (ABS SAL). Same bearer key and per-call
+  cent metering as the REST API.
+deployment:
+  mode: remote
+  endpoint: https://mcp.microburbs.com.au/sse
+  auth: api-key
+  verified: probed
+  note: >-
+    SSE transport is the provider-declared canonical endpoint (well-known/mcp.json,
+    /developers/mcp). A streamable-HTTP endpoint also answers at
+    https://api.microburbs.com.au/mcp -- initialize returned protocolVersion 2025-06-18,
+    serverInfo name=microburbs version=3.4.4, and tools/list returned 174 tools
+    anonymously. Listing tools needs no key; calling a tool requires
+    Authorization: Bearer mib_live_... and is metered per call.
+server_info:
+  name: microburbs
+  version: 3.4.4
+  protocolVersion: '2025-06-18'
+  capabilities:
+  - prompts
+  - resources
+  - tools
+tools:
+  count: 174
+  list: mcp/microburbs-tools-list.json
+  gated: false
+  note: tools/list fetched anonymously; inputSchema/outputSchema present on every tool.
+documentation: https://www.microburbs.com.au/developers/mcp
+signup: https://www.microburbs.com.au/api-access

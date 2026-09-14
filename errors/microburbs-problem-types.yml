@@ -1,0 +1,43 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/microburbs-openapi.json responses ; info.description billing/access semantics
+format: fastapi-detail
+note: >-
+  The spec declares one machine error shape: HTTP 422 (HTTPValidationError -->
+  { detail: [ {loc, msg, type} ] }, application/json). It is NOT RFC 9457
+  problem+json. The remaining failure codes below are documented in prose in the
+  API description ("402/429/5xx semantics you can code against") and in the
+  bearer/sandbox notes, not as OpenAPI response objects, so they are recorded
+  from documentation rather than from the response matrix. The success envelope
+  also expresses a soft no-data case (HTTP 200, data=null, stable reason slug) --
+  see conventions/microburbs-conventions.yml.
+error_shape:
+  validation: '{ "detail": [ { "loc": [...], "msg": "...", "type": "..." } ] }'
+  no_data: '{ "data": null, "available": false, "reason": "<slug>", "message": "<human>" }'
+problem_types:
+- status: 422
+  title: Validation error
+  source: openapi
+  envelope_field: detail[]
+  meaning: A path or query parameter failed validation (bad GNAF id, unknown suburb field, out-of-range value).
+  remediation: Fix the offending parameter named in detail[].loc; consult the operation schema.
+- status: 402
+  title: Payment required / insufficient prepaid credit
+  source: documentation
+  meaning: The prepaid wallet has no spendable credit (X-Remaining-Cents at zero). Calls stop at zero.
+  remediation: Top up the prepaid wallet; check X-Remaining-Cents before high-cost bundle calls.
+- status: 403
+  title: Forbidden / sandbox key outside allowlist
+  source: documentation
+  meaning: The sandbox key `test` was used against a GNAF/SAL outside the free sample allowlist, or the key lacks access.
+  remediation: Use one of the documented sample GNAFs/SALs with the test key, or mint a full key at /developers/keys.
+- status: 429
+  title: Too many requests / rate limited
+  source: documentation
+  meaning: Predictable per-key rate limit exceeded.
+  remediation: Back off and retry; honour Retry-After if present.
+- status: 5xx
+  title: Server error
+  source: documentation
+  meaning: Upstream/data-pipeline failure.
+  remediation: Retry with backoff; quote X-Request-Id in a support ticket to david@microburbs.com.au.

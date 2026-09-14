@@ -1,0 +1,72 @@
+generated: '2026-09-14'
+method: searched
+source: openapi/microburbs-openapi.json (info.description) ; https://www.microburbs.com.au/developers/api-docs
+note: >-
+  Cross-cutting runtime semantics for the Microburbs Property Data API. The API is
+  READ-ONLY: all 173 operations are GET. Every priced endpoint returns a single
+  uniform response envelope and a consistent set of metering headers.
+auth:
+  style: bearer
+  header: 'Authorization: Bearer <key>'
+  key_prefix: mib_live_
+  sandbox_key: test
+  detail: authentication/microburbs-authentication.yml
+response_envelope:
+  shape: '{ "data": <payload|null>, "available"?: bool, "reason"?: slug, "message"?: string }'
+  success: HTTP 200 with data populated.
+  no_data: HTTP 200 with data=null, available=false, and a stable per-endpoint reason slug plus human message. No-data is NOT an error.
+  branch_on: data !== null
+metering_headers:
+- name: X-Cost-Cents
+  meaning: Exact cents billed for this call.
+- name: X-Spent-Cents
+  meaning: Cumulative cents used for this wallet.
+- name: X-Remaining-Cents
+  meaning: Spendable prepaid credit left; calls stop at zero.
+- name: X-Balance-Cents
+  meaning: Alias of X-Remaining-Cents (prepaid-wallet-preview clients).
+- name: X-Period-End
+  meaning: Start of the next UTC calendar month; credits do not expire here.
+- name: X-Rate-Card-Version
+  meaning: Version of pricing in effect for this call.
+- name: X-Request-Id
+  meaning: UUID for this call; quote in support tickets.
+request_id:
+  header: X-Request-Id
+  scope: response
+  note: UUID per call for support correlation.
+versioning:
+  scheme: url-path
+  current: v1
+  base_path: /v1
+  rate_card: X-Rate-Card-Version header tracks pricing revisions independently of the API version.
+pagination:
+  style: none-observed
+  note: >-
+    No cursor/offset pagination scheme is declared in the spec. List endpoints
+    (e.g. suburbs_list, lga_list) return full arrays; finder endpoints accept
+    filter parameters rather than page tokens.
+error_envelope:
+  shape: '422 returns FastAPI detail[] of {loc, msg, type}; monetary/access failures (402/403/429/5xx) documented in prose.'
+  detail: errors/microburbs-problem-types.yml
+idempotency:
+  coverage: na
+  scope: []
+  note: >-
+    The API is entirely read-only (GET only), so replay protection is not
+    applicable -- repeating any call is inherently safe and simply re-bills the
+    per-call cost. The provider does document "atomic prepaid reservations" for
+    the billing wallet, but exposes no client Idempotency-Key header.
+reversibility:
+  status: na
+  note: >-
+    No write, mutation, cancel, refund or delete operation exists in the contract;
+    every operation is a metered data read. Reversibility is not applicable.
+dry_run_mode:
+  status: na
+  note: >-
+    No write surface to rehearse. Cost is knowable ahead of a call from the
+    per-endpoint rate card, and finder exposes a free _count endpoint
+    (suburbs_finder_count) to size a query before paying per row.
+rate_limits:
+  detail: rate-limits/microburbs-rate-limits.yml

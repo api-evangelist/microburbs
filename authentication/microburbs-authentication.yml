@@ -1,0 +1,17 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/microburbs-openapi.json
+summary:
+  types:
+  - http
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs
+    GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490,
+    GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude
+    Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your
+    own at /developers/keys for full access
+  sources:
+  - openapi/microburbs-openapi.json

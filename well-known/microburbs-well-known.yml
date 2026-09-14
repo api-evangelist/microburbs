@@ -1,0 +1,50 @@
+generated: '2026-09-14'
+method: probed
+source: direct probe of /.well-known/* on every known host
+note: >-
+  Only /.well-known/mcp.json is served (on www), returning a real MCP discovery
+  document that points at the hosted SSE server. All standard discovery paths
+  (security.txt, openid-configuration, oauth-authorization-server,
+  oauth-protected-resource, api-catalog, ai-plugin.json, agent-card.json,
+  agent.json) return 404 on www, api and mcp hosts. No OAuth server metadata is
+  published because the API authenticates with a static bearer key, not OAuth.
+hosts:
+- host: www.microburbs.com.au
+  documents:
+  - path: /.well-known/mcp.json
+    status: 200
+    file: well-known/microburbs-mcp.json
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: api.microburbs.com.au
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+- host: mcp.microburbs.com.au
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404

@@ -1,0 +1,28 @@
+overlay: 1.0.0
+info:
+  title: Microburbs API enrichment overlay
+  version: 1.0.0
+extends: ../openapi/microburbs-openapi.json
+x-generated: '2026-09-14'
+x-method: generated
+x-source: API Evangelist enrichment -- adds first-party contact/support and license metadata absent from the harvested spec.
+actions:
+- target: $.info
+  description: Add support contact absent from the source spec (published at info.description "Getting help" and llms.txt).
+  update:
+    contact:
+      name: Microburbs API Support
+      email: david@microburbs.com.au
+      url: https://www.microburbs.com.au/developers/api-docs
+    termsOfService: https://www.microburbs.com.au/terms
+- target: $.info
+  description: Record the metered pay-per-call commercial model as a machine-readable extension.
+  update:
+    x-pricing-model: metered-pay-per-call
+    x-cost-header: X-Cost-Cents
+    x-mcp-endpoint: https://mcp.microburbs.com.au/sse
+- target: $.info
+  description: Note read-only posture for agents.
+  update:
+    x-write-operations: 0
+    x-read-only: true

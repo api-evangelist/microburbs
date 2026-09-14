@@ -1,0 +1,46 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/microburbs-openapi.json ; llms/microburbs-llms.txt
+note: >-
+  Cross-cutting and domain-standard conformance for a read-only Australian
+  property-data API. Rewards only; absence of an inapplicable standard is not a
+  penalty. The API is bearer-token metered REST -- it does NOT implement OAuth2,
+  OIDC, RFC 9457 problem+json, or a formal pagination standard. Its strongest
+  standards signal is domain-level: it is keyed end-to-end on Australian Bureau
+  of Statistics (ABS) statistical geography (GNAF address ids, SAL suburbs, mesh
+  blocks, SA1-SA4, LGA, GCCSA) and ABS Census + G-NAF identifier schemes.
+conformance:
+- id: oauth2
+  conforms: false
+  evidence: securitySchemes declares only BearerAuth (http/bearer static key); no oauth2 flow.
+- id: oidc
+  conforms: false
+  evidence: No openid-configuration served (404 on all hosts).
+- id: rfc9457
+  conforms: false
+  evidence: Errors use FastAPI detail[] (422) and prose 402/403/429, not application/problem+json.
+- id: pagination
+  conforms: false
+  evidence: No cursor/offset pagination scheme declared; list endpoints return full arrays.
+- id: idempotency
+  conforms: false
+  evidence: Read-only API; no Idempotency-Key header exposed.
+domain_standards:
+- id: abs-statistical-geography
+  conforms: true
+  evidence: >-
+    Every locality path resolves against the ABS Australian Statistical Geography
+    Standard (ASGS) -- SAL suburbs, mesh blocks, SA1/SA2/SA3/SA4, LGA and GCCSA are
+    first-class path/response entities (suburbs_profile, mbs_profile, lga_profile,
+    sa4_profile). Suburb names are canonical ABS SAL strings (e.g. "St Kilda (Vic.)").
+- id: gnaf-address-identifier
+  conforms: true
+  evidence: >-
+    Properties are addressed by G-NAF (Geocoded National Address File) persistent
+    identifiers (e.g. GANSW704074813) across all property endpoints and the
+    geocode_address resolver. G-NAF is the PSMA/Geoscape national address standard.
+- id: abs-census
+  conforms: true
+  evidence: >-
+    Demographic, ethnicity and tenure endpoints are sourced from and keyed to ABS
+    Census 2021 aggregates at SAL and mesh-block level (llms.txt; suburbs_demographics_*).

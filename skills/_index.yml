@@ -1,0 +1,14 @@
+generated: '2026-09-14'
+method: generated
+source: skills grounded in real operationIds from openapi/microburbs-openapi.json
+api: Microburbs API
+skills:
+- name: microburbs-property-valuation
+  file: skills/microburbs-property-valuation.md
+  description: AVM valuation with range, comparables and sale history from a freeform address.
+- name: microburbs-suburb-screening
+  file: skills/microburbs-suburb-screening.md
+  description: Screen Australian suburbs with the Finder -- fields, free count, filtered search.
+- name: microburbs-property-risk
+  file: skills/microburbs-property-risk.md
+  description: Property + suburb environmental/neighbourhood risk assessment via bundled risks/all.
