@@ -1,0 +1,42 @@
+name: Microburbs
+description: Australian property and location data API -- 173 operations covering suburb, demographic and property
+  intelligence, with a hosted MCP server.
+url: https://raw.githubusercontent.com/api-evangelist/microburbs/refs/heads/main/apis.yml
+created: '2026-09-14'
+modified: '2026-09-14'
+specificationVersion: '0.21'
+tags:
+- Property Data
+- Real Estate
+- Australia
+- Demographics
+- Location Intelligence
+apis:
+- name: Microburbs API
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property Data
+  - Real Estate
+  - Australia
+  properties:
+  - type: OpenAPI
+    url: https://api.microburbs.com.au/openapi.json
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: WellKnown
+    url: https://www.microburbs.com.au/.well-known/mcp.json
+  - type: MCPServer
+    url: https://api.microburbs.com.au/mcp
+common:
+- type: Website
+  url: https://www.microburbs.com.au
+maintainers:
+- FN: Microburbs
+  url: https://www.microburbs.com.au
+x-source:
+  via: api-search/inbox#32 (David-Mib)
+  fetched: '2026-09-14'
+  note: 173-path OpenAPI 3.1; hosted MCP where initialize/tools-list work keyless. Every pointer probed before writing.
