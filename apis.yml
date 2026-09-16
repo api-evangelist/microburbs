@@ -9,35 +9,33 @@ modified: '2026-09-14'
 specificationVersion: '0.21'
 tags:
 - Property Data
+- Real-Estate
+- Australia
+- Demographics
+- Location Intelligence
+tags_raw:
+- Property Data
 - Real Estate
 - Australia
 - Demographics
 - Location Intelligence
 apis:
-- name: Microburbs API
-  description: 'The Microburbs Property Data API: 173 metered, read-only REST operations for Australian property
-    and suburb intelligence -- AVM valuations, sale/rent history, comparables, risk overlays, zoning, schools, transport
-    and demographics -- with a matching 174-tool hosted MCP server.'
+- aid: microburbs:microburbs-account-api
+  name: Microburbs Account API
+  description: Account info — caller identity, prepaid balance and usage.
   humanURL: https://www.microburbs.com.au/developers/api-docs
   baseURL: https://api.microburbs.com.au
   tags:
-  - Property Data
-  - Real Estate
-  - Australia
+  - Account
   properties:
   - type: OpenAPI
-    url: openapi/microburbs-openapi.json
-  - type: OpenAPI
-    name: Microburbs Property Data API (provider-hosted)
-    url: https://api.microburbs.com.au/openapi.json
+    url: openapi/microburbs-account-api-openapi.yml
   - type: Documentation
     url: https://www.microburbs.com.au/developers/api-docs
   - type: LLMsTxt
     url: https://www.microburbs.com.au/llms.txt
   - type: ToolCrosswalk
     url: mcp/microburbs-tool-crosswalk.yml
-  - type: MCPServer
-    url: mcp/microburbs-mcp.yml
   - type: Conventions
     url: conventions/microburbs-conventions.yml
   - type: ErrorCatalog
@@ -46,8 +44,6 @@ apis:
     url: lifecycle/microburbs-lifecycle.yml
   - type: DataModel
     url: data-model/microburbs-data-model.yml
-  - type: Overlay
-    url: overlays/microburbs-openapi-overlay.yaml
   - type: Plans
     url: plans/microburbs-plans-pricing.yml
   - type: RateLimits
@@ -56,9 +52,1101 @@ apis:
     url: conformance/microburbs-conformance.yml
   - type: Sandbox
     url: sandbox/microburbs-sandbox.yml
-  - type: AgentSkill
-    url: skills/_index.yml
+- aid: microburbs:microburbs-area-statistics-api
+  name: Microburbs Area Statistics API
+  description: The Area Statistics API from Microburbs — 3 operation(s) for area statistics.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Area Statistics
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-area-statistics-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-geocode-api
+  name: Microburbs Geocode API
+  description: Address → GNAF and suburb autocomplete. The entry point before you have an identifier.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Geocode
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-geocode-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-lga-profile-api
+  name: Microburbs LGA - Profile API
+  description: ABS geo profile for a Local Government Area.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - LGA - Profile
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-lga-profile-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-mesh-block-profile-api
+  name: Microburbs Mesh Block - Profile API
+  description: ABS geo profile for a mesh block — upward chain.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Mesh Block - Profile
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-mesh-block-profile-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-amenities-api
+  name: Microburbs Property - Amenities API
+  description: Nearby amenities and transport within 1km.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Amenities
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-amenities-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-basics-api
+  name: Microburbs Property - Basics API
+  description: Bedroom, bathroom, parking, dwelling type, lot size.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Basics
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-basics-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-comparables-api
+  name: Microburbs Property - Comparables API
+  description: CMA comp sets and recent nearby sales.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Comparables
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-comparables-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-context-api
+  name: Microburbs Property - Context API
+  description: The 1km around the property — mesh-block stats, street series, nearby listings.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Context
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-context-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-development-api
+  name: Microburbs Property - Development API
+  description: Zoning code and overlays.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Development
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-development-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-history-api
+  name: Microburbs Property - History API
+  description: Sale and rental transaction history.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - History
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-history-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-profile-api
+  name: Microburbs Property - Profile API
+  description: ABS geo profile — mesh block + SA1–SA4 + LGA + state.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Profile
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-profile-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-risks-api
+  name: Microburbs Property - Risks API
+  description: Bushfire, flood, heritage, landslide, erosion, etc.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Risks
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-risks-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-schools-api
+  name: Microburbs Property - Schools API
+  description: Nearby schools and rankings.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Schools
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-schools-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-surroundings-api
+  name: Microburbs Property - Surroundings API
+  description: The 200m around the property — neighbours, tenure, parcels, housing.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Surroundings
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-surroundings-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-title-api
+  name: Microburbs Property - Title API
+  description: Cadastral attributes — neighbours, owner.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Title
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-title-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-property-valuation-api
+  name: Microburbs Property - Valuation API
+  description: Automated valuation model output.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Property - Valuation
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-property-valuation-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-sa4-profile-api
+  name: Microburbs SA4 - Profile API
+  description: ABS geo profile for a Statistical Area Level 4.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - SA4 - Profile
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-sa4-profile-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-crime-api
+  name: Microburbs Suburb - Crime API
+  description: Crime benchmark, breakdown and mesh-block map values.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Crime
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-crime-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-demographics-api
+  name: Microburbs Suburb - Demographics API
+  description: ABS census age, dwelling, household, income.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Demographics
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-demographics-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-development-api
+  name: Microburbs Suburb - Development API
+  description: Development applications.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Development
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-development-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-ethnicity-api
+  name: Microburbs Suburb - Ethnicity API
+  description: Ancestry, birthplace, language at home.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Ethnicity
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-ethnicity-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-finder-api
+  name: Microburbs Suburb - Finder API
+  description: Cross-suburb range-filter search — filter on ~36 metrics, sort, paginate.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Finder
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-finder-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-forecast-api
+  name: Microburbs Suburb - Forecast API
+  description: 12-month sale-price forecast.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Forecast
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-forecast-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-hero-api
+  name: Microburbs Suburb - Hero API
+  description: Headline summary — geography, population, growth, neighbours.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Hero
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-hero-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-lifestyle-api
+  name: Microburbs Suburb - Lifestyle API
+  description: POIs, livability, landmarks, narrative.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Lifestyle
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-lifestyle-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-listings-api
+  name: Microburbs Suburb - Listings API
+  description: Current for-sale listings snapshot.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Listings
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-listings-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-market-api
+  name: Microburbs Suburb - Market API
+  description: Medians, growth, yield, days on market.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Market
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-market-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-profile-api
+  name: Microburbs Suburb - Profile API
+  description: ABS geo profile — admin chain + mesh-block inventory.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Profile
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-profile-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-risks-api
+  name: Microburbs Suburb - Risks API
+  description: Suburb-aggregated risk coverages.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Risks
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-risks-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-sales-api
+  name: Microburbs Suburb - Sales API
+  description: Recent sold properties and sales summary.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Sales
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-sales-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-schools-api
+  name: Microburbs Suburb - Schools API
+  description: Suburb-level school list and catchment.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Schools
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-schools-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-shapes-api
+  name: Microburbs Suburb - Shapes API
+  description: GeoJSON — boundary, neighbours, mesh blocks, hazard overlays, noise.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Shapes
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-shapes-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-similar-api
+  name: Microburbs Suburb - Similar API
+  description: Most-similar suburb recommendations.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Similar
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-similar-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
+- aid: microburbs:microburbs-suburb-street-forecasts-api
+  name: Microburbs Suburb - Street Forecasts API
+  description: Street-level price forecasts.
+  humanURL: https://www.microburbs.com.au/developers/api-docs
+  baseURL: https://api.microburbs.com.au
+  tags:
+  - Suburb - Street Forecasts
+  properties:
+  - type: OpenAPI
+    url: openapi/microburbs-suburb-street-forecasts-api-openapi.yml
+  - type: Documentation
+    url: https://www.microburbs.com.au/developers/api-docs
+  - type: LLMsTxt
+    url: https://www.microburbs.com.au/llms.txt
+  - type: ToolCrosswalk
+    url: mcp/microburbs-tool-crosswalk.yml
+  - type: Conventions
+    url: conventions/microburbs-conventions.yml
+  - type: ErrorCatalog
+    url: errors/microburbs-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/microburbs-lifecycle.yml
+  - type: DataModel
+    url: data-model/microburbs-data-model.yml
+  - type: Plans
+    url: plans/microburbs-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/microburbs-rate-limits.yml
+  - type: Conformance
+    url: conformance/microburbs-conformance.yml
+  - type: Sandbox
+    url: sandbox/microburbs-sandbox.yml
 common:
+- type: MCPServer
+  url: mcp/microburbs-mcp.yml
+- type: Overlay
+  url: overlays/microburbs-openapi-overlay.yaml
+- type: AgentSkill
+  url: skills/_index.yml
 - type: DomainSecurity
   url: security/microburbs-domain-security.yml
 - type: Authentication
