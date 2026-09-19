@@ -538,6 +538,8 @@ apis:
   humanURL: https://www.microburbs.com.au/developers/api-docs
   baseURL: https://api.microburbs.com.au
   tags:
+  - Property Valuation
+  tags_raw:
   - Property - Valuation
   properties:
   - type: OpenAPI
