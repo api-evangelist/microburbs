@@ -1,0 +1,3620 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Demographics API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Demographics
+  description: ABS census age, dwelling, household, income.
+paths:
+  /v1/suburbs/{suburb_name}/demographics/age:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Age-bracket breakdown
+      description: 'Population by age bracket and gender.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_suburb_demographics_age_v1_suburbs__suburb_name__demographics_age_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_DemographicRow__'
+              example:
+                data:
+                - area_name: Belmont North
+                  area_level: suburb
+                  age_bracket: 0-4
+                  gender: females
+                  proportion: 0.0272
+                - area_name: Belmont North
+                  area_level: suburb
+                  age_bracket: 0-4
+                  gender: males
+                  proportion: 0.0275
+                - area_name: Belmont North
+                  area_level: suburb
+                  age_bracket: 0-4
+                  gender: persons
+                  proportion: 0.0545
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_name: Belmont North
+        area_level: suburb
+        age_bracket: 0-4
+        gender: females
+        proportion: 0.0272
+      - area_name: Belmont North
+        area_level: suburb
+        age_bracket: 0-4
+        gender: males
+        proportion: 0.0275
+      - area_name: Belmont North
+        area_level: suburb
+        age_bracket: 0-4
+        gender: persons
+        proportion: 0.0545
+      x-price-cents: 3
+  /v1/suburbs/{suburb_name}/demographics/income:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Income-bracket breakdown
+      description: 'Household income breakdown by bracket.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_suburb_demographics_income_v1_suburbs__suburb_name__demographics_income_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_DemographicRow__'
+              example:
+                data:
+                - area_name: Belmont North
+                  area_level: suburb
+                  income_bracket: '>$156k'
+                  proportion: 0.0287
+                  median_income: 90480
+                - area_name: Belmont North
+                  area_level: suburb
+                  income_bracket: $65k-$155k
+                  proportion: 0.256
+                  median_income: 90480
+                - area_name: Belmont North
+                  area_level: suburb
+                  income_bracket: $33k-$64k
+                  proportion: 0.268
+                  median_income: 90480
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_name: Belmont North
+        area_level: suburb
+        income_bracket: '>$156k'
+        proportion: 0.0287
+        median_income: 90480
+      - area_name: Belmont North
+        area_level: suburb
+        income_bracket: $65k-$155k
+        proportion: 0.256
+        median_income: 90480
+      - area_name: Belmont North
+        area_level: suburb
+        income_bracket: $33k-$64k
+        proportion: 0.268
+        median_income: 90480
+      x-price-cents: 3
+  /v1/suburbs/{suburb_name}/demographics/all:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Age + income — bundle
+      description: '**Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 6¢ per call.**'
+      operationId: get_suburb_demographics_all_v1_suburbs__suburb_name__demographics_all_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_DemographicsAll_'
+              example:
+                data:
+                  age:
+                  - age_bracket: 0-4
+                    area_level: suburb
+                    area_name: Belmont North
+                    gender: females
+                    proportion: 0.0272
+                  income:
+                  - age_bracket: 0-4
+                    area_level: suburb
+                    area_name: Belmont North
+                    gender: females
+                    proportion: 0.0272
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 6
+  /v1/suburbs/{suburb_name}/demographics/population-history:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Total population, history & projection
+      description: 'Total suburb population is `current_population` (ABS Census 2021),
+
+        alongside suburb census points (2011/2016/2021) and the LGA''s yearly
+
+        population series with a 10-year modelled projection tail. Use this route
+
+        for questions such as "what is the total population of Clarkson?
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_population_history_v1_suburbs__suburb_name__demographics_population_history_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PopulationHistory_'
+              example:
+                data:
+                  census_year: 2021
+                  current_population: 6302
+                  lga: Lake Macquarie
+                  lga_growth:
+                    end_population: 219000
+                    end_year: 2025
+                    pct_change: 9.0
+                    start_population: 201000
+                    start_year: 2015
+                  lga_projection:
+                    pct_change: 12.2
+                    source: MIB
+                    to_year: 2035
+                  lga_series:
+                  - population: 216983
+                    projected: false
+                    year: 2024
+                  - population: 219000
+                    projected: false
+                    year: 2025
+                  - population: 221672
+                    projected: true
+                    year: 2026
+                  microburb_count: 77
+                  suburb: Belmont North
+                  suburb_growth:
+                    end_population: 6302
+                    end_year: 2021
+                    pct_change: 3.5
+                    start_population: 6086
+                    start_year: 2011
+                  suburb_series:
+                  - population: 6086
+                    year: 2011
+                  - population: 6338
+                    year: 2016
+                  - population: 6302
+                    year: 2021
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/business:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Local business mix
+      description: 'ABN industry-mix pattern (Diverse / Professional-services-heavy /
+
+        Mining-exposed / Low-commercial residential) plus the POI categories
+
+        unusually common in the suburb, with named examples.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_business_v1_suburbs__suburb_name__demographics_business_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbBusiness_'
+              example:
+                data:
+                  busiest_street_footnote: On the busiest residential street, Croudace Bay Rd, the median house price sits at $890k.
+                  distinctive_categories:
+                  - category: Takeaway
+                    count: 6
+                    examples:
+                    - Golden Wok
+                    - Belmont North Pizza
+                    times_more_common: 4.9
+                  industries:
+                  - industry: trade_construction
+                    label: Trades & construction
+                    n: 143
+                    share: 0.21
+                  pattern:
+                    headline: Mostly residential — too few businesses to identify a market pattern.
+                    label: Low-commercial residential
+                    subline: The local business mix below shows what is distinctive in this suburb regardless.
+                  suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/voting:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Projected voting profile
+      description: 'Projected first-preference shares per party, aggregated across the
+
+        suburb''s microburbs (booth-derived model — not an actual vote).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_voting_v1_suburbs__suburb_name__demographics_voting_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbVoting_'
+              example:
+                data:
+                  lean: Labor lean
+                  margin_pct: 6.7
+                  n_microburbs: 85
+                  parties:
+                  - label: Labor
+                    party: ALP
+                    pct: 38.2
+                  - label: Liberal
+                    party: LIB
+                    pct: 31.5
+                  - label: Greens
+                    party: GRN
+                    pct: 11.3
+                  projection: Federal election held May 2026 (projected — not an actual vote)
+                  runner_up:
+                    label: Liberal
+                    party: LIB
+                    pct: 31.5
+                  suburb: Belmont North
+                  winner:
+                    label: Labor
+                    party: ALP
+                    pct: 38.2
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/ancestry-map:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Dominant ancestry per microburb
+      description: 'The dominant ancestry (and its share) in each of the suburb''s
+
+        microburbs, plus suburb-level ancestry shares. Pilot coverage.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_ancestry_map_v1_suburbs__suburb_name__demographics_ancestry_map_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbAncestryMap_'
+              example:
+                data:
+                  microburbs:
+                  - dominant_ancestry: Anglo-Australian
+                    mb: '10694860000'
+                    persons: 118
+                    share_pct: 62.1
+                    street: Edinburgh Rd
+                  n_microburbs: 37
+                  suburb: Castlecrag
+                  suburb_ancestry_shares:
+                  - ancestry: Anglo-Australian
+                    pct: 58.4
+                  - ancestry: Chinese
+                    pct: 12.9
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/cultural-integration:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Cultural-integration score
+      description: 'Suburb cultural-integration composite (0-100) with national
+
+        percentile and tier, plus the per-microburb scores behind it.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_cultural_integration_v1_suburbs__suburb_name__demographics_cultural_integration_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbCulturalIntegration_'
+              example:
+                data:
+                  cg_impact_pct_yr: 0.43
+                  least_integrated:
+                    score_100: 51.5
+                    street: Kalaroo Rd
+                  microburbs:
+                  - mb: '10664530000'
+                    score_100: 68.2
+                    street: Marquis St
+                  most_integrated:
+                    score_100: 68.2
+                    street: Marquis St
+                  n_microburbs: 77
+                  percentile: 79.7
+                  score_100: 61.8
+                  suburb: Belmont North
+                  tier: Top
+                  tier_growth_pct_4y: 1.7
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/tenure:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Owner-occupation and housing tenure rates
+      description: 'Explicit total owner-occupation rate plus owned-outright / mortgaged /
+
+        renting / public-housing shares — a suburb rollup and the per-microburb
+
+        downscaled Census shares. `owner_occupied_pct` is the requested headline;
+
+        it equals owned outright plus mortgaged and is null if either is absent.
+
+        `census_year` makes the 2021 reference period explicit.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_tenure_v1_suburbs__suburb_name__demographics_tenure_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbTenure_'
+              example:
+                data:
+                  census_year: 2021
+                  microburbs:
+                  - mb: '10664530000'
+                    mortgaged_pct: 41.0
+                    owned_outright_pct: 38.2
+                    public_housing_pct: 0.9
+                    renting_pct: 17.3
+                    street: Marquis St
+                  mortgaged_pct: 40.1
+                  n_microburbs: 71
+                  owned_outright_pct: 34.7
+                  owner_occupied_pct: 74.8
+                  public_housing_pct: 1.8
+                  renting_pct: 20.9
+                  suburb: Belmont North
+                  tier: Mixed
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/cohorts:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Regional & neighbour cohort ranks
+      description: 'How the suburb ranks inside its SA4 region and against its touching
+
+        neighbours on renter share, welfare dependency, overseas-born parents
+
+        and public housing.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_cohorts_v1_suburbs__suburb_name__demographics_cohorts_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbCohorts_'
+              example:
+                data:
+                  metrics:
+                  - field: mib_perc_renters
+                    label: Renter share
+                    neighbours:
+                      dramatic:
+                        delta_pct: 258
+                        suburb: Windale
+                        value_pct: 39.4
+                      highest_in_group: false
+                      lowest_in_group: false
+                      n: 7
+                    sa4:
+                      delta_pct: 34
+                      n: 135
+                      percentile: 34
+                      position: bottom
+                    value_pct: 11.0
+                  n_neighbours: 7
+                  sa4:
+                    cohort_size: 148
+                    name: Newcastle and Lake Macquarie
+                  suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/income-map:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Income per microburb
+      description: 'Median weekly household income for every microburb in the suburb,
+
+        plus the suburb median, national percentile and highest/lowest pockets.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_income_map_v1_suburbs__suburb_name__demographics_income_map_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbIncomeMap_'
+              example:
+                data:
+                  highest:
+                    street: Marquis St
+                    weekly_income: 2105
+                  lowest:
+                    street: Kalaroo Rd
+                    weekly_income: 1188
+                  median_weekly_income: 1740
+                  microburbs:
+                  - mb: '10664530000'
+                    street: Marquis St
+                    weekly_income: 2105
+                  n_microburbs: 71
+                  national_percentile: 55
+                  suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/underclass-drag:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Underclass drag
+      description: 'Welfare-dependency and public-housing shares with the suburb''s
+
+        underclass tier (High / Mid / Low) and the capital-growth impact
+
+        associated with that tier. Regional and neighbour ranks for the same
+
+        two metrics are served by `/demographics/cohorts`.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_underclass_drag_v1_suburbs__suburb_name__demographics_underclass_drag_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_UnderclassDrag_'
+              example:
+                data:
+                  growth_impact:
+                    band: Middle 90%
+                    pct_per_year: 0.0
+                  n_microburbs: 77
+                  public_housing_basis: microburb_downscale
+                  public_housing_pct: 6.6
+                  suburb: Belmont North
+                  tier: Mid
+                  welfare_dependency_pct: 16.2
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/unemployment:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Unemployment rate
+      description: 'Labour-force-weighted unemployment rate for the suburb against the
+
+        pinned national median, plus the per-microburb shares behind it.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_unemployment_v1_suburbs__suburb_name__demographics_unemployment_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Unemployment_'
+              example:
+                data:
+                  basis: labour_force
+                  growth_impact:
+                    band: Mid unemployment
+                    pct_per_year: 0.0
+                  microburbs:
+                  - mb: '10664530000'
+                    street: Marquis St
+                    unemployment_pct: 3.1
+                  n_microburbs: 71
+                  national_median_pct: 5.2
+                  suburb: Belmont North
+                  unemployment_pct: 4.2
+                  vs_national: below
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/demographics/single-parents:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Single-parent families
+      description: 'Single-parent-family share for the suburb against the pinned
+
+        national median, with the associated capital-growth impact.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_suburb_single_parents_v1_suburbs__suburb_name__demographics_single_parents_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SingleParents_'
+              example:
+                data:
+                  growth_impact:
+                    band: High single-parent share
+                    pct_per_year: -0.5
+                  national_median_pct: 5.8
+                  single_parent_pct: 11.0
+                  suburb: Belmont North
+                  vs_national: above
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+  /v1/suburbs/{suburb_name}/demographics/private-school:
+    get:
+      tags:
+      - Suburb - Demographics
+      summary: Private-school students
+      description: 'Share of residents attending Catholic / Independent schools —
+
+        suburb rollup plus the per-microburb shares behind it.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_private_school_v1_suburbs__suburb_name__demographics_private_school_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PrivateSchool_'
+              example:
+                data:
+                  basis: microburb_downscale
+                  growth_impact:
+                    band: Low private-school share
+                    pct_per_year: -0.3
+                  microburbs:
+                  - mb: '10664530000'
+                    private_school_pct: 5.8
+                    street: Marquis St
+                  n_microburbs: 71
+                  private_school_pct: 4.7
+                  suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+components:
+  schemas:
+    UnderclassDrag:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        welfare_dependency_pct:
+          type: number
+          title: Welfare Dependency Pct
+          description: Share of working-age residents on JobSeeker / Disability Support / carer payments, as a percentage.
+        public_housing_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Public Housing Pct
+          description: Public-housing share of dwellings, as a percentage.
+        public_housing_basis:
+          anyOf:
+          - type: string
+            enum:
+            - microburb_downscale
+            - census_suburb
+          - type: 'null'
+          title: Public Housing Basis
+          description: Which denominator produced public_housing_pct — 'microburb_downscale' (mesh-block tenure base, preferred) or 'census_suburb' (suburb census population share).
+        tier:
+          type: string
+          enum:
+          - High
+          - Mid
+          - Low
+          title: Tier
+          description: Underclass concentration tier. High = welfare >= 20% or public housing >= 15%; Low = welfare < 10% and public housing < 2%.
+        growth_impact:
+          $ref: '#/components/schemas/GrowthImpact'
+          description: Capital-growth impact associated with the tier.
+        n_microburbs:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: N Microburbs
+          description: Mesh blocks behind the public-housing rollup.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - welfare_dependency_pct
+      - tier
+      - growth_impact
+      title: UnderclassDrag
+      description: Welfare dependency + public housing, with the underclass tier.
+      example:
+        growth_impact:
+          band: Middle 90%
+          pct_per_year: 0.0
+        n_microburbs: 77
+        public_housing_basis: microburb_downscale
+        public_housing_pct: 6.6
+        suburb: Belmont North
+        tier: Mid
+        welfare_dependency_pct: 16.2
+    BusinessIndustry:
+      properties:
+        industry:
+          type: string
+          title: Industry
+          description: Industry key (e.g. trade_construction).
+        label:
+          type: string
+          title: Label
+          description: Human industry label.
+        share:
+          type: number
+          title: Share
+          description: Share of classified ABNs (0-1).
+        n:
+          type: integer
+          title: N
+          description: ABN count in the industry.
+      additionalProperties: true
+      type: object
+      required:
+      - industry
+      - label
+      - share
+      - n
+      title: BusinessIndustry
+      description: One ABN industry share row.
+    SuburbAncestryMap:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Microburbs with ancestry data.
+        microburbs:
+          items:
+            $ref: '#/components/schemas/AncestryMb'
+          type: array
+          title: Microburbs
+          description: Dominant ancestry per microburb.
+        suburb_ancestry_shares:
+          items:
+            $ref: '#/components/schemas/AncestryShare'
+          type: array
+          title: Suburb Ancestry Shares
+          description: Suburb-level ancestry shares, descending.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - n_microburbs
+      - microburbs
+      - suburb_ancestry_shares
+      title: SuburbAncestryMap
+      description: Per-microburb dominant ancestry (pilot-coverage dataset).
+      example:
+        microburbs:
+        - dominant_ancestry: Anglo-Australian
+          mb: '10694860000'
+          persons: 118
+          share_pct: 62.1
+          street: Edinburgh Rd
+        n_microburbs: 37
+        suburb: Castlecrag
+        suburb_ancestry_shares:
+        - ancestry: Anglo-Australian
+          pct: 58.4
+        - ancestry: Chinese
+          pct: 12.9
+    PartyResult:
+      properties:
+        party:
+          type: string
+          title: Party
+          description: Party code (LIB/ALP/GRN/TEAL/…).
+        label:
+          type: string
+          title: Label
+          description: Human party name.
+        pct:
+          type: number
+          title: Pct
+          description: Projected first-preference share (%).
+      additionalProperties: true
+      type: object
+      required:
+      - party
+      - label
+      - pct
+      title: PartyResult
+      description: One party's projected first-preference share.
+    CohortSa4Rank:
+      properties:
+        percentile:
+          type: integer
+          title: Percentile
+          description: Share of SA4 cohort strictly below the suburb (0-100).
+        position:
+          type: string
+          enum:
+          - top
+          - bottom
+          title: Position
+          description: Which tail the suburb sits in.
+        delta_pct:
+          type: integer
+          title: Delta Pct
+          description: Distance from the tail — 6 reads as 'Top 6%'.
+        n:
+          type: integer
+          title: N
+          description: SA4 cohort suburbs with a value.
+      additionalProperties: true
+      type: object
+      required:
+      - percentile
+      - position
+      - delta_pct
+      - n
+      title: CohortSa4Rank
+      description: SA4-cohort percentile position for one metric.
+    PopulationHistory:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        lga:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Lga
+          description: The suburb's LGA name.
+        current_population:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Current Population
+          description: Current residents (ABS Census 2021, mesh-block sum).
+        microburb_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Microburb Count
+          description: Residential microburbs (mesh blocks) in the suburb.
+        census_year:
+          type: integer
+          title: Census Year
+          description: Census year of current_population.
+        suburb_series:
+          items:
+            $ref: '#/components/schemas/PopulationPoint'
+          type: array
+          title: Suburb Series
+          description: Suburb census points (2011/2016/2021 where available).
+        lga_series:
+          items:
+            $ref: '#/components/schemas/LgaPopulationPoint'
+          type: array
+          title: Lga Series
+          description: LGA yearly series — ABS ERP history (projected=false) plus a 10-year interpolated projection tail (projected=true).
+        suburb_growth:
+          anyOf:
+          - $ref: '#/components/schemas/PopulationGrowth'
+          - type: 'null'
+          description: Suburb growth over the census window.
+        lga_growth:
+          anyOf:
+          - $ref: '#/components/schemas/PopulationGrowth'
+          - type: 'null'
+          description: LGA growth over the last ~10 historical years.
+        lga_projection:
+          anyOf:
+          - $ref: '#/components/schemas/LgaProjection'
+          - type: 'null'
+          description: LGA projection to the 10-year horizon.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - census_year
+      - suburb_series
+      - lga_series
+      title: PopulationHistory
+      description: Suburb + LGA population history with a 10-year LGA projection.
+      example:
+        census_year: 2021
+        current_population: 6302
+        lga: Lake Macquarie
+        lga_growth:
+          end_population: 219000
+          end_year: 2025
+          pct_change: 9.0
+          start_population: 201000
+          start_year: 2015
+        lga_projection:
+          pct_change: 12.2
+          source: MIB
+          to_year: 2035
+        lga_series:
+        - population: 216983
+          projected: false
+          year: 2024
+        - population: 219000
+          projected: false
+          year: 2025
+        - population: 221672
+          projected: true
+          year: 2026
+        microburb_count: 77
+        suburb: Belmont North
+        suburb_growth:
+          end_population: 6302
+          end_year: 2021
+          pct_change: 3.5
+          start_population: 6086
+          start_year: 2011
+        suburb_series:
+        - population: 6086
+          year: 2011
+        - population: 6338
+          year: 2016
+        - population: 6302
+          year: 2021
+    AncestryShare:
+      properties:
+        ancestry:
+          type: string
+          title: Ancestry
+          description: Ancestry bucket name.
+        pct:
+          type: number
+          title: Pct
+          description: Share of all ancestry responses (%).
+      additionalProperties: true
+      type: object
+      required:
+      - ancestry
+      - pct
+      title: AncestryShare
+      description: Suburb-level ancestry share.
+    SuburbTenure:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: The suburb these figures describe, as the canonical ABS suburb (SAL) name — the resolved form of whatever was requested.
+        census_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Census Year
+          description: Reference year of the underlying ABS Census tenure inputs (currently 2021). This is not a current-year occupancy survey.
+        owned_outright_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Owned Outright Pct
+          description: Suburb-wide share of dwellings owned outright, percent 0–100.
+        mortgaged_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mortgaged Pct
+          description: Suburb-wide share owner-occupied with a mortgage, percent 0–100.
+        owner_occupied_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Owner Occupied Pct
+          description: 'Total suburb owner-occupation rate, percent 0–100: `owned_outright_pct + mortgaged_pct`. Null unless both components are available. This is a modelled, unweighted average across microburbs, not an exact dwelling-weighted ABS SAL count.'
+        renting_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Renting Pct
+          description: Suburb-wide share of dwellings rented, percent 0–100 — private and public renting combined. Drives `tier`.
+        public_housing_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Public Housing Pct
+          description: Suburb-wide share rented from a state/territory housing authority, percent 0–100. Included within `renting_pct`, not additional to it.
+        tier:
+          type: string
+          title: Tier
+          description: 'One-word read on the suburb''s ownership mix, banded on `renting_pct`: ''Owner-Occupier'' under 7% renters, ''Mixed'' under 20%, ''Investor-Heavy'' at 20% or above (''Unknown'' when there is no renting share). A convenience label — the underlying percentage is the precise figure.'
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: 'How many microburbs are listed in `microburbs`. Not the number behind the suburb figures above: very small or sparsely-populated microburbs are filtered out of the list but still counted in the suburb averages, so re-averaging `microburbs` will not exactly reproduce them.'
+        microburbs:
+          items:
+            $ref: '#/components/schemas/TenureMb'
+          type: array
+          title: Microburbs
+          description: Tenure shares for each microburb in the suburb, showing how ownership varies street by street — often the more useful signal, since a single suburb average can hide an owner-occupied pocket next to a rental-heavy one.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - tier
+      - n_microburbs
+      - microburbs
+      title: SuburbTenure
+      description: 'Who owns and who rents across a suburb — one headline set of shares
+
+        plus the microburb-by-microburb detail underneath.
+
+
+        The suburb figures are an **unweighted average across the suburb''s
+
+        microburbs**, so each microburb counts equally regardless of how many
+
+        dwellings it holds. That is close to, but not identical with, a true
+
+        dwelling-weighted suburb share; do not expect it to reconcile exactly
+
+        with published Census suburb tenure counts. Same 0–100 percent scale
+
+        and same overlapping-categories caveat as `TenureMb`.'
+      example:
+        census_year: 2021
+        microburbs:
+        - mb: '10664530000'
+          mortgaged_pct: 41.0
+          owned_outright_pct: 38.2
+          public_housing_pct: 0.9
+          renting_pct: 17.3
+          street: Marquis St
+        mortgaged_pct: 40.1
+        n_microburbs: 71
+        owned_outright_pct: 34.7
+        owner_occupied_pct: 74.8
+        public_housing_pct: 1.8
+        renting_pct: 20.9
+        suburb: Belmont North
+        tier: Mixed
+    ApiResponse_SuburbAncestryMap_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbAncestryMap'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbAncestryMap]
+    ApiResponse_SuburbCohorts_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbCohorts'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbCohorts]
+    SingleParents:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        single_parent_pct:
+          type: number
+          title: Single Parent Pct
+          description: Single-parent-family share as a percentage.
+        national_median_pct:
+          type: number
+          title: National Median Pct
+          description: The Australia-wide single-parent-family share to compare `single_parent_pct` against, as a percentage — a fixed 2021 Census benchmark, identical in every response. A different metric and a different number from the unemployment endpoint's benchmark of the same name.
+        vs_national:
+          type: string
+          enum:
+          - below
+          - above
+          title: Vs National
+          description: Whether this suburb's single-parent share sits 'below' or 'above' the national benchmark. Exact equality is reported as 'above'.
+        growth_impact:
+          $ref: '#/components/schemas/GrowthImpact'
+          description: The capital-growth difference historically associated with suburbs in this single-parent-share band. An association, not a forecast — see the field's own description.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - single_parent_pct
+      - national_median_pct
+      - vs_national
+      - growth_impact
+      title: SingleParents
+      description: Single-parent-family share vs the national median.
+      example:
+        growth_impact:
+          band: High single-parent share
+          pct_per_year: -0.5
+        national_median_pct: 5.8
+        single_parent_pct: 11.0
+        suburb: Belmont North
+        vs_national: above
+    SuburbVoting:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Microburbs in the aggregate.
+        projection:
+          type: string
+          title: Projection
+          description: What the projection represents (and its provenance).
+        winner:
+          $ref: '#/components/schemas/PartyResult'
+          description: Leading party.
+        runner_up:
+          $ref: '#/components/schemas/PartyResult'
+          description: Second-placed party.
+        margin_pct:
+          type: number
+          title: Margin Pct
+          description: Winner-minus-runner-up margin (pp).
+        lean:
+          type: string
+          title: Lean
+          description: Strong <party> (≥15pp) / <party> lean (≥5pp) / Marginal.
+        parties:
+          items:
+            $ref: '#/components/schemas/PartyResult'
+          type: array
+          title: Parties
+          description: All parties polling ≥0.5%, descending.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - n_microburbs
+      - projection
+      - winner
+      - runner_up
+      - margin_pct
+      - lean
+      - parties
+      title: SuburbVoting
+      description: Projected voting profile, aggregated across the suburb's microburbs.
+      example:
+        lean: Labor lean
+        margin_pct: 6.7
+        n_microburbs: 85
+        parties:
+        - label: Labor
+          party: ALP
+          pct: 38.2
+        - label: Liberal
+          party: LIB
+          pct: 31.5
+        - label: Greens
+          party: GRN
+          pct: 11.3
+        projection: Federal election held May 2026 (projected — not an actual vote)
+        runner_up:
+          label: Liberal
+          party: LIB
+          pct: 31.5
+        suburb: Belmont North
+        winner:
+          label: Labor
+          party: ALP
+          pct: 38.2
+    DemographicRow:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        proportion:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Proportion
+          description: Share of the suburb in this bracket (0–1).
+        age_bracket:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Age Bracket
+          description: Only on /demographics/age.
+        gender:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gender
+          description: Only on /demographics/age — 'males' / 'females' / 'persons'.
+        income_bracket:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Income Bracket
+          description: Only on /demographics/income.
+        median_income:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Median Income
+          description: Only on /demographics/income.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: DemographicRow
+      description: 'One row of demographic data — age bracket or income bracket. The
+
+        shape varies per endpoint; common keys are always present, the rest
+
+        are open (``extra=allow``) so a renamed sub-key doesn''t break
+
+        clients.'
+      example:
+        age_bracket: 0-4
+        area_level: suburb
+        area_name: Belmont North
+        gender: females
+        proportion: 0.0272
+    ApiResponse_SuburbIncomeMap_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbIncomeMap'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbIncomeMap]
+    SuburbIncomeMap:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        median_weekly_income:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Median Weekly Income
+          description: Suburb median household income ($/week).
+        national_percentile:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: National Percentile
+          description: National income percentile, clamped 1-99.
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Microburbs with income data.
+        microburbs:
+          items:
+            $ref: '#/components/schemas/IncomeMb'
+          type: array
+          title: Microburbs
+          description: Per-microburb incomes.
+        highest:
+          anyOf:
+          - $ref: '#/components/schemas/IncomePocket'
+          - type: 'null'
+          description: Highest-income pocket.
+        lowest:
+          anyOf:
+          - $ref: '#/components/schemas/IncomePocket'
+          - type: 'null'
+          description: Lowest-income pocket.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - n_microburbs
+      - microburbs
+      title: SuburbIncomeMap
+      description: Per-microburb median household income map.
+      example:
+        highest:
+          street: Marquis St
+          weekly_income: 2105
+        lowest:
+          street: Kalaroo Rd
+          weekly_income: 1188
+        median_weekly_income: 1740
+        microburbs:
+        - mb: '10664530000'
+          street: Marquis St
+          weekly_income: 2105
+        n_microburbs: 71
+        national_percentile: 55
+        suburb: Belmont North
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    IncomeMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the MB.
+        weekly_income:
+          type: integer
+          title: Weekly Income
+          description: Median household income ($/week).
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      - weekly_income
+      title: IncomeMb
+      description: One microburb's median weekly household income.
+    ApiResponse_PopulationHistory_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PopulationHistory'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PopulationHistory]
+    PopulationGrowth:
+      properties:
+        start_year:
+          type: integer
+          title: Start Year
+          description: First year of the window.
+        end_year:
+          type: integer
+          title: End Year
+          description: Last year of the window.
+        start_population:
+          type: integer
+          title: Start Population
+          description: Population at start_year.
+        end_population:
+          type: integer
+          title: End Population
+          description: Population at end_year.
+        pct_change:
+          type: number
+          title: Pct Change
+          description: Percent change over the window.
+      additionalProperties: true
+      type: object
+      required:
+      - start_year
+      - end_year
+      - start_population
+      - end_population
+      - pct_change
+      title: PopulationGrowth
+      description: Start → end growth summary over a population series.
+    PrivateSchool:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        private_school_pct:
+          type: number
+          title: Private School Pct
+          description: Share of residents attending Catholic / Independent schools, as a percentage.
+        basis:
+          type: string
+          enum:
+          - microburb_downscale
+          - census_count_over_population
+          title: Basis
+          description: How private_school_pct was derived — 'microburb_downscale' (mesh-block share rollup, preferred) or 'census_count_over_population' (suburb census student count over mesh-block population).
+        growth_impact:
+          $ref: '#/components/schemas/GrowthImpact'
+          description: Capital-growth impact associated with the share band.
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Mesh blocks in the microburbs list.
+        microburbs:
+          items:
+            $ref: '#/components/schemas/PrivateSchoolMicroburb'
+          type: array
+          title: Microburbs
+          description: Per-mesh-block private-school shares (sparse cells dropped).
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - private_school_pct
+      - basis
+      - growth_impact
+      - n_microburbs
+      - microburbs
+      title: PrivateSchool
+      description: Share of residents attending Catholic / Independent schools.
+      example:
+        basis: microburb_downscale
+        growth_impact:
+          band: Low private-school share
+          pct_per_year: -0.3
+        microburbs:
+        - mb: '10664530000'
+          private_school_pct: 5.8
+          street: Marquis St
+        n_microburbs: 71
+        private_school_pct: 4.7
+        suburb: Belmont North
+    DemographicsAll:
+      properties:
+        age:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/DemographicRow'
+            type: array
+          - type: 'null'
+          title: Age
+        income:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/DemographicRow'
+            type: array
+          - type: 'null'
+          title: Income
+      type: object
+      title: DemographicsAll
+    BusinessPattern:
+      properties:
+        label:
+          type: string
+          title: Label
+          description: 'Pattern tag: Diverse / Professional-services-heavy / Mining-exposed / Low-commercial residential.'
+        headline:
+          type: string
+          title: Headline
+          description: One-line market read for the pattern.
+        subline:
+          type: string
+          title: Subline
+          description: Context sentence (may be empty).
+      additionalProperties: true
+      type: object
+      required:
+      - label
+      - headline
+      - subline
+      title: BusinessPattern
+      description: Business-mix pattern classification.
+    CohortMetric:
+      properties:
+        field:
+          type: string
+          title: Field
+          description: suburb_finder field code.
+        label:
+          type: string
+          title: Label
+          description: Human metric name.
+        value_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Value Pct
+          description: The suburb's value (%).
+        sa4:
+          anyOf:
+          - $ref: '#/components/schemas/CohortSa4Rank'
+          - type: 'null'
+          description: SA4 percentile rank.
+        neighbours:
+          anyOf:
+          - $ref: '#/components/schemas/CohortNeighbours'
+          - type: 'null'
+          description: Touching-suburb comparison.
+      additionalProperties: true
+      type: object
+      required:
+      - field
+      - label
+      title: CohortMetric
+      description: One ranked metric with its SA4 + neighbour comparisons.
+    SuburbBusiness:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        pattern:
+          $ref: '#/components/schemas/BusinessPattern'
+          description: Business-mix pattern.
+        industries:
+          items:
+            $ref: '#/components/schemas/BusinessIndustry'
+          type: array
+          title: Industries
+          description: Top ABN industries by share (up to 5).
+        distinctive_categories:
+          items:
+            $ref: '#/components/schemas/DistinctiveCategory'
+          type: array
+          title: Distinctive Categories
+          description: POI categories unusually common here (up to 4).
+        busiest_street_footnote:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Busiest Street Footnote
+          description: Busiest-residential-street context sentence.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - pattern
+      - industries
+      - distinctive_categories
+      title: SuburbBusiness
+      description: Local business mix — ABN industry pattern + distinctive POI categories.
+      example:
+        busiest_street_footnote: On the busiest residential street, Croudace Bay Rd, the median house price sits at $890k.
+        distinctive_categories:
+        - category: Takeaway
+          count: 6
+          examples:
+          - Golden Wok
+          - Belmont North Pizza
+          times_more_common: 4.9
+        industries:
+        - industry: trade_construction
+          label: Trades & construction
+          n: 143
+          share: 0.21
+        pattern:
+          headline: Mostly residential — too few businesses to identify a market pattern.
+          label: Low-commercial residential
+          subline: The local business mix below shows what is distinctive in this suburb regardless.
+        suburb: Belmont North
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_DemographicsAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/DemographicsAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[DemographicsAll]
+    ApiResponse_SuburbVoting_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbVoting'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbVoting]
+    CulturalIntegrationMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the MB.
+        score_100:
+          type: number
+          title: Score 100
+          description: Composite score, 0-100.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      - score_100
+      title: CulturalIntegrationMb
+      description: One microburb's cultural-integration composite.
+    CohortSa4:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: SA4 region name.
+        cohort_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cohort Size
+          description: Suburbs in the SA4 cohort.
+      additionalProperties: true
+      type: object
+      title: CohortSa4
+      description: The suburb's SA4 cohort.
+    ApiResponse_SuburbBusiness_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbBusiness'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbBusiness]
+    AncestryMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the MB.
+        dominant_ancestry:
+          type: string
+          title: Dominant Ancestry
+          description: Largest ancestry bucket.
+        share_pct:
+          type: number
+          title: Share Pct
+          description: Dominant bucket's share of ancestry responses (%).
+        persons:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Persons
+          description: Total persons in the MB.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      - dominant_ancestry
+      - share_pct
+      title: AncestryMb
+      description: One microburb's dominant ancestry.
+    ApiResponse_list_DemographicRow__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/DemographicRow'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[DemographicRow]]
+    DistinctiveCategory:
+      properties:
+        category:
+          type: string
+          title: Category
+          description: Category name (title-cased).
+        count:
+          type: integer
+          title: Count
+          description: POIs of this category in the suburb.
+        times_more_common:
+          type: number
+          title: Times More Common
+          description: How many times more common than the national base rate.
+        examples:
+          items:
+            type: string
+          type: array
+          title: Examples
+          description: Up to 3 named example POIs.
+      additionalProperties: true
+      type: object
+      required:
+      - category
+      - count
+      - times_more_common
+      - examples
+      title: DistinctiveCategory
+      description: A POI category unusually common in this suburb.
+    TenureMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code identifying this microburb, as a string of digits (keep it a string — leading digits are significant and it overflows a 32-bit int).
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: The most common street name inside the microburb, title-cased — a human handle for an area that otherwise has only a numeric code. Not a boundary or a full address, and several microburbs in a suburb can share one.
+        owned_outright_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Owned Outright Pct
+          description: Share of dwellings owned outright with no mortgage, as a percent 0–100 (34.7 = 34.7%). Typically tracks an older, longer-settled population.
+        mortgaged_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mortgaged Pct
+          description: Share of dwellings owner-occupied but still mortgaged, as a percent 0–100. Add it to `owned_outright_pct` for total owner-occupation.
+        renting_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Renting Pct
+          description: Share of dwellings rented, as a percent 0–100 — all renting, private landlords and public housing together. This is the figure the suburb-level `tier` is banded on.
+        public_housing_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Public Housing Pct
+          description: Share of dwellings rented from a state or territory housing authority, as a percent 0–100. A subset of `renting_pct`, not a fourth category — these dwellings are counted in both fields. Stacking all four in one chart double-counts; use owned-outright + mortgaged + renting for a breakdown (which still sums slightly under 100, the remainder being other and not-stated tenures) and show public housing separately.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: TenureMb
+      description: 'How the households in one microburb hold their homes — owned, being
+
+        paid off, or rented.
+
+
+        All four shares are **percentages 0–100** (not fractions) of the same
+
+        denominator: occupied private dwellings, including those whose tenure
+
+        was not stated. Two things follow, and both bite people who chart these
+
+        naively — see `public_housing_pct` and the note on summing below.
+
+
+        These come from a model, not a published count: Census tenure is
+
+        published for larger areas and statistically downscaled to microburb
+
+        level, so read a single microburb as an estimate with real uncertainty.'
+    ApiResponse_UnderclassDrag_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/UnderclassDrag'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[UnderclassDrag]
+    CohortNeighbours:
+      properties:
+        n:
+          type: integer
+          title: N
+          description: Touching suburbs with a value.
+        lowest_in_group:
+          type: boolean
+          title: Lowest In Group
+          description: True when every neighbour is at or above the suburb.
+        highest_in_group:
+          type: boolean
+          title: Highest In Group
+          description: True when every neighbour is at or below the suburb.
+        dramatic:
+          anyOf:
+          - $ref: '#/components/schemas/DramaticNeighbour'
+          - type: 'null'
+          description: Largest-delta neighbour (only when mixed).
+      additionalProperties: true
+      type: object
+      required:
+      - n
+      - lowest_in_group
+      - highest_in_group
+      title: CohortNeighbours
+      description: Touching-suburb comparison for one metric.
+    SuburbCulturalIntegration:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        score_100:
+          type: number
+          title: Score 100
+          description: Suburb composite score, 0-100.
+        percentile:
+          type: number
+          title: Percentile
+          description: National percentile (0-100).
+        tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tier
+          description: 'Tier bin: Top / Mid / Bottom.'
+        tier_growth_pct_4y:
+          type: number
+          title: Tier Growth Pct 4Y
+          description: The tier's 4-year price growth (%).
+        cg_impact_pct_yr:
+          type: number
+          title: Cg Impact Pct Yr
+          description: Capital-growth impact, % per year (tier growth / 4).
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Microburbs with a composite score.
+        microburbs:
+          items:
+            $ref: '#/components/schemas/CulturalIntegrationMb'
+          type: array
+          title: Microburbs
+          description: Per-microburb composite scores.
+        most_integrated:
+          anyOf:
+          - $ref: '#/components/schemas/IntegrationPocket'
+          - type: 'null'
+          description: Highest-scoring pocket.
+        least_integrated:
+          anyOf:
+          - $ref: '#/components/schemas/IntegrationPocket'
+          - type: 'null'
+          description: Lowest-scoring pocket.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - score_100
+      - percentile
+      - tier_growth_pct_4y
+      - cg_impact_pct_yr
+      - n_microburbs
+      - microburbs
+      title: SuburbCulturalIntegration
+      description: Cultural-integration composite — suburb tier + per-microburb scores.
+      example:
+        cg_impact_pct_yr: 0.43
+        least_integrated:
+          score_100: 51.5
+          street: Kalaroo Rd
+        microburbs:
+        - mb: '10664530000'
+          score_100: 68.2
+          street: Marquis St
+        most_integrated:
+          score_100: 68.2
+          street: Marquis St
+        n_microburbs: 77
+        percentile: 79.7
+        score_100: 61.8
+        suburb: Belmont North
+        tier: Top
+        tier_growth_pct_4y: 1.7
+    DramaticNeighbour:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Neighbouring SAL name.
+        value_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Value Pct
+          description: Neighbour's value (%).
+        delta_pct:
+          type: integer
+          title: Delta Pct
+          description: Percent difference vs the subject (signed).
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - delta_pct
+      title: DramaticNeighbour
+      description: Largest-delta neighbouring suburb (|delta| >= 25%).
+    UnemploymentMicroburb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the mesh block.
+        unemployment_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Unemployment Pct
+          description: Downscaled unemployment share for the mesh block.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: UnemploymentMicroburb
+      description: One mesh block's unemployment share.
+    IntegrationPocket:
+      properties:
+        street:
+          type: string
+          title: Street
+          description: Modal street of the pocket's MB.
+        score_100:
+          type: number
+          title: Score 100
+          description: Composite score, 0-100.
+      additionalProperties: true
+      type: object
+      required:
+      - street
+      - score_100
+      title: IntegrationPocket
+      description: Most/least-integrated pocket callout.
+    ApiResponse_Unemployment_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/Unemployment'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[Unemployment]
+    ApiResponse_SuburbCulturalIntegration_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbCulturalIntegration'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbCulturalIntegration]
+    ApiResponse_PrivateSchool_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PrivateSchool'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PrivateSchool]
+    LgaProjection:
+      properties:
+        to_year:
+          type: integer
+          title: To Year
+          description: Final projected year.
+        pct_change:
+          type: number
+          title: Pct Change
+          description: Projected percent change from the last historical year.
+        source:
+          type: string
+          title: Source
+          description: Data source — 'MIB'.
+      additionalProperties: true
+      type: object
+      required:
+      - to_year
+      - pct_change
+      - source
+      title: LgaProjection
+      description: LGA 10-year projection summary.
+    SuburbCohorts:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        sa4:
+          anyOf:
+          - $ref: '#/components/schemas/CohortSa4'
+          - type: 'null'
+          description: SA4 cohort metadata.
+        n_neighbours:
+          type: integer
+          title: N Neighbours
+          description: Touching suburbs in the cohort.
+        metrics:
+          items:
+            $ref: '#/components/schemas/CohortMetric'
+          type: array
+          title: Metrics
+          description: Per-metric comparisons.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - n_neighbours
+      - metrics
+      title: SuburbCohorts
+      description: 'SA4-cohort percentile ranks + neighbour comparisons for four
+
+        demographic metrics (renters, welfare, overseas-born, public housing).'
+      example:
+        metrics:
+        - field: mib_perc_renters
+          label: Renter share
+          neighbours:
+            dramatic:
+              delta_pct: 258
+              suburb: Windale
+              value_pct: 39.4
+            highest_in_group: false
+            lowest_in_group: false
+            n: 7
+          sa4:
+            delta_pct: 34
+            n: 135
+            percentile: 34
+            position: bottom
+          value_pct: 11.0
+        n_neighbours: 7
+        sa4:
+          cohort_size: 148
+          name: Newcastle and Lake Macquarie
+        suburb: Belmont North
+    Unemployment:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        unemployment_pct:
+          type: number
+          title: Unemployment Pct
+          description: Suburb unemployment rate as a percentage.
+        basis:
+          type: string
+          enum:
+          - labour_force
+          - population_share
+          title: Basis
+          description: Denominator behind unemployment_pct — 'labour_force' (unemployed / labour force, the reported figure) or 'population_share' (suburb census fallback when the mesh-block downscale has no coverage).
+        national_median_pct:
+          type: number
+          title: National Median Pct
+          description: The Australia-wide unemployment rate to compare `unemployment_pct` against, as a percentage — a fixed 2021 Census benchmark, so it is the same constant in every response and does not move between suburbs or over time. Despite 'median' in the name it is a national aggregate rate, not the median of suburb rates.
+        vs_national:
+          type: string
+          enum:
+          - below
+          - above
+          title: Vs National
+          description: Whether this suburb's unemployment sits 'below' or 'above' the national benchmark — the shorthand answer to 'is this good or bad'. Below is the favourable direction here. A suburb exactly equal to the benchmark is reported as 'above'.
+        growth_impact:
+          $ref: '#/components/schemas/GrowthImpact'
+          description: The capital-growth difference historically associated with suburbs in this unemployment band. An association from past research, not a forecast — see the field's own description.
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Mesh blocks in the microburbs list.
+        microburbs:
+          items:
+            $ref: '#/components/schemas/UnemploymentMicroburb'
+          type: array
+          title: Microburbs
+          description: Per-mesh-block unemployment shares (sparse cells dropped).
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - unemployment_pct
+      - basis
+      - national_median_pct
+      - vs_national
+      - growth_impact
+      - n_microburbs
+      - microburbs
+      title: Unemployment
+      description: Suburb unemployment rate vs the national median, plus per-mesh-block.
+      example:
+        basis: labour_force
+        growth_impact:
+          band: Mid unemployment
+          pct_per_year: 0.0
+        microburbs:
+        - mb: '10664530000'
+          street: Marquis St
+          unemployment_pct: 3.1
+        n_microburbs: 71
+        national_median_pct: 5.2
+        suburb: Belmont North
+        unemployment_pct: 4.2
+        vs_national: below
+    GrowthImpact:
+      properties:
+        pct_per_year:
+          type: number
+          title: Pct Per Year
+          description: The growth difference historically associated with this band, in percentage points per year on a percent scale — `-3.8` means 3.8 percentage points a year worse, `0.5` means half a point a year better, and `0.0` (the common case, for suburbs in the middle band) means no association either way. A relative difference, not a growth rate in its own right.
+        band:
+          type: string
+          title: Band
+          description: Plain-language name of the band the suburb landed in, suitable for display alongside the figure — e.g. 'Middle 90%', 'High unemployment', 'Low private-school share'. The wording differs per indicator; treat it as a label, not a shared enum.
+      additionalProperties: true
+      type: object
+      required:
+      - pct_per_year
+      - band
+      title: GrowthImpact
+      description: 'What a suburb''s score on this indicator has historically gone
+
+        together with, in capital-growth terms.
+
+
+        ⚠️ **This is an association, not a prediction, and not a calculation
+
+        from this suburb''s own numbers.** The suburb is sorted into one of a
+
+        few bands, and each band carries a fixed figure drawn from Microburbs''
+
+        research across many suburbs. Two suburbs in the same band always
+
+        return exactly the same `pct_per_year`. Do not add these up across
+
+        indicators to build a growth forecast, and do not present the figure
+
+        as something this suburb will do.'
+    IncomePocket:
+      properties:
+        street:
+          type: string
+          title: Street
+          description: Modal street of the pocket's MB.
+        weekly_income:
+          type: integer
+          title: Weekly Income
+          description: Median household income ($/week).
+      additionalProperties: true
+      type: object
+      required:
+      - street
+      - weekly_income
+      title: IncomePocket
+      description: Highest/lowest income pocket callout.
+    ApiResponse_SingleParents_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SingleParents'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SingleParents]
+    LgaPopulationPoint:
+      properties:
+        year:
+          type: integer
+          title: Year
+          description: Calendar year.
+        population:
+          type: integer
+          title: Population
+          description: Estimated resident population.
+        projected:
+          type: boolean
+          title: Projected
+          description: True on the 10-year modelled projection tail.
+      additionalProperties: true
+      type: object
+      required:
+      - year
+      - population
+      - projected
+      title: LgaPopulationPoint
+      description: One LGA population reading — ABS ERP history or projection tail.
+    PopulationPoint:
+      properties:
+        year:
+          type: integer
+          title: Year
+          description: Census year (2011/2016/2021).
+        population:
+          type: integer
+          title: Population
+          description: Residents counted that year.
+      additionalProperties: true
+      type: object
+      required:
+      - year
+      - population
+      title: PopulationPoint
+      description: One suburb census reading (ABS Census years).
+    ApiResponse_SuburbTenure_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbTenure'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbTenure]
+    PrivateSchoolMicroburb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the mesh block.
+        private_school_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Private School Pct
+          description: Downscaled private-school share for the mesh block.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: PrivateSchoolMicroburb
+      description: One mesh block's private-school share.
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

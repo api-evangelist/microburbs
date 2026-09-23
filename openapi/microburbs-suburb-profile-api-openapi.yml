@@ -1,0 +1,574 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Profile API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Profile
+  description: ABS geo profile — admin chain + mesh-block inventory.
+paths:
+  /v1/suburbs/{suburb_name}/profile:
+    get:
+      tags:
+      - Suburb - Profile
+      summary: ABS geo profile
+      description: 'The suburb''s upward ABS admin chain — LGA, SA2/3/4, GCCSA,
+
+        state, postcode. Use ``/v1/suburbs/list`` to discover canonical
+
+        SAL names (and filter by state / LGA / SA4 / postcode).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_suburb_profile_v1_suburbs__suburb_name__profile_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbProfile_'
+              example:
+                data:
+                  gccsa: Rest of NSW
+                  lga: Lake Macquarie
+                  postcode: '2280'
+                  sa2: Belmont - Bennetts Green
+                  sa3: Lake Macquarie - East
+                  sa4: Newcastle and Lake Macquarie
+                  state: New South Wales
+                  suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+  /v1/suburbs/list:
+    get:
+      tags:
+      - Suburb - Profile
+      summary: List suburbs
+      description: 'List Australian suburbs (SALs). Always returns `{suburb, state}`
+
+        per row so SAL-name collisions across states are unambiguous.
+
+
+        With no filter you get the first 1000 suburbs alphabetically
+
+        (browser-renderable preview). Pass any of the filters to narrow:
+
+        state / lga / sa4 / sa3 / postcode / q (name search). Filters
+
+        combine (AND). Flat cost regardless of how many rows come back.
+
+
+        **Name search (`q`) is typo-tolerant.** It tries an exact match, then
+
+        substring, then a fuzzy near-miss, and returns `match`
+
+        (`exact` / `contains` / `fuzzy`) and `score` on every row so you can
+
+        see which happened.
+
+
+        **Always tell the user which suburb you resolved to, and its state,
+
+        before quoting numbers for it.** A fuzzy match is a suggestion, not a
+
+        confirmation — `rokeby` is one letter from Kokeby in Western Australia
+
+        and Rokeby exists in both Tasmania and Victoria. If more than one
+
+        candidate is plausible, ask rather than pick.
+
+
+        When `q` is combined with `state`, the state is a **preference, not a
+
+        filter**: in-state candidates rank first, but a suburb of that name in
+
+        another state is still returned rather than hidden, so a near-miss
+
+        becomes "Seaview is in Victoria, not Tasmania" instead of "no data".
+
+        Every other filter stays a strict AND.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_suburb_list_v1_suburbs_list_get
+      parameters:
+      - name: state
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by state / territory (e.g. NSW, VIC, 'New South Wales').
+          title: State
+          example: NSW
+        description: Filter by state / territory (e.g. NSW, VIC, 'New South Wales').
+        example: NSW
+      - name: lga
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by Local Government Area name.
+          title: Lga
+          example: Lake Macquarie
+        description: Filter by Local Government Area name.
+        example: Lake Macquarie
+      - name: sa4
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by SA4 name.
+          title: Sa4
+          example: Newcastle and Lake Macquarie
+        description: Filter by SA4 name.
+        example: Newcastle and Lake Macquarie
+      - name: sa3
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by SA3 name.
+          title: Sa3
+          example: Lake Macquarie - East
+        description: Filter by SA3 name.
+        example: Lake Macquarie - East
+      - name: postcode
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by 4-digit postcode (POA).
+          title: Postcode
+          example: '2280'
+        description: Filter by 4-digit postcode (POA).
+        example: '2280'
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Suburb-name search. Matches exactly, then by substring, then by fuzzy near-miss so a typo still resolves ('devenport' -> Devonport). Each row comes back with `match` and `score` saying how it was found.
+          title: Q
+          example: belmont
+        description: Suburb-name search. Matches exactly, then by substring, then by fuzzy near-miss so a typo still resolves ('devenport' -> Devonport). Each row comes back with `match` and `score` saying how it was found.
+        example: belmont
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_SuburbListItem__'
+              example:
+                data:
+                - state: New South Wales
+                  suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_SuburbProfile_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbProfile]
+    ApiResponse_list_SuburbListItem__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SuburbListItem'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[SuburbListItem]]
+    SuburbProfile:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL — ABS Suburb and Locality).
+        lga:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Lga
+          description: Local Government Area.
+        sa2:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa2
+          description: SA2 name.
+        sa3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa3
+          description: SA3 name.
+        sa4:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa4
+          description: SA4 name.
+        gccsa:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gccsa
+          description: Greater Capital City Statistical Area.
+        state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State
+          description: State / Territory.
+        postcode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Postcode
+          description: Postcode (POA).
+      type: object
+      required:
+      - suburb
+      title: SuburbProfile
+      description: ABS geo profile — the upward admin chain for a suburb.
+      example:
+        gccsa: Rest of NSW
+        lga: Lake Macquarie
+        postcode: '2280'
+        sa2: Belmont - Bennetts Green
+        sa3: Lake Macquarie - East
+        sa4: Newcastle and Lake Macquarie
+        state: New South Wales
+        suburb: Belmont North
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    SuburbListItem:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL) name.
+        state:
+          type: string
+          title: State
+          description: State / Territory.
+        match:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Match
+          description: 'How this row matched the `q` you sent — `exact`, `contains`, or `fuzzy` (a near-miss recovered from a likely typo). Only present when `q` was supplied. **Anything other than `exact` is a suggestion, not a confirmation: tell the user which suburb and state you used before you quote numbers for it.** A `fuzzy` row in a different state from the one the user named is very often the wrong place.'
+        score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Score
+          description: Match confidence 0-1 (1.0 = exact). Only present when `q` was supplied. Use it to decide between asking the user and proceeding — not as a licence to pick silently.
+      type: object
+      required:
+      - suburb
+      - state
+      title: SuburbListItem
+      description: 'One row in the suburb directory — minimum to disambiguate SAL
+
+        names that collide across states (e.g. ''Springfield'' in NSW + QLD).'
+      example:
+        state: New South Wales
+        suburb: Belmont North
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

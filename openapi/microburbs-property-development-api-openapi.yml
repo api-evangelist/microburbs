@@ -1,0 +1,579 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - Development API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - Development
+  description: Zoning code and overlays.
+paths:
+  /v1/properties/{gnaf_id}/development/zoning-code:
+    get:
+      tags:
+      - Property - Development
+      summary: Primary zoning code
+      description: 'Primary zoning at the property''s point — code (R2, B4, ...) when
+
+        the council ships one, plus the human-readable name and the
+
+        broader category.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_property_zoning_code_v1_properties__gnaf_id__development_zoning_code_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_ZoningCode_'
+              example:
+                data:
+                  category: Residential Zones
+                  code: R2
+                  name: Low Density Residential
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+  /v1/properties/{gnaf_id}/development/zoning-overlays:
+    get:
+      tags:
+      - Property - Development
+      summary: Development overlays at this point
+      description: 'Development overlays intersecting the property''s parcel.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_property_zoning_overlays_v1_properties__gnaf_id__development_zoning_overlays_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_ZoningOverlay__'
+              example:
+                data:
+                - layer: hob
+                  value: 10 m
+                - layer: hob
+                  value: 5.5 m
+                - layer: hob
+                  value: 8.5 m
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - layer: hob
+        value: 10 m
+      - layer: hob
+        value: 5.5 m
+      - layer: hob
+        value: 8.5 m
+      x-price-cents: 5
+  /v1/properties/{gnaf_id}/development/all:
+    get:
+      tags:
+      - Property - Development
+      summary: All planning — bundle
+      description: '**Price: 8¢ per call.**'
+      operationId: get_property_planning_all_v1_properties__gnaf_id__development_all_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PlanningAll_'
+              example:
+                data:
+                  zoning_code:
+                    category: Residential Zones
+                    code: R2
+                    name: Low Density Residential
+                  zoning_overlays:
+                  - layer: hob
+                    value: 10 m
+                  - layer: hob
+                    value: 5.5 m
+                  - layer: hob
+                    value: 8.5 m
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 8
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_ZoningCode_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ZoningCode'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[ZoningCode]
+    ApiResponse_PlanningAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PlanningAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PlanningAll]
+    ZoningCode:
+      properties:
+        code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Code
+          description: Parenthesised code (e.g. 'R2', 'B4', 'IN1') when the council's feed includes one. Many regional NSW + Adelaide + QLD councils don't — in which case this is null and the human-readable label is on `name`.
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Human-readable zone class, e.g. 'Low Density Residential'.
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Broader category bucket, e.g. 'Residential Zones', 'Business Zones'.
+      type: object
+      title: ZoningCode
+      example:
+        category: Residential Zones
+        code: R2
+        name: Low Density Residential
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ZoningOverlay:
+      properties:
+        layer:
+          type: string
+          title: Layer
+          description: Overlay layer code, e.g. 'fsr', 'hob'.
+        value:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Value
+          description: Value at this point (e.g. '1.5' for FSR, '9.5' for HoB metres).
+      additionalProperties: true
+      type: object
+      required:
+      - layer
+      title: ZoningOverlay
+      description: 'One planning overlay intersecting the property''s buffer.
+
+
+        ``layer`` is the overlay family (e.g. ``"fsr"`` Floor Space Ratio,
+
+        ``"hob"`` Height of Building). ``value`` is the numeric/string
+
+        value that overlay carries at this point (e.g. ``"1.5"`` for FSR
+
+        or ``"9.5"`` for HoB metres).'
+      example:
+        layer: fsr
+        value: '1.5'
+    PlanningAll:
+      properties:
+        zoning_code:
+          anyOf:
+          - $ref: '#/components/schemas/ZoningCode'
+          - type: 'null'
+        zoning_overlays:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ZoningOverlay'
+            type: array
+          - type: 'null'
+          title: Zoning Overlays
+      type: object
+      title: PlanningAll
+      description: All planning — zoning + overlays.
+      example:
+        zoning_code:
+          category: Residential Zones
+          code: R2
+          name: Low Density Residential
+        zoning_overlays:
+        - layer: hob
+          value: 10 m
+        - layer: hob
+          value: 5.5 m
+        - layer: hob
+          value: 8.5 m
+    ApiResponse_list_ZoningOverlay__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ZoningOverlay'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[ZoningOverlay]]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

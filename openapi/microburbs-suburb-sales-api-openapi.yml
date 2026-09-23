@@ -1,0 +1,565 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Sales API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Sales
+  description: Recent sold properties and sales summary.
+paths:
+  /v1/suburbs/{suburb_name}/sales/recent:
+    get:
+      tags:
+      - Suburb - Sales
+      summary: Recent sales (last 3 years)
+      description: 'Properties sold in the suburb over the last 3 years, with beds/baths/land
+
+        size, sale price and date, and coordinates.
+
+
+        Paginated: `total` reports how many sales are available for the suburb
+
+        (counted before `limit`/`offset`), so you can page through the full feed.
+
+        Flat price per call regardless of page size.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_recent_sales_v1_suburbs__suburb_name__sales_recent_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Sales to return (default 20, max 200).
+          default: 20
+          title: Limit
+        description: Sales to return (default 20, max 200).
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Row offset — page through the feed with `limit`.
+          default: 0
+          title: Offset
+        description: Row offset — page through the feed with `limit`.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_RecentSales_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  results:
+                  - address: 9 Kanundra Street
+                    bathrooms: 3.0
+                    bedrooms: 2.0
+                    gnaf_pid: GANSW704074941
+                    lat: -33.02135461
+                    lng: 151.66919805
+                    property_type: House
+                    sold_date: '2026-03-30'
+                    sold_price: 1005000.0
+                  - address: 9 Hope Street
+                    bathrooms: 1.0
+                    bedrooms: 3.0
+                    gnaf_pid: GANSW704073843
+                    land_size: 844
+                    lat: -33.01951863
+                    lng: 151.67430967
+                    property_type: House
+                    sold_date: '2026-03-27'
+                    sold_price: 910000.0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+  /v1/suburbs/{suburb_name}/sales/summary:
+    get:
+      tags:
+      - Suburb - Sales
+      summary: Sales summary (3-year count + median)
+      description: 'Number of sales and median sold price in the suburb over the last 3 years.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_sales_summary_v1_suburbs__suburb_name__sales_summary_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SalesSummary_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  median_sold_price_3y: 965000.0
+                  sales_count_3y: 155
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+components:
+  schemas:
+    RecentSales:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        total:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total
+          description: Sales available for this suburb — counted before `limit`/`offset`, so it stays accurate while paging.
+        results:
+          items:
+            $ref: '#/components/schemas/RecentSaleRow'
+          type: array
+          title: Results
+          description: Sold properties, most significant first. Capped by `limit`.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - results
+      title: RecentSales
+      description: Properties sold in the suburb over the last 3 years, paginated.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        results:
+        - address: 9 Kanundra Street
+          bathrooms: 3.0
+          bedrooms: 2.0
+          gnaf_pid: GANSW704074941
+          lat: -33.02135461
+          lng: 151.66919805
+          property_type: House
+          sold_date: '2026-03-30'
+          sold_price: 1005000.0
+        - address: 9 Hope Street
+          bathrooms: 1.0
+          bedrooms: 3.0
+          gnaf_pid: GANSW704073843
+          land_size: 844
+          lat: -33.01951863
+          lng: 151.67430967
+          property_type: House
+          sold_date: '2026-03-27'
+          sold_price: 910000.0
+    RecentSaleRow:
+      properties:
+        gnaf_pid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gnaf Pid
+          description: GNAF property ID.
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Street address (title-cased).
+        property_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Property Type
+          description: 'Bucketed type: House / Townhouse / Unit / Land / Other.'
+        bedrooms:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Bedrooms
+          description: Bedroom count.
+        bathrooms:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Bathrooms
+          description: Bathroom count.
+        land_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Land Size
+          description: Land size in m², where known.
+        sold_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sold Price
+          description: Sale price (AUD).
+        sold_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sold Date
+          description: Sale date (YYYY-MM-DD).
+        lat:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lat
+          description: Latitude (WGS84).
+        lng:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lng
+          description: Longitude (WGS84).
+      additionalProperties: true
+      type: object
+      title: RecentSaleRow
+      description: One sold property.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_SalesSummary_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SalesSummary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SalesSummary]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_RecentSales_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/RecentSales'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[RecentSales]
+    SalesSummary:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        sales_count_3y:
+          type: integer
+          title: Sales Count 3Y
+          description: Number of recorded sales in the last 3 years.
+        median_sold_price_3y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Sold Price 3Y
+          description: Median sold price (AUD) across those sales.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - sales_count_3y
+      title: SalesSummary
+      description: 3-year sales count and median sold price for the suburb.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        median_sold_price_3y: 965000.0
+        sales_count_3y: 155
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

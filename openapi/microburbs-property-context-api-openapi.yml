@@ -1,0 +1,1534 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - Context API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - Context
+  description: The 1km around the property — mesh-block stats, street series, nearby listings.
+paths:
+  /v1/properties/{gnaf_id}/context/mesh-blocks:
+    get:
+      tags:
+      - Property - Context
+      summary: Mesh blocks — 1 km buffer stats
+      description: 'Mesh-block polygons within 1 km of the property (GeoJSON), each with
+
+        avg annual growth, investor counts, modal street and median sold price.
+
+
+        **Price: 30¢ per call.**'
+      operationId: get_property_context_mesh_blocks_v1_properties__gnaf_id__context_mesh_blocks_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its per-mesh-block stats but its `geometry` is null. Use it for the stats surface without the polygons (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its per-mesh-block stats but its `geometry` is null. Use it for the stats surface without the polygons (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_MeshBlocksContext_'
+              example:
+                data:
+                  buffer_km: 1.0
+                  center_lat: -33.802479
+                  center_lng: 151.219715
+                  gnaf_id: GANSW704360755
+                  mesh_blocks:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - - 151.2185
+                            - -33.8018
+                          - - 151.2199
+                            - -33.8018
+                          - - 151.2199
+                            - -33.8031
+                          - - 151.2185
+                            - -33.8031
+                          - - 151.2185
+                            - -33.8018
+                        type: Polygon
+                      properties:
+                        mb: '10693650000'
+                        modal_street: THE BULWARK
+                        avg_annual_growth: 0.061
+                        total_properties: 42
+                        rental_properties: 9
+                        investor_pct: 21.43
+                        median_sold_price: 3350000.0
+                      type: Feature
+                    type: FeatureCollection
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 30
+  /v1/properties/{gnaf_id}/context/street-bedroom-series:
+    get:
+      tags:
+      - Property - Context
+      summary: Bedroom-band price series
+      description: 'The subject''s bedroom band (bed count from listing history) and the
+
+        suburb''s 10-year price series for that band.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_property_context_street_bedroom_series_v1_properties__gnaf_id__context_street_bedroom_series_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_StreetBedroomSeries_'
+              example:
+                data:
+                  band_label: 4-bed house
+                  bedrooms: 4
+                  gnaf_id: GANSW704360755
+                  latest_date: '2026-06-28'
+                  latest_value: 4400000.0
+                  property_type: house
+                  series:
+                  - date: '2026-06-28'
+                    value: 4400000.0
+                  suburb: Castlecrag
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 15
+  /v1/properties/{gnaf_id}/context/nearby-for-sale:
+    get:
+      tags:
+      - Property - Context
+      summary: Nearby for-sale listings
+      description: 'Currently for-sale listings within `radius_km` of the property
+
+        (newest first, max 30) with AVM and rent-yield comparison.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_property_context_nearby_for_sale_v1_properties__gnaf_id__context_nearby_for_sale_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      - name: radius_km
+        in: query
+        required: false
+        schema:
+          type: number
+          maximum: 5.0
+          minimum: 0.1
+          description: Search radius in km (0.1-5).
+          default: 1.0
+          title: Radius Km
+        description: Search radius in km (0.1-5).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_NearbyForSale_'
+              example:
+                data:
+                  center_lat: -33.802479
+                  center_lng: 151.219715
+                  count: 2
+                  gnaf_id: GANSW704360755
+                  listings:
+                  - address: 8 The Bulwark, Castlecrag NSW 2068
+                    avm: 4380000
+                    bathrooms: 2
+                    bedrooms: 4
+                    discount_pct: 2.7
+                    gnaf_pid: GANSW704357382
+                    land_size: 696
+                    lat: -33.8019
+                    listing_date: '2026-06-14'
+                    lng: 151.2205
+                    price: 4500000.0
+                    price_label: $4,500,000 Guide
+                    property_type: House
+                    weekly_rent: 1850.0
+                    yield_pct: 2.1
+                  radius_km: 1.0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+  /v1/properties/{gnaf_id}/street/profile:
+    get:
+      tags:
+      - Property - Context
+      summary: Street profile — this property's street vs its suburb
+      description: 'The property''s own street: current median price, 2/4/8-year price
+
+        forecasts, realised growth, sale/rental turnover, renter share and
+
+        houses/units on the street — plus the suburb-wide medians to judge it
+
+        against and the street''s rank on 4-year forecast growth.
+
+
+        404s when the street has no forecast row rather than falling back to
+
+        suburb-wide figures, which would answer a different question.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_property_street_profile_v1_properties__gnaf_id__street_profile_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PropertyStreetProfile_'
+              example:
+                data:
+                  gnaf_id: GANSW717662275
+                  address: 15 Rengor Close
+                  suburb: Belmont North
+                  street: Rengor Close
+                  streets_in_suburb: 81
+                  profile:
+                    street: Rengor Cl
+                    title: Rengor Close
+                    current_price: 1300000.0
+                    n_sales: 47
+                    target_2y: 1694197.26
+                    annual_2y: 14.2
+                    target_4y: 1979978.08
+                    annual_4y: 11.1
+                    target_8y: 2532146.5
+                    annual_8y: 8.7
+                    past_growth_pct: 2.82
+                    confidence: Medium
+                    history:
+                    - year: 2024
+                      price: 1002844.58
+                      suburb_med: 866399
+                    - year: 2025
+                      price: 1300000.0
+                      suburb_med: 948908
+                    - year: 2026
+                      price: 1300000.0
+                      suburb_med: 1040068
+                    houses_on_street: 12
+                    units_on_street: 0
+                    median_house_rent_week: 986.5
+                    sale_turnover: Every 9.2 years (very high turnover)
+                    sale_turnover_years: 9.2
+                    renters_pct: 0%
+                    renters_pct_num: 0.0
+                  suburb_medians:
+                    past_growth_pct: 3.23
+                    annual_4y: 6.3
+                    annual_8y: 4.6
+                    sale_turnover_years: 14.4
+                    rental_turnover_years: 6.0
+                    renters_pct: 16.0
+                  forecast_rank:
+                    rank: 1
+                    total: 81
+                    percentile_from_top: 1
+                    band: Top 1%
+                    tercile: upper third
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        gnaf_id: GANSW717662275
+        address: 15 Rengor Close
+        suburb: Belmont North
+        street: Rengor Close
+        streets_in_suburb: 81
+        profile:
+          street: Rengor Cl
+          title: Rengor Close
+          current_price: 1300000.0
+          n_sales: 47
+          target_2y: 1694197.26
+          annual_2y: 14.2
+          target_4y: 1979978.08
+          annual_4y: 11.1
+          target_8y: 2532146.5
+          annual_8y: 8.7
+          past_growth_pct: 2.82
+          confidence: Medium
+          history:
+          - year: 2024
+            price: 1002844.58
+            suburb_med: 866399
+          - year: 2025
+            price: 1300000.0
+            suburb_med: 948908
+          - year: 2026
+            price: 1300000.0
+            suburb_med: 1040068
+          houses_on_street: 12
+          units_on_street: 0
+          median_house_rent_week: 986.5
+          sale_turnover: Every 9.2 years (very high turnover)
+          sale_turnover_years: 9.2
+          renters_pct: 0%
+          renters_pct_num: 0.0
+        suburb_medians:
+          past_growth_pct: 3.23
+          annual_4y: 6.3
+          annual_8y: 4.6
+          sale_turnover_years: 14.4
+          rental_turnover_years: 6.0
+          renters_pct: 16.0
+        forecast_rank:
+          rank: 1
+          total: 81
+          percentile_from_top: 1
+          band: Top 1%
+          tercile: upper third
+      x-price-cents: 20
+components:
+  schemas:
+    ApiResponse_MeshBlocksContext_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/MeshBlocksContext'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[MeshBlocksContext]
+    PropertyStreetProfile:
+      properties:
+        gnaf_id:
+          type: string
+          title: Gnaf Id
+          description: GNAF persistent identifier of the property.
+        address:
+          type: string
+          title: Address
+          description: Street address of the property, e.g. '15 Rengor Close'.
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL) name.
+        street:
+          type: string
+          title: Street
+          description: The property's street, suffix-expanded, e.g. 'Rengor Close'.
+        streets_in_suburb:
+          type: integer
+          title: Streets In Suburb
+          description: Forecastable streets in the suburb (the benchmark population).
+        profile:
+          $ref: '#/components/schemas/StreetProfileRow'
+          description: The property's own street.
+        suburb_medians:
+          $ref: '#/components/schemas/StreetSuburbMedians'
+          description: Suburb-wide medians to judge the street against.
+        forecast_rank:
+          anyOf:
+          - $ref: '#/components/schemas/StreetForecastRank'
+          - type: 'null'
+          description: Rank of the street's 4-year forecast within the suburb. None when the street has no 4-year forecast or fewer than two streets rank.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_id
+      - address
+      - suburb
+      - street
+      - streets_in_suburb
+      - profile
+      - suburb_medians
+      title: PropertyStreetProfile
+      description: The property's own street, benchmarked against its suburb.
+      example:
+        address: 15 Rengor Close
+        forecast_rank:
+          band: Top 1%
+          percentile_from_top: 1
+          rank: 1
+          tercile: upper third
+          total: 81
+        gnaf_id: GANSW717662275
+        profile:
+          annual_2y: 14.2
+          annual_4y: 11.1
+          annual_8y: 8.7
+          confidence: Medium
+          current_price: 1300000.0
+          history:
+          - price: 1002844.58
+            suburb_med: 866399
+            year: 2024
+          - price: 1300000.0
+            suburb_med: 948908
+            year: 2025
+          - price: 1300000.0
+            suburb_med: 1040068
+            year: 2026
+          houses_on_street: 12
+          median_house_rent_week: 986.5
+          n_sales: 47
+          past_growth_pct: 2.82
+          renters_pct: 0%
+          renters_pct_num: 0.0
+          sale_turnover: Every 9.2 years (very high turnover)
+          sale_turnover_years: 9.2
+          street: Rengor Cl
+          target_2y: 1694197.26
+          target_4y: 1979978.08
+          target_8y: 2532146.5
+          title: Rengor Close
+          units_on_street: 0
+        street: Rengor Close
+        streets_in_suburb: 81
+        suburb: Belmont North
+        suburb_medians:
+          annual_4y: 6.3
+          annual_8y: 4.6
+          past_growth_pct: 3.23
+          rental_turnover_years: 6.0
+          renters_pct: 16.0
+          sale_turnover_years: 14.4
+    MeshBlockStats:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        modal_street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Modal Street
+          description: Most common street name inside the mesh block.
+        avg_annual_growth:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Annual Growth
+          description: Average annual price growth for properties in the mesh block, as a decimal fraction per year (0.061 = 6.1%/yr) — same scale as the suburb investor-concentration endpoint.
+        total_properties:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Properties
+          description: Total residential properties in the mesh block.
+        rental_properties:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rental Properties
+          description: Properties identified as rentals in the mesh block.
+        investor_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Investor Pct
+          description: Investor share = rental_properties / total_properties × 100, as a percentage 0-100 (21.43 = 21.43%).
+        median_sold_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Sold Price
+          description: Median sold price (AUD) across the suburb's last ~12 months of house sales that geocode into this mesh block (min 2 sales, else null).
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: MeshBlockStats
+      description: Per-mesh-block stats attached to each GeoJSON feature.
+    NearbyForSale:
+      properties:
+        gnaf_id:
+          type: string
+          title: Gnaf Id
+          description: Subject property GNAF id.
+        center_lat:
+          type: number
+          title: Center Lat
+          description: Subject property latitude.
+        center_lng:
+          type: number
+          title: Center Lng
+          description: Subject property longitude.
+        radius_km:
+          type: number
+          title: Radius Km
+          description: Search radius used (km).
+        count:
+          type: integer
+          title: Count
+          description: Number of listings returned (0-30).
+        listings:
+          items:
+            $ref: '#/components/schemas/NearbyForSaleListing'
+          type: array
+          title: Listings
+          description: For-sale listings, newest listing date first.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_id
+      - center_lat
+      - center_lng
+      - radius_km
+      - count
+      - listings
+      title: NearbyForSale
+      description: 'Currently for-sale listings within the requested radius of the
+
+        property (newest first, max 30), with AVM / rent-yield comparison.'
+      example:
+        center_lat: -33.802479
+        center_lng: 151.219715
+        count: 2
+        gnaf_id: GANSW704360755
+        listings:
+        - address: 8 The Bulwark, Castlecrag NSW 2068
+          avm: 4380000
+          bathrooms: 2
+          bedrooms: 4
+          discount_pct: 2.7
+          gnaf_pid: GANSW704357382
+          land_size: 696
+          lat: -33.8019
+          listing_date: '2026-06-14'
+          lng: 151.2205
+          price: 4500000.0
+          price_label: $4,500,000 Guide
+          property_type: House
+          weekly_rent: 1850.0
+          yield_pct: 2.1
+        radius_km: 1.0
+    StreetProfileRow:
+      properties:
+        street:
+          type: string
+          title: Street
+          description: Street name as stored in the forecast payload, e.g. 'Rengor Cl'.
+        title:
+          type: string
+          title: Title
+          description: Display name with the street suffix expanded, e.g. 'Rengor Close'.
+        current_price:
+          type: number
+          title: Current Price
+          description: Current median house price for the street (AUD) — the real sold median, not a model estimate.
+        n_sales:
+          type: integer
+          title: N Sales
+          description: Number of sales underpinning the street model.
+        target_2y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Target 2Y
+          description: Forecast street price in 2 years (AUD).
+        annual_2y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Annual 2Y
+          description: Forecast annual growth over the next 2 years (percent, e.g. 8.0 = 8%/yr).
+        target_4y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Target 4Y
+          description: Forecast street price in 4 years (AUD).
+        annual_4y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Annual 4Y
+          description: Forecast annual growth over the next 4 years (percent).
+        target_8y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Target 8Y
+          description: Forecast street price in 8 years (AUD).
+        annual_8y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Annual 8Y
+          description: Forecast annual growth over the next 8 years (percent).
+        past_growth_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Past Growth Pct
+          description: Realised annual growth (CAGR, percent) across the street's price history. None when the history has fewer than two priced years.
+        confidence:
+          type: string
+          title: Confidence
+          description: 'Confidence in the street model from its sample size: ''High'' (>=50 sales), ''Medium'' (>=15), ''Low'' otherwise.'
+        history:
+          items:
+            $ref: '#/components/schemas/app__schemas__property_planning_v6__StreetHistoryPoint'
+          type: array
+          title: History
+          description: Year-by-year modelled price history vs the suburb median.
+        houses_on_street:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Houses On Street
+          description: Number of houses on the street.
+        units_on_street:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Units On Street
+          description: Number of units on the street.
+        median_house_rent_week:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median House Rent Week
+          description: Median weekly house rent on the street (AUD/week).
+        sale_turnover:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sale Turnover
+          description: Plain-language sale-turnover rate, e.g. 'Every 12.0 years (average turnover)'.
+        sale_turnover_years:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sale Turnover Years
+          description: '`sale_turnover` as a number of years.'
+        rental_turnover:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Rental Turnover
+          description: Plain-language rental-turnover rate.
+        rental_turnover_years:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Rental Turnover Years
+          description: '`rental_turnover` as a number of years.'
+        renters_pct:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Renters Pct
+          description: Share of the street that is rented, e.g. '18%'.
+        renters_pct_num:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Renters Pct Num
+          description: '`renters_pct` as a number, e.g. 18.0.'
+      additionalProperties: true
+      type: object
+      required:
+      - street
+      - title
+      - current_price
+      - n_sales
+      - confidence
+      - history
+      title: StreetProfileRow
+      description: 'The property''s own street — forecast row plus the derived figures the
+
+        v6 report renders alongside it.'
+      example:
+        annual_2y: 14.2
+        annual_4y: 11.1
+        annual_8y: 8.7
+        confidence: Medium
+        current_price: 1300000.0
+        history:
+        - price: 1002844.58
+          suburb_med: 866399
+          year: 2024
+        - price: 1300000.0
+          suburb_med: 948908
+          year: 2025
+        - price: 1300000.0
+          suburb_med: 1040068
+          year: 2026
+        houses_on_street: 12
+        median_house_rent_week: 986.5
+        n_sales: 47
+        past_growth_pct: 2.82
+        renters_pct: 0%
+        renters_pct_num: 0.0
+        sale_turnover: Every 9.2 years (very high turnover)
+        sale_turnover_years: 9.2
+        street: Rengor Cl
+        target_2y: 1694197.26
+        target_4y: 1979978.08
+        target_8y: 2532146.5
+        title: Rengor Close
+        units_on_street: 0
+    app__schemas__property_planning_v6__StreetHistoryPoint:
+      properties:
+        year:
+          type: integer
+          title: Year
+          description: Calendar year.
+        price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price
+          description: Modelled street median price for the year (AUD), re-anchored to the sold median so the trajectory ends at `current_price`.
+        suburb_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Suburb Med
+          description: Suburb median price for the same year (AUD) — baseline, not re-anchored.
+      additionalProperties: true
+      type: object
+      required:
+      - year
+      title: StreetHistoryPoint
+      description: 'One year of the street''s modelled price history, with the suburb
+
+        median as a baseline.'
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    StreetBedroomSeries:
+      properties:
+        gnaf_id:
+          type: string
+          title: Gnaf Id
+          description: Subject property GNAF id.
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL) the series is for.
+        bedrooms:
+          type: integer
+          title: Bedrooms
+          description: Subject bed count — MAX(bedrooms) across every listing snapshot on record for the GNAF.
+        property_type:
+          type: string
+          enum:
+          - house
+          - unit
+          title: Property Type
+          description: Subject property type bucket.
+        band_label:
+          type: string
+          title: Band Label
+          description: Human label, e.g. "4-bed house".
+        latest_value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Latest Value
+          description: Most recent series value (AUD).
+        latest_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Latest Date
+          description: Date of the most recent series point (YYYY-MM-DD).
+        series:
+          items:
+            $ref: '#/components/schemas/BandSeriesPoint'
+          type: array
+          title: Series
+          description: 10-year monthly median price series for the band.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_id
+      - suburb
+      - bedrooms
+      - property_type
+      - band_label
+      - series
+      title: StreetBedroomSeries
+      description: 'The subject''s bedroom-band benchmark: bed count inferred from
+
+        listing history, plus the suburb''s 10-year price series for that
+
+        bed-count + property-type band.'
+      example:
+        band_label: 4-bed house
+        bedrooms: 4
+        gnaf_id: GANSW704360755
+        latest_date: '2026-06-28'
+        latest_value: 4400000.0
+        property_type: house
+        series:
+        - date: '2026-06-28'
+          value: 4400000.0
+        suburb: Castlecrag
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    StreetForecastRank:
+      properties:
+        rank:
+          type: integer
+          title: Rank
+          description: 1-based rank, 1 = strongest 4-year forecast.
+        total:
+          type: integer
+          title: Total
+          description: Streets ranked (those with a 4-year forecast).
+        percentile_from_top:
+          type: integer
+          title: Percentile From Top
+          description: rank/total as a percentage — 1 is best, 100 is worst.
+        band:
+          type: string
+          title: Band
+          description: 'Plain-English band: ''Top N%'', ''Mid-pack'' or ''Bottom N%''.'
+        tercile:
+          type: string
+          title: Tercile
+          description: '''upper third'', ''middle third'' or ''lower third''.'
+      additionalProperties: true
+      type: object
+      required:
+      - rank
+      - total
+      - percentile_from_top
+      - band
+      - tercile
+      title: StreetForecastRank
+      description: 'Where the property''s street sits on 4-year forecast growth against
+
+        every other street in the suburb.'
+    MeshBlocksContext:
+      properties:
+        gnaf_id:
+          type: string
+          title: Gnaf Id
+          description: Subject property GNAF id.
+        buffer_km:
+          type: number
+          title: Buffer Km
+          description: Buffer radius (km). Always 1.0.
+        center_lat:
+          type: number
+          title: Center Lat
+          description: Subject property latitude.
+        center_lng:
+          type: number
+          title: Center Lng
+          description: Subject property longitude.
+        mesh_blocks:
+          $ref: '#/components/schemas/MeshBlockFeatureCollection'
+          description: GeoJSON FeatureCollection of buffer mesh blocks.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_id
+      - buffer_km
+      - center_lat
+      - center_lng
+      - mesh_blocks
+      title: MeshBlocksContext
+      description: 'Mesh blocks within a 1 km buffer of the property, with per-block
+
+        growth / investor / median-price stats — the same base layers every
+
+        map in the v6 property report renders.'
+      example:
+        buffer_km: 1.0
+        center_lat: -33.802479
+        center_lng: 151.219715
+        gnaf_id: GANSW704360755
+        mesh_blocks:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.2185
+                  - -33.8018
+                - - 151.2199
+                  - -33.8018
+                - - 151.2199
+                  - -33.8031
+                - - 151.2185
+                  - -33.8031
+                - - 151.2185
+                  - -33.8018
+              type: Polygon
+            properties:
+              mb: '10693650000'
+              modal_street: THE BULWARK
+              avg_annual_growth: 0.061
+              total_properties: 42
+              rental_properties: 9
+              investor_pct: 21.43
+              median_sold_price: 3350000.0
+            type: Feature
+          type: FeatureCollection
+    StreetSuburbMedians:
+      properties:
+        past_growth_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Past Growth Pct
+          description: Median realised annual growth across the suburb's streets (percent).
+        annual_4y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Annual 4Y
+          description: Median 4-year forecast annual growth across the suburb's streets (percent).
+        annual_8y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Annual 8Y
+          description: Median 8-year forecast annual growth across the suburb's streets (percent).
+        sale_turnover_years:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sale Turnover Years
+          description: Median years between sales across the suburb's streets.
+        rental_turnover_years:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Rental Turnover Years
+          description: Median years between tenancies across the suburb's streets.
+        renters_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Renters Pct
+          description: Median share of dwellings rented across the suburb's streets (percent).
+      additionalProperties: true
+      type: object
+      title: StreetSuburbMedians
+      description: 'Median across every forecastable street in the suburb — the benchmark
+
+        the report compares the property''s street against.'
+    ApiResponse_PropertyStreetProfile_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PropertyStreetProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PropertyStreetProfile]
+    NearbyForSaleListing:
+      properties:
+        gnaf_pid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gnaf Pid
+          description: Listing property GNAF id.
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Full address, title-cased.
+        property_type:
+          type: string
+          title: Property Type
+          description: 'Bucketed type: House / Townhouse / Unit / Land / Other.'
+        bedrooms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bedrooms
+          description: Bedroom count.
+        bathrooms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bathrooms
+          description: Bathroom count.
+        land_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Land Size
+          description: Land size (sqm) when parseable.
+        price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price
+          description: Asking price (AUD) — parsed from the display price when possible.
+        price_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Price Label
+          description: Raw asking-price label, e.g. "Auction" or "$3.5M Guide".
+        listing_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Listing Date
+          description: Listing date (YYYY-MM-DD).
+        lat:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lat
+          description: Listing latitude.
+        lng:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lng
+          description: Listing longitude.
+        avm:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avm
+          description: Latest AVM prediction (AUD) for the listing, if available.
+        discount_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Discount Pct
+          description: 'Asking price vs AVM: (price - avm) / avm * 100. Negative = under AVM.'
+        weekly_rent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Weekly Rent
+          description: Predicted weekly rent (AUD) from the rental AVM.
+        yield_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Yield Pct
+          description: Gross rental yield % = weekly_rent * 52 / price * 100.
+      additionalProperties: true
+      type: object
+      required:
+      - property_type
+      title: NearbyForSaleListing
+      description: One currently-for-sale listing near the subject property.
+    MeshBlockFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          description: Always 'Feature'.
+        geometry:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Geometry
+          description: GeoJSON geometry (Polygon or MultiPolygon), simplified for rendering. Null if the polygon failed to serialise, or when the request passes `?geojson=false`.
+        properties:
+          $ref: '#/components/schemas/MeshBlockStats'
+          description: Per-mesh-block stats.
+      type: object
+      required:
+      - type
+      - properties
+      title: MeshBlockFeature
+      description: RFC 7946 GeoJSON Feature — one mesh-block polygon + its stats.
+    ApiResponse_StreetBedroomSeries_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/StreetBedroomSeries'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[StreetBedroomSeries]
+    BandSeriesPoint:
+      properties:
+        date:
+          type: string
+          title: Date
+          description: ISO date (YYYY-MM-DD).
+        value:
+          type: number
+          title: Value
+          description: Median asking price (AUD) at that date.
+      type: object
+      required:
+      - date
+      - value
+      title: BandSeriesPoint
+      description: One point in the bedroom-band price series.
+    MeshBlockFeatureCollection:
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+          title: Type
+          description: Always 'FeatureCollection'.
+        features:
+          items:
+            $ref: '#/components/schemas/MeshBlockFeature'
+          type: array
+          title: Features
+          description: One feature per mesh block (max 200).
+      type: object
+      required:
+      - type
+      - features
+      title: MeshBlockFeatureCollection
+      description: RFC 7946 GeoJSON FeatureCollection of buffer mesh blocks.
+    ApiResponse_NearbyForSale_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/NearbyForSale'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[NearbyForSale]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

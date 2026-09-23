@@ -1,0 +1,914 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - Comparables API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - Comparables
+  description: CMA comp sets and recent nearby sales.
+paths:
+  /v1/properties/{gnaf_id}/comparables/cma-comp-set:
+    get:
+      tags:
+      - Property - Comparables
+      summary: CMA comparable set
+      description: 'Top comparable sales used to triangulate the subject property''s value.
+
+
+        **Price: 60¢ per call.**'
+      operationId: get_property_cma_comp_set_v1_properties__gnaf_id__comparables_cma_comp_set_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_CmaComp__'
+              example:
+                data:
+                - gnaf_pid: GAACT714923950
+                  street: 8 SHIPARD PL
+                  bedrooms: 4
+                  bathrooms: 2
+                  dist_score: 6.319769313849382
+                  price: 815000.0
+                  date_sold: '2024-07-13'
+                  latitude: -35.38013684
+                  longitude: 149.06828089
+                  sal: Kambah
+                  state: ACT
+                  property_type: house
+                  garage_spaces: 2
+                - gnaf_pid: GAACT714962432
+                  street: 19 MACKAY CR
+                  bedrooms: 4
+                  bathrooms: 2
+                  dist_score: 6.314913077374466
+                  price: 975000.0
+                  date_sold: '2024-05-17'
+                  latitude: -35.38141033
+                  longitude: 149.0765471
+                  sal: Kambah
+                  state: ACT
+                  property_type: house
+                  garage_spaces: 2
+                - gnaf_pid: GAACT714953151
+                  street: 23 BROWNSMITH CR
+                  bedrooms: 4
+                  bathrooms: 2
+                  dist_score: 6.202634043106887
+                  price: 1049000.0
+                  date_sold: '2024-05-10'
+                  latitude: -35.38009598
+                  longitude: 149.07224252
+                  sal: Kambah
+                  state: ACT
+                  property_type: house
+                  garage_spaces: 4
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - gnaf_pid: GAACT714923950
+        street: 8 SHIPARD PL
+        bedrooms: 4
+        bathrooms: 2
+        dist_score: 6.319769313849382
+        price: 815000.0
+        date_sold: '2024-07-13'
+        latitude: -35.38013684
+        longitude: 149.06828089
+        sal: Kambah
+        state: ACT
+        property_type: house
+        garage_spaces: 2
+      - gnaf_pid: GAACT714962432
+        street: 19 MACKAY CR
+        bedrooms: 4
+        bathrooms: 2
+        dist_score: 6.314913077374466
+        price: 975000.0
+        date_sold: '2024-05-17'
+        latitude: -35.38141033
+        longitude: 149.0765471
+        sal: Kambah
+        state: ACT
+        property_type: house
+        garage_spaces: 2
+      - gnaf_pid: GAACT714953151
+        street: 23 BROWNSMITH CR
+        bedrooms: 4
+        bathrooms: 2
+        dist_score: 6.202634043106887
+        price: 1049000.0
+        date_sold: '2024-05-10'
+        latitude: -35.38009598
+        longitude: 149.07224252
+        sal: Kambah
+        state: ACT
+        property_type: house
+        garage_spaces: 4
+      x-price-cents: 60
+  /v1/properties/{gnaf_id}/comparables/cma-single-comp:
+    get:
+      tags:
+      - Property - Comparables
+      summary: CMA — single best comparable
+      description: 'Single best comparable from the CMA set (highest dist_score).
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_property_cma_single_comp_v1_properties__gnaf_id__comparables_cma_single_comp_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_CmaComp_'
+              example:
+                data:
+                  bathrooms: 2
+                  bedrooms: 4
+                  date_sold: '2024-07-13'
+                  dist_score: 6.319769313849382
+                  garage_spaces: 2
+                  gnaf_pid: GAACT714923950
+                  latitude: -35.38013684
+                  longitude: 149.06828089
+                  price: 815000.0
+                  property_type: house
+                  sal: Kambah
+                  state: ACT
+                  street: 8 SHIPARD PL
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/properties/{gnaf_id}/comparables/recent-sales-nearby:
+    get:
+      tags:
+      - Property - Comparables
+      summary: Recent sales within a radius
+      description: 'Recent comparable sales in a small radius around the subject parcel.
+
+
+        **Price: 4¢ per call.**'
+      operationId: get_property_recent_sales_nearby_v1_properties__gnaf_id__comparables_recent_sales_nearby_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RecentSale__'
+              example:
+                data:
+                - address: 30 Arlington Street, Belmont North
+                  bath_count: 2
+                  bed_count: 3
+                  distance_m: 65
+                  dwelling_type: house
+                  sale_date: '2024-08-12'
+                  sale_price: 815000
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 4
+  /v1/properties/{gnaf_id}/comparables/all:
+    get:
+      tags:
+      - Property - Comparables
+      summary: All comparables — bundle
+      description: '**Price: 74¢ per call.**'
+      operationId: get_property_comparables_all_v1_properties__gnaf_id__comparables_all_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_ComparablesAll_'
+              example:
+                data:
+                  cma_comp_set:
+                  - bathrooms: 2
+                    bedrooms: 4
+                    date_sold: '2024-07-13'
+                    dist_score: 6.319769313849382
+                    garage_spaces: 2
+                    gnaf_pid: GAACT714923950
+                    latitude: -35.38013684
+                    longitude: 149.06828089
+                    price: 815000.0
+                    property_type: house
+                    sal: Kambah
+                    state: ACT
+                    street: 8 SHIPARD PL
+                  - bathrooms: 2
+                    bedrooms: 4
+                    date_sold: '2024-05-17'
+                    dist_score: 6.314913077374466
+                    garage_spaces: 2
+                    gnaf_pid: GAACT714962432
+                    latitude: -35.38141033
+                    longitude: 149.0765471
+                    price: 975000.0
+                    property_type: house
+                    sal: Kambah
+                    state: ACT
+                    street: 19 MACKAY CR
+                  - bathrooms: 2
+                    bedrooms: 4
+                    date_sold: '2024-05-10'
+                    dist_score: 6.202634043106887
+                    garage_spaces: 4
+                    gnaf_pid: GAACT714953151
+                    latitude: -35.38009598
+                    longitude: 149.07224252
+                    price: 1049000.0
+                    property_type: house
+                    sal: Kambah
+                    state: ACT
+                    street: 23 BROWNSMITH CR
+                  cma_single_comp:
+                    bathrooms: 2
+                    bedrooms: 4
+                    date_sold: '2024-07-13'
+                    dist_score: 6.319769313849382
+                    garage_spaces: 2
+                    gnaf_pid: GAACT714923950
+                    latitude: -35.38013684
+                    longitude: 149.06828089
+                    price: 815000.0
+                    property_type: house
+                    sal: Kambah
+                    state: ACT
+                    street: 8 SHIPARD PL
+                  recent_sales_nearby:
+                  - bathrooms: 2
+                    bedrooms: 4
+                    date_sold: '2024-07-13'
+                    dist_score: 6.319769313849382
+                    garage_spaces: 2
+                    gnaf_pid: GAACT714923950
+                    latitude: -35.38013684
+                    longitude: 149.06828089
+                    price: 815000.0
+                    property_type: house
+                    sal: Kambah
+                    state: ACT
+                    street: 8 SHIPARD PL
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 74
+components:
+  schemas:
+    ApiResponse_list_RecentSale__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RecentSale'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[RecentSale]]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_CmaComp_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CmaComp'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[CmaComp]
+    ApiResponse_list_CmaComp__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CmaComp'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[CmaComp]]
+    ComparablesAll:
+      properties:
+        cma_comp_set:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CmaComp'
+            type: array
+          - type: 'null'
+          title: Cma Comp Set
+        cma_single_comp:
+          anyOf:
+          - $ref: '#/components/schemas/CmaComp'
+          - type: 'null'
+        recent_sales_nearby:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RecentSale'
+            type: array
+          - type: 'null'
+          title: Recent Sales Nearby
+      type: object
+      title: ComparablesAll
+      description: All comparables — CMA set, single comp, and recent nearby sales.
+      example:
+        cma_comp_set:
+        - bathrooms: 2
+          bedrooms: 4
+          date_sold: '2024-07-13'
+          dist_score: 6.319769313849382
+          garage_spaces: 2
+          gnaf_pid: GAACT714923950
+          latitude: -35.38013684
+          longitude: 149.06828089
+          price: 815000.0
+          property_type: house
+          sal: Kambah
+          state: ACT
+          street: 8 SHIPARD PL
+        - bathrooms: 2
+          bedrooms: 4
+          date_sold: '2024-05-17'
+          dist_score: 6.314913077374466
+          garage_spaces: 2
+          gnaf_pid: GAACT714962432
+          latitude: -35.38141033
+          longitude: 149.0765471
+          price: 975000.0
+          property_type: house
+          sal: Kambah
+          state: ACT
+          street: 19 MACKAY CR
+        - bathrooms: 2
+          bedrooms: 4
+          date_sold: '2024-05-10'
+          dist_score: 6.202634043106887
+          garage_spaces: 4
+          gnaf_pid: GAACT714953151
+          latitude: -35.38009598
+          longitude: 149.07224252
+          price: 1049000.0
+          property_type: house
+          sal: Kambah
+          state: ACT
+          street: 23 BROWNSMITH CR
+        cma_single_comp:
+          bathrooms: 2
+          bedrooms: 4
+          date_sold: '2024-07-13'
+          dist_score: 6.319769313849382
+          garage_spaces: 2
+          gnaf_pid: GAACT714923950
+          latitude: -35.38013684
+          longitude: 149.06828089
+          price: 815000.0
+          property_type: house
+          sal: Kambah
+          state: ACT
+          street: 8 SHIPARD PL
+        recent_sales_nearby:
+        - bathrooms: 2
+          bedrooms: 4
+          date_sold: '2024-07-13'
+          dist_score: 6.319769313849382
+          garage_spaces: 2
+          gnaf_pid: GAACT714923950
+          latitude: -35.38013684
+          longitude: 149.06828089
+          price: 815000.0
+          property_type: house
+          sal: Kambah
+          state: ACT
+          street: 8 SHIPARD PL
+    ApiResponse_ComparablesAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ComparablesAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[ComparablesAll]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CmaComp:
+      properties: {}
+      additionalProperties: true
+      type: object
+      title: CmaComp
+      description: One comparable sale row.
+      example:
+        bathrooms: 2
+        bedrooms: 4
+        date_sold: '2024-07-13'
+        dist_score: 6.319769313849382
+        garage_spaces: 2
+        gnaf_pid: GAACT714923950
+        latitude: -35.38013684
+        longitude: 149.06828089
+        price: 815000.0
+        property_type: house
+        sal: Kambah
+        state: ACT
+        street: 8 SHIPARD PL
+    RecentSale:
+      properties:
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Street address.
+        sale_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sale Date
+          description: ISO date (YYYY-MM-DD).
+        sale_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sale Price
+          description: Sale price, AUD.
+        distance_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Distance M
+          description: Distance from the subject property in metres.
+        bed_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bed Count
+          description: Bedrooms.
+        bath_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bath Count
+          description: Bathrooms.
+        dwelling_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dwelling Type
+          description: house / unit / townhouse / ...
+      additionalProperties: true
+      type: object
+      title: RecentSale
+      description: One recent sale within the subject property's CMA search radius.
+      example:
+        address: 30 Arlington Street, Belmont North
+        bath_count: 2
+        bed_count: 3
+        distance_m: 65
+        dwelling_type: house
+        sale_date: '2024-08-12'
+        sale_price: 815000
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

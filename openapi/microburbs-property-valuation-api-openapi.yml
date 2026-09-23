@@ -1,0 +1,1274 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - Valuation API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - Valuation
+  description: Automated valuation model output.
+paths:
+  /v1/properties/{gnaf_id}/valuation/avm:
+    get:
+      tags:
+      - Property - Valuation
+      summary: AVM — automated valuation
+      description: 'Microburbs ML AVM for a single GNAF — point estimate, 80% range,
+
+        plus a confidence score (0–100) derived from the interval width.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_property_avm_v1_properties__gnaf_id__valuation_avm_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_AvmEstimate_'
+              example:
+                data:
+                  predicted_price: 876651
+                  predicted_price_high: 1183479
+                  predicted_price_low: 569823
+                  prediction_date: '2026-04-20'
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/properties/{gnaf_id}/valuation/all:
+    get:
+      tags:
+      - Property - Valuation
+      summary: All valuation outputs — bundle
+      description: '**Price: 10¢ per call.**'
+      operationId: get_property_valuation_all_v1_properties__gnaf_id__valuation_all_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_ValuationAll_'
+              example:
+                data:
+                  avm:
+                    predicted_price: 876651
+                    predicted_price_high: 1183479
+                    predicted_price_low: 569823
+                    prediction_date: '2026-04-20'
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/properties/{gnaf_id}/valuation/land-values:
+    get:
+      tags:
+      - Property - Valuation
+      summary: Council land values — 5-year series
+      description: 'Council land valuations for the parcel — val_2021..val_2025 series
+
+        with YoY change and $/sqm, plus lot area and zoning description.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_property_land_values_v1_properties__gnaf_id__valuation_land_values_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PropertyLandValues_'
+              example:
+                data:
+                  area_sqm: 714.5
+                  history:
+                  - price_per_sqm: 2449.27
+                    value: 1750000.0
+                    year: 2021
+                  - price_per_sqm: 3177.05
+                    value: 2270000.0
+                    year: 2022
+                    yoy_pct: 29.71
+                  - price_per_sqm: 2883.14
+                    value: 2060000.0
+                    year: 2023
+                    yoy_pct: -9.25
+                  - price_per_sqm: 3177.05
+                    value: 2270000.0
+                    year: 2024
+                    yoy_pct: 10.19
+                  - price_per_sqm: 3177.05
+                    value: 2270000.0
+                    year: 2025
+                    yoy_pct: 0.0
+                  land_value: 2270000.0
+                  zone_desc: C4 - Environmental Living
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 15
+  /v1/properties/{gnaf_id}/valuation/value-series:
+    get:
+      tags:
+      - Property - Valuation
+      summary: AVM value over time
+      description: 'Modelled property value over time (monthly for the last year,
+
+        annual before that). Houses only — units have no series.
+
+
+        **Price: 30¢ per call.**'
+      operationId: get_property_value_series_v1_properties__gnaf_id__valuation_value_series_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_ValueSeriesPoint__'
+              example:
+                data:
+                - month: 1990-01
+                  value: 462145.0
+                - month: 1991-01
+                  value: 484200.0
+                - month: 2026-05
+                  value: 4168459.0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - month: 1990-01
+        value: 462145.0
+      - month: 1991-01
+        value: 484200.0
+      - month: 2026-05
+        value: 4168459.0
+      x-price-cents: 30
+  /v1/properties/{gnaf_id}/valuation/negative-gearing:
+    get:
+      tags:
+      - Property - Valuation
+      summary: Negative-gearing stat
+      description: 'Negative-gearing stat at the finest available level: per-property
+
+        cashflow scenarios (80% + 105% LVR), falling back to mesh-block then
+
+        suburb investor-exposure.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_property_negative_gearing_v1_properties__gnaf_id__valuation_negative_gearing_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_NegativeGearing_'
+              example:
+                data:
+                  gross_yield_pct: 0.57
+                  is_negatively_geared: true
+                  level: property
+                  lvr_default: 0.8
+                  net_cashflow_105lvr: -255336.0
+                  net_cashflow_80lvr: -189996.0
+                  net_cashflow_80lvr_wk: -3654.0
+                  rent_estimate_suspect: true
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+  /v1/properties/{gnaf_id}/valuation/agent-quoting:
+    get:
+      tags:
+      - Property - Valuation
+      summary: Agent quoting accuracy
+      description: 'Quoting accuracy of the property''s current listing agency —
+
+        cohort, median guide-vs-sold deviation, underquote rate and its 5
+
+        most-recent tracked sales. Only while the property is listed for
+
+        sale with a tracked agency.
+
+
+        **Price: 50¢ per call.**'
+      operationId: get_property_agent_quoting_v1_properties__gnaf_id__valuation_agent_quoting_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_AgentQuoting_'
+              example:
+                data:
+                  agency_name: Elders Mt Gambier RLA 62833
+                  asking_price: 450000
+                  cohort: Severe Underquoter
+                  likely_sale_price: 523350
+                  median_deviation_pct: 16.3
+                  recent_sales:
+                  - address: 12 Chauvel Street, Mount Gambier
+                    diff_pct: 53.9
+                    guide_price: 287500
+                    sold_date: '2026-03-19'
+                    sold_price: 442500
+                  total_sales: 4
+                  underquote_rate_pct: 50.0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 50
+components:
+  schemas:
+    ValueSeriesPoint:
+      properties:
+        month:
+          type: string
+          title: Month
+          description: Month (YYYY-MM).
+        value:
+          type: number
+          title: Value
+          description: Modelled property value at that month (AUD).
+      additionalProperties: true
+      type: object
+      required:
+      - month
+      - value
+      title: ValueSeriesPoint
+      description: One point of the AVM value-over-time series.
+      example:
+        month: 2026-05
+        value: 4168459.0
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LandValueYear:
+      properties:
+        year:
+          type: integer
+          title: Year
+          description: Valuation year.
+        value:
+          type: number
+          title: Value
+          description: Council land value (AUD).
+        yoy_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Yoy Pct
+          description: Change vs the previous valued year (%). Null on the first year or after a gap.
+        price_per_sqm:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price Per Sqm
+          description: Land value per square metre (AUD/sqm). Null when the lot area is unknown.
+      additionalProperties: true
+      type: object
+      required:
+      - year
+      - value
+      title: LandValueYear
+      description: One year of the council land-valuation series.
+      example:
+        price_per_sqm: 3177.05
+        value: 2270000.0
+        year: 2025
+        yoy_pct: 0.0
+    AgentQuoting:
+      properties:
+        agency_name:
+          type: string
+          title: Agency Name
+          description: Current listing agency.
+        cohort:
+          type: string
+          title: Cohort
+          description: Quoting-behaviour cohort label (e.g. 'Severe Underquoter').
+        median_deviation_pct:
+          type: number
+          title: Median Deviation Pct
+          description: Median sold-vs-guide deviation across tracked sales (%).
+        underquote_rate_pct:
+          type: number
+          title: Underquote Rate Pct
+          description: Share of tracked sales that sold above guide (%).
+        total_sales:
+          type: integer
+          title: Total Sales
+          description: Number of tracked transparent sales.
+        asking_price:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Asking Price
+          description: Current asking guide for this listing (AUD).
+        likely_sale_price:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Likely Sale Price
+          description: Asking guide adjusted by the agency's median deviation (AUD).
+        recent_sales:
+          items:
+            $ref: '#/components/schemas/AgentRecentSale'
+          type: array
+          title: Recent Sales
+          description: Up to 5 most-recent tracked sales.
+      additionalProperties: true
+      type: object
+      required:
+      - agency_name
+      - cohort
+      - median_deviation_pct
+      - underquote_rate_pct
+      - total_sales
+      - recent_sales
+      title: AgentQuoting
+      description: 'Quoting accuracy of the property''s CURRENT listing agency.
+
+
+        Only available while the property is for sale with a tracked agency —
+
+        otherwise the endpoint reports no data.'
+      example:
+        agency_name: Elders Mt Gambier RLA 62833
+        asking_price: 450000
+        cohort: Severe Underquoter
+        likely_sale_price: 523350
+        median_deviation_pct: 16.3
+        recent_sales:
+        - address: 12 Chauvel Street, Mount Gambier
+          diff_pct: 53.9
+          guide_price: 287500
+          sold_date: '2026-03-19'
+          sold_price: 442500
+        total_sales: 4
+        underquote_rate_pct: 50.0
+    AvmEstimate:
+      properties:
+        predicted_price:
+          type: number
+          title: Predicted Price
+          description: Point estimate, AUD.
+        predicted_price_low:
+          type: number
+          title: Predicted Price Low
+          description: Lower bound of the 80% prediction interval, AUD.
+        predicted_price_high:
+          type: number
+          title: Predicted Price High
+          description: Upper bound of the 80% prediction interval, AUD.
+        prediction_date:
+          type: string
+          title: Prediction Date
+          description: Date the model produced this estimate. AVMs are refreshed in batches; not on demand.
+        confidence_score:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Confidence Score
+          description: 0–100. The valuation model's own calibrated confidence in this estimate — higher means the model is more certain. Read alongside `predicted_price_low` / `predicted_price_high` for the range.
+      type: object
+      required:
+      - predicted_price
+      - predicted_price_low
+      - predicted_price_high
+      - prediction_date
+      title: AvmEstimate
+      description: 'Automated valuation: point estimate + 80% prediction interval +
+
+        confidence score derived from the interval width.'
+      example:
+        predicted_price: 876651
+        predicted_price_high: 1183479
+        predicted_price_low: 569823
+        prediction_date: '2026-04-20'
+    AgentRecentSale:
+      properties:
+        address:
+          type: string
+          title: Address
+          description: Street address, suburb.
+        guide_price:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Guide Price
+          description: Advertised guide (midpoint, AUD).
+        sold_price:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sold Price
+          description: Achieved sale price (AUD).
+        diff_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Diff Pct
+          description: Sold vs guide deviation (%).
+        sold_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sold Date
+          description: Sale date (YYYY-MM-DD).
+      additionalProperties: true
+      type: object
+      required:
+      - address
+      title: AgentRecentSale
+      description: One recent transparent sale by the listing agency.
+      example:
+        address: 12 Chauvel Street, Mount Gambier
+        diff_pct: 53.9
+        guide_price: 287500
+        sold_date: '2026-03-19'
+        sold_price: 442500
+    ApiResponse_ValuationAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ValuationAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[ValuationAll]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_NegativeGearing_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/NegativeGearing'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[NegativeGearing]
+    ApiResponse_list_ValueSeriesPoint__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ValueSeriesPoint'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[ValueSeriesPoint]]
+    ApiResponse_AgentQuoting_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AgentQuoting'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AgentQuoting]
+    NegativeGearing:
+      properties:
+        level:
+          type: string
+          enum:
+          - property
+          - mb
+          - suburb
+          title: Level
+          description: 'Resolution the stat was found at: per-property, mesh-block, or suburb.'
+        is_negatively_geared:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Negatively Geared
+          description: Rent minus interest at 80% LVR is negative (property level).
+        net_cashflow_80lvr:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Net Cashflow 80Lvr
+          description: Net cashflow AUD/yr at the headline 80% LVR (property level).
+        net_cashflow_105lvr:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Net Cashflow 105Lvr
+          description: Net cashflow AUD/yr at the 105% equity-release scenario (property level).
+        net_cashflow_80lvr_wk:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Net Cashflow 80Lvr Wk
+          description: Net cashflow AUD/wk at 80% LVR (property level).
+        gross_yield_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Gross Yield Pct
+          description: Gross rental yield, already a percent (property level).
+        lvr_default:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lvr Default
+          description: Headline-scenario LVR, 0-1 (property level).
+        rent_estimate_suspect:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Rent Estimate Suspect
+          description: Upstream rent under-predicts — yield/cashflow indicative only (property level).
+        sal:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sal
+          description: Suburb (SAL) name (mb/suburb level).
+        exposure:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Exposure
+          description: Share of dwellings held by negatively-geared landlords, 0-1 (mb/suburb level).
+        tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tier
+          description: Exposure tier (e.g. 'Very high', 'High', 'Medium', 'Low') (mb/suburb level).
+        private_rental_share:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Private Rental Share
+          description: Private-rental share of dwellings, 0-1 (suburb level only).
+        share_tax_loss_making:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Share Tax Loss Making
+          description: Share of investor candidates that are tax-loss-making, 0-1 (mb/suburb level).
+        n_investor_candidates:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: N Investor Candidates
+          description: Number of investor candidates scored (mb/suburb level).
+        realistic_lvr:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Realistic Lvr
+          description: Mean LVR among candidates, 0-1 (mb level only).
+      additionalProperties: true
+      type: object
+      required:
+      - level
+      title: NegativeGearing
+      description: 'Negative-gearing stat at the finest level available.
+
+
+        ``level=''property''`` carries the per-property cashflow fields;
+
+        ``level=''mb''`` / ``level=''suburb''`` carry the area-exposure fields.
+
+        Fields for the other level are null.'
+      example:
+        gross_yield_pct: 0.57
+        is_negatively_geared: true
+        level: property
+        lvr_default: 0.8
+        net_cashflow_105lvr: -255336.0
+        net_cashflow_80lvr: -189996.0
+        net_cashflow_80lvr_wk: -3654.0
+        rent_estimate_suspect: true
+    ApiResponse_PropertyLandValues_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PropertyLandValues'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PropertyLandValues]
+    ApiResponse_AvmEstimate_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AvmEstimate'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AvmEstimate]
+    ValuationAll:
+      properties:
+        avm:
+          anyOf:
+          - $ref: '#/components/schemas/AvmEstimate'
+          - type: 'null'
+      type: object
+      title: ValuationAll
+      description: 'All valuation outputs in one call. Today: just the AVM (which
+
+        now includes confidence_score inline). Kept as a bundle so future
+
+        valuation outputs — rental AVM, off-market signals — slot in
+
+        without a new endpoint.'
+    PropertyLandValues:
+      properties:
+        land_value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Land Value
+          description: Latest council land value (AUD).
+        area_sqm:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Area Sqm
+          description: Lot area (square metres).
+        zone_desc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Zone Desc
+          description: Zoning description (e.g. 'R2 - Low Density Residential').
+        history:
+          items:
+            $ref: '#/components/schemas/LandValueYear'
+          type: array
+          title: History
+          description: Per-year valuation series, oldest first.
+      additionalProperties: true
+      type: object
+      required:
+      - history
+      title: PropertyLandValues
+      description: Council land valuations for the parcel — 5-year series + lot area + zoning.
+      example:
+        area_sqm: 714.5
+        history:
+        - price_per_sqm: 2449.27
+          value: 1750000.0
+          year: 2021
+        - price_per_sqm: 3177.05
+          value: 2270000.0
+          year: 2022
+          yoy_pct: 29.71
+        - price_per_sqm: 2883.14
+          value: 2060000.0
+          year: 2023
+          yoy_pct: -9.25
+        - price_per_sqm: 3177.05
+          value: 2270000.0
+          year: 2024
+          yoy_pct: 10.19
+        - price_per_sqm: 3177.05
+          value: 2270000.0
+          year: 2025
+          yoy_pct: 0.0
+        land_value: 2270000.0
+        zone_desc: C4 - Environmental Living
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

@@ -1,0 +1,1249 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - Surroundings API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - Surroundings
+  description: The 200m around the property — neighbours, tenure, parcels, housing.
+paths:
+  /v1/properties/{gnaf_id}/surroundings/properties:
+    get:
+      tags:
+      - Property - Surroundings
+      summary: Surrounding properties (200 m)
+      description: 'Every GNAF property within 200 m of the subject, with lat/lng and mesh block.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_property_surrounding_properties_v1_properties__gnaf_id__surroundings_properties_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SurroundingProperties_'
+              example:
+                data:
+                  count: 128
+                  gnaf_pid: GANSW704360755
+                  properties:
+                  - gnaf_pid: GANSW704355807
+                    lat: -33.80427291
+                    lng: 151.21837048
+                    address: 9 The Barbette
+                    mb: '10843130000'
+                    is_subject: false
+                  - gnaf_pid: GANSW704360755
+                    lat: -33.80247931
+                    lng: 151.21971516
+                    address: 90 The Bulwark
+                    mb: '10843090000'
+                    is_subject: true
+                  radius_m: 200
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 15
+  /v1/properties/{gnaf_id}/surroundings/tenure:
+    get:
+      tags:
+      - Property - Surroundings
+      summary: Surrounding tenure mix (200 m)
+      description: 'ABS Census 2021 tenure shares for each mesh block around the subject.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_property_surrounding_tenure_v1_properties__gnaf_id__surroundings_tenure_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SurroundingTenure_'
+              example:
+                data:
+                  as_of: '2021-08-10'
+                  gnaf_pid: GANSW704360755
+                  mbs:
+                  - mb: '10843090000'
+                    mortgaged_pct: 39.9
+                    owned_outright_pct: 35.4
+                    property_count: 39
+                    public_housing_pct: 0.0
+                    rented_pct: 15.2
+                  - mb: '10842992000'
+                    mortgaged_pct: 45.9
+                    owned_outright_pct: 36.3
+                    property_count: 21
+                    public_housing_pct: 0.6
+                    rented_pct: 6.6
+                  radius_m: 200
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 15
+  /v1/properties/{gnaf_id}/surroundings/public-housing:
+    get:
+      tags:
+      - Property - Surroundings
+      summary: Surrounding public-housing flags (200 m)
+      description: 'Properties around the subject flagged by the public-housing classifier.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_property_surrounding_public_housing_v1_properties__gnaf_id__surroundings_public_housing_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SurroundingPublicHousing_'
+              example:
+                data:
+                  flagged:
+                  - address: 3 The Bulwark
+                    gnaf_pid: GANSW704349559
+                    lat: -33.80311
+                    lng: 151.21899
+                    ph_chance: 3.0
+                  flagged_count: 1
+                  gnaf_pid: GANSW704360755
+                  property_count: 128
+                  radius_m: 200
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 15
+  /v1/properties/{gnaf_id}/surroundings/parcels:
+    get:
+      tags:
+      - Property - Surroundings
+      summary: Surrounding cadastral parcels (200 m)
+      description: 'Cadastral parcel polygons (GeoJSON) for properties around the subject.
+
+
+        **Price: 25¢ per call.**'
+      operationId: get_property_surrounding_parcels_v1_properties__gnaf_id__surroundings_parcels_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SurroundingParcels_'
+              example:
+                data:
+                  count: 127
+                  gnaf_pid: GANSW704360755
+                  parcels:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - - - 151.221417
+                              - -33.800987
+                            - - 151.221318
+                              - -33.801078
+                            - - 151.221308
+                              - -33.801256
+                            - - 151.221417
+                              - -33.800987
+                        type: MultiPolygon
+                      properties:
+                        gnaf_pid: GANSW704355807
+                        is_subject: false
+                      type: Feature
+                    type: FeatureCollection
+                  radius_m: 200
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 25
+  /v1/properties/{gnaf_id}/surroundings/listing-history-signals:
+    get:
+      tags:
+      - Property - Surroundings
+      summary: Surrounding listing-history signals (200 m)
+      description: 'Latest sold/rent dates and likely-owner-status signal per nearby property.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_property_surrounding_listing_signals_v1_properties__gnaf_id__surroundings_listing_history_signals_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SurroundingListingSignals_'
+              example:
+                data:
+                  count: 97
+                  gnaf_pid: GANSW704360755
+                  radius_m: 200
+                  recent_window_years: 10
+                  signals:
+                  - gnaf_pid: GANSW704349559
+                    last_sold_date: '2021-11-23'
+                    last_sold_years_ago: 4.6
+                    signal: previously_for_sale
+                  - gnaf_pid: GANSW704341221
+                    last_sold_date: '2015-01-27'
+                    last_sold_years_ago: 11.4
+                    signal: no_recent_listings
+                  summary:
+                    no_recent_listings: 24
+                    previously_for_sale: 55
+                    previously_rented: 18
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+components:
+  schemas:
+    ParcelFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          description: Always 'Feature'.
+        properties:
+          additionalProperties: true
+          type: object
+          title: Properties
+          description: 'Feature properties: `gnaf_pid` and `is_subject`.'
+        geometry:
+          $ref: '#/components/schemas/GeoJsonGeometry'
+          description: Parcel polygon, 6 dp coords.
+      additionalProperties: true
+      type: object
+      required:
+      - type
+      - properties
+      - geometry
+      title: ParcelFeature
+      description: One cadastral parcel as a GeoJSON Feature.
+    ParcelFeatureCollection:
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+          title: Type
+          description: Always 'FeatureCollection'.
+        features:
+          items:
+            $ref: '#/components/schemas/ParcelFeature'
+          type: array
+          title: Features
+          description: One feature per parcel.
+      additionalProperties: true
+      type: object
+      required:
+      - type
+      - features
+      title: ParcelFeatureCollection
+      description: RFC 7946 GeoJSON FeatureCollection of parcel polygons.
+    ApiResponse_SurroundingPublicHousing_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingPublicHousing'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingPublicHousing]
+    ApiResponse_SurroundingProperties_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingProperties'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingProperties]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SurroundingProperty:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: GNAF PID of this property.
+        lat:
+          type: number
+          title: Lat
+          description: Latitude (EPSG:4326).
+        lng:
+          type: number
+          title: Lng
+          description: Longitude (EPSG:4326).
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Street address (title-cased).
+        mb:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mb
+          description: ABS 2021 mesh-block code the property sits in.
+        is_subject:
+          type: boolean
+          title: Is Subject
+          description: True for the subject property itself.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - lat
+      - lng
+      - is_subject
+      title: SurroundingProperty
+      description: One property inside the search box.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    MbTenure:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        property_count:
+          type: integer
+          title: Property Count
+          description: Properties inside the search box that sit in this mesh block.
+        owned_outright_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Owned Outright Pct
+          description: Share of dwellings owned outright (%).
+        mortgaged_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mortgaged Pct
+          description: Share of dwellings owned with a mortgage (%).
+        rented_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Rented Pct
+          description: Share of dwellings rented privately (%).
+        public_housing_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Public Housing Pct
+          description: Share of dwellings in public/social housing (%).
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      - property_count
+      title: MbTenure
+      description: ABS Census 2021 tenure shares for one mesh block.
+    ApiResponse_SurroundingTenure_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingTenure'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingTenure]
+    ApiResponse_SurroundingListingSignals_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingListingSignals'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingListingSignals]
+    ListingSignalSummary:
+      properties:
+        previously_rented:
+          type: integer
+          title: Previously Rented
+          description: Properties with a recent rental.
+        previously_for_sale:
+          type: integer
+          title: Previously For Sale
+          description: Properties with a recent sale.
+        no_recent_listings:
+          type: integer
+          title: No Recent Listings
+          description: Properties with no listing inside the window.
+      additionalProperties: true
+      type: object
+      required:
+      - previously_rented
+      - previously_for_sale
+      - no_recent_listings
+      title: ListingSignalSummary
+      description: Counts of each signal across the returned properties.
+    ApiResponse_SurroundingParcels_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingParcels'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingParcels]
+    SurroundingTenure:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        as_of:
+          type: string
+          title: As Of
+          description: Census anchor date (YYYY-MM-DD).
+        mbs:
+          items:
+            $ref: '#/components/schemas/MbTenure'
+          type: array
+          title: Mbs
+          description: Per-mesh-block tenure shares, sorted by property count desc.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - as_of
+      - mbs
+      title: SurroundingTenure
+      description: Tenure mix (own / mortgage / rent / public) around the subject.
+      example:
+        as_of: '2021-08-10'
+        gnaf_pid: GANSW704360755
+        mbs:
+        - mb: '10843090000'
+          mortgaged_pct: 39.9
+          owned_outright_pct: 35.4
+          property_count: 39
+          public_housing_pct: 0.0
+          rented_pct: 15.2
+        - mb: '10842992000'
+          mortgaged_pct: 45.9
+          owned_outright_pct: 36.3
+          property_count: 21
+          public_housing_pct: 0.6
+          rented_pct: 6.6
+        radius_m: 200
+    PublicHousingFlag:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: GNAF PID of the flagged property.
+        lat:
+          type: number
+          title: Lat
+          description: Latitude (EPSG:4326).
+        lng:
+          type: number
+          title: Lng
+          description: Longitude (EPSG:4326).
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Street address (title-cased).
+        ph_chance:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Ph Chance
+          description: Classifier confidence band (2 or 3 — every returned row is a positive prediction).
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - lat
+      - lng
+      title: PublicHousingFlag
+      description: One property flagged by the public-housing classifier.
+    SurroundingListingSignals:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        recent_window_years:
+          type: integer
+          title: Recent Window Years
+          description: Recency window used to derive the signals (years).
+        count:
+          type: integer
+          title: Count
+          description: Properties with any listing history (never-listed properties carry no signal and are omitted).
+        signals:
+          items:
+            $ref: '#/components/schemas/ListingHistorySignal'
+          type: array
+          title: Signals
+          description: Per-property signals, sorted by GNAF PID.
+        summary:
+          $ref: '#/components/schemas/ListingSignalSummary'
+          description: Signal counts across the returned properties.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - recent_window_years
+      - count
+      - signals
+      - summary
+      title: SurroundingListingSignals
+      description: Listing-history owner-status signals for properties around the subject.
+      example:
+        count: 97
+        gnaf_pid: GANSW704360755
+        radius_m: 200
+        recent_window_years: 10
+        signals:
+        - gnaf_pid: GANSW704349559
+          last_sold_date: '2021-11-23'
+          last_sold_years_ago: 4.6
+          signal: previously_for_sale
+        - gnaf_pid: GANSW704341221
+          last_sold_date: '2015-01-27'
+          last_sold_years_ago: 11.4
+          signal: no_recent_listings
+        summary:
+          no_recent_listings: 24
+          previously_for_sale: 55
+          previously_rented: 18
+    SurroundingPublicHousing:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        property_count:
+          type: integer
+          title: Property Count
+          description: Total properties inside the search box.
+        flagged_count:
+          type: integer
+          title: Flagged Count
+          description: How many of those the classifier flags as public housing.
+        flagged:
+          items:
+            $ref: '#/components/schemas/PublicHousingFlag'
+          type: array
+          title: Flagged
+          description: The flagged properties (empty when none).
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - property_count
+      - flagged_count
+      - flagged
+      title: SurroundingPublicHousing
+      description: Public-housing classifier flags for properties around the subject.
+      example:
+        flagged:
+        - address: 3 The Bulwark
+          gnaf_pid: GANSW704349559
+          lat: -33.80311
+          lng: 151.21899
+          ph_chance: 3.0
+        flagged_count: 1
+        gnaf_pid: GANSW704360755
+        property_count: 128
+        radius_m: 200
+    ListingHistorySignal:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: GNAF PID of the property.
+        last_sold_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Sold Date
+          description: Most recent Sold/Buy listing date (YYYY-MM-DD).
+        last_rent_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Rent Date
+          description: Most recent rental listing date (YYYY-MM-DD).
+        last_sold_years_ago:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Last Sold Years Ago
+          description: Years since the last sale listing (1 dp).
+        last_rent_years_ago:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Last Rent Years Ago
+          description: Years since the last rental listing (1 dp).
+        signal:
+          type: string
+          enum:
+          - previously_rented
+          - previously_for_sale
+          - no_recent_listings
+          title: Signal
+          description: 'Likely owner status: recent rent listing → `previously_rented` (likely investor); recent sale → `previously_for_sale` (likely mortgaged); neither within the window → `no_recent_listings` (likely owned outright).'
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - signal
+      title: ListingHistorySignal
+      description: Derived owner-status signal for one nearby property.
+    SurroundingParcels:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        count:
+          type: integer
+          title: Count
+          description: Number of parcel features returned.
+        parcels:
+          $ref: '#/components/schemas/ParcelFeatureCollection'
+          description: GeoJSON FeatureCollection, one feature per parcel.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - count
+      - parcels
+      title: SurroundingParcels
+      description: Cadastral parcel polygons for every property around the subject.
+      example:
+        count: 127
+        gnaf_pid: GANSW704360755
+        parcels:
+          features:
+          - geometry:
+              coordinates:
+              - - - - 151.221417
+                    - -33.800987
+                  - - 151.221318
+                    - -33.801078
+                  - - 151.221308
+                    - -33.801256
+                  - - 151.221417
+                    - -33.800987
+              type: MultiPolygon
+            properties:
+              gnaf_pid: GANSW704355807
+              is_subject: false
+            type: Feature
+          type: FeatureCollection
+        radius_m: 200
+    GeoJsonGeometry:
+      properties:
+        type:
+          type: string
+          title: Type
+          description: GeoJSON geometry type, e.g. 'MultiPolygon'.
+        coordinates:
+          title: Coordinates
+          description: Nested coordinate arrays per the GeoJSON spec, lon first.
+      additionalProperties: true
+      type: object
+      required:
+      - type
+      - coordinates
+      title: GeoJsonGeometry
+      description: RFC 7946 GeoJSON geometry (Polygon or MultiPolygon in practice).
+    SurroundingProperties:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        count:
+          type: integer
+          title: Count
+          description: Number of properties returned.
+        properties:
+          items:
+            $ref: '#/components/schemas/SurroundingProperty'
+          type: array
+          title: Properties
+          description: Properties inside the box, subject included.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - count
+      - properties
+      title: SurroundingProperties
+      description: Every GNAF property within 200 m of the subject.
+      example:
+        count: 128
+        gnaf_pid: GANSW704360755
+        properties:
+        - gnaf_pid: GANSW704355807
+          lat: -33.80427291
+          lng: 151.21837048
+          address: 9 The Barbette
+          mb: '10843130000'
+          is_subject: false
+        - gnaf_pid: GANSW704360755
+          lat: -33.80247931
+          lng: 151.21971516
+          address: 90 The Bulwark
+          mb: '10843090000'
+          is_subject: true
+        radius_m: 200
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

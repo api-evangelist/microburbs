@@ -1,0 +1,567 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Ethnicity API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Ethnicity
+  description: Ancestry, birthplace, language at home.
+paths:
+  /v1/suburbs/{suburb_name}/ethnicity/ancestry:
+    get:
+      tags:
+      - Suburb - Ethnicity
+      summary: Ancestry breakdown
+      description: 'Ancestry breakdown from the ABS census.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_suburb_ethnicity_ancestry_v1_suburbs__suburb_name__ethnicity_ancestry_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_EthnicityRow__'
+              example:
+                data:
+                - area_name: Belmont North
+                  area_level: suburb
+                  ancestry: Australians
+                  proportion: 0.926304347826087
+                - area_name: Belmont North
+                  area_level: suburb
+                  ancestry: Northern and Western Europeans
+                  proportion: 0.028440434782608694
+                - area_name: Belmont North
+                  area_level: suburb
+                  ancestry: Southern Europeans
+                  proportion: 0.0016239130434782605
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_name: Belmont North
+        area_level: suburb
+        ancestry: Australians
+        proportion: 0.926304347826087
+      - area_name: Belmont North
+        area_level: suburb
+        ancestry: Northern and Western Europeans
+        proportion: 0.028440434782608694
+      - area_name: Belmont North
+        area_level: suburb
+        ancestry: Southern Europeans
+        proportion: 0.0016239130434782605
+      x-price-cents: 3
+  /v1/suburbs/{suburb_name}/ethnicity/birthplace:
+    get:
+      tags:
+      - Suburb - Ethnicity
+      summary: Country-of-birth breakdown
+      description: 'Country-of-birth breakdown from the ABS census.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_suburb_ethnicity_birthplace_v1_suburbs__suburb_name__ethnicity_birthplace_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_EthnicityRow__'
+              example:
+                data:
+                - area_name: Belmont North
+                  area_level: suburb
+                  proportion: 0.916
+                  country: Australia
+                - area_name: Belmont North
+                  area_level: suburb
+                  proportion: 0.0185
+                  country: England
+                - area_name: Belmont North
+                  area_level: suburb
+                  proportion: 0.00931
+                  country: New Zealand
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_name: Belmont North
+        area_level: suburb
+        proportion: 0.916
+        country: Australia
+      - area_name: Belmont North
+        area_level: suburb
+        proportion: 0.0185
+        country: England
+      - area_name: Belmont North
+        area_level: suburb
+        proportion: 0.00931
+        country: New Zealand
+      x-price-cents: 3
+  /v1/suburbs/{suburb_name}/ethnicity/all:
+    get:
+      tags:
+      - Suburb - Ethnicity
+      summary: All ethnicity — bundle
+      description: '**Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 6¢ per call.**'
+      operationId: get_suburb_ethnicity_all_v1_suburbs__suburb_name__ethnicity_all_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_EthnicityAll_'
+              example:
+                data:
+                  ancestry:
+                  - ancestry: Australians
+                    area_level: suburb
+                    area_name: Belmont North
+                    proportion: 0.926304347826087
+                  birthplace:
+                  - ancestry: Australians
+                    area_level: suburb
+                    area_name: Belmont North
+                    proportion: 0.926304347826087
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 6
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    EthnicityRow:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        proportion:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Proportion
+          description: Share of the suburb identifying with this category (0–1).
+        ancestry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ancestry
+          description: Only on /ethnicity/ancestry.
+        birthplace:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Birthplace
+          description: Only on /ethnicity/birthplace.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: EthnicityRow
+      description: One row of ancestry / birthplace data.
+      example:
+        ancestry: Australians
+        area_level: suburb
+        area_name: Belmont North
+        proportion: 0.926304347826087
+    EthnicityAll:
+      properties:
+        ancestry:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/EthnicityRow'
+            type: array
+          - type: 'null'
+          title: Ancestry
+        birthplace:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/EthnicityRow'
+            type: array
+          - type: 'null'
+          title: Birthplace
+      type: object
+      title: EthnicityAll
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_list_EthnicityRow__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/EthnicityRow'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[EthnicityRow]]
+    ApiResponse_EthnicityAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/EthnicityAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[EthnicityAll]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

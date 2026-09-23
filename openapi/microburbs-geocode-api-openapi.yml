@@ -1,0 +1,445 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Geocode API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Geocode
+  description: Address → GNAF and suburb autocomplete. The entry point before you have an identifier.
+paths:
+  /v1/geocode/address:
+    get:
+      tags:
+      - Geocode
+      summary: Address → GNAF
+      description: 'Resolve a freeform address string to candidate G-NAF identifiers.
+
+
+        Use this before calling any ``/v1/properties/{gnaf_id}/...`` route —
+
+        those endpoints require a GNAF in the path. Returns up to 10
+
+        candidates, ranked by Meilisearch score.
+
+
+        **Price: 1¢ per call.**'
+      operationId: geocode_address_v1_geocode_address_get
+      parameters:
+      - name: address
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          description: Freeform address string.
+          examples:
+          - 27 Arlington Street, Belmont North NSW
+          title: Address
+        description: Freeform address string.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_GnafCandidate__'
+              example:
+                data:
+                - abbr: 27 ARLINGTON ST BELMONT NORTH
+                  display_name: 27 Arlington Street, Belmont North
+                  id: GANSW704074813
+                  name: 27 Arlington Street, Belmont North
+                  property_type: house
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 1
+  /v1/geocode/suburb:
+    get:
+      tags:
+      - Geocode
+      summary: Suburb autocomplete
+      description: 'Autocomplete a partial suburb search string against the ABS SAL
+
+        list. Use this before calling ``/v1/suburbs/{name}/...`` — those
+
+        endpoints require a canonical SAL name in the path.
+
+
+        **Price: 1¢ per call.**'
+      operationId: geocode_suburb_v1_geocode_suburb_get
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          description: Partial suburb name.
+          title: Q
+          example: belmont
+        description: Partial suburb name.
+        example: belmont
+      - name: state
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional state filter (NSW, VIC, ...).
+          title: State
+          example: NSW
+        description: Optional state filter (NSW, VIC, ...).
+        example: NSW
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_SuburbCandidate__'
+              example:
+                data:
+                - area_level: suburb
+                  area_name: Belmont (NSW)
+                  information:
+                    lga: Lake Macquarie
+                    poa: '2280'
+                    sa2: Belmont - Bennetts Green
+                    sa3: Lake Macquarie - East
+                    sa4: Newcastle and Lake Macquarie
+                    state: New South Wales
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 1
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SuburbCandidate:
+      properties: {}
+      additionalProperties: true
+      type: object
+      title: SuburbCandidate
+      description: 'One candidate row returned by the suburb autocomplete.
+
+
+        Open shape — see GnafCandidate. The helper returns
+
+        ``area_name`` / ``area_level`` / ``information`` (a nested chain of
+
+        POA / SA2 / SA3 / SA4 / LGA / state).'
+      example:
+        area_level: suburb
+        area_name: Belmont (NSW)
+        information:
+          lga: Lake Macquarie
+          poa: '2280'
+          sa2: Belmont - Bennetts Green
+          sa3: Lake Macquarie - East
+          sa4: Newcastle and Lake Macquarie
+          state: New South Wales
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    GnafCandidate:
+      properties: {}
+      additionalProperties: true
+      type: object
+      title: GnafCandidate
+      description: 'One candidate row returned by the address geocoder.
+
+
+        Shape is intentionally open — Meilisearch returns whatever fields
+
+        the index has indexed (id, name, display_name, property_type, …)
+
+        and we pass them through verbatim so customers can read fields
+
+        they''d otherwise have to look up separately.'
+      example:
+        abbr: 27 ARLINGTON ST BELMONT NORTH
+        display_name: 27 Arlington Street, Belmont North
+        id: GANSW704074813
+        name: 27 Arlington Street, Belmont North
+        property_type: house
+    ApiResponse_list_GnafCandidate__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/GnafCandidate'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[GnafCandidate]]
+    ApiResponse_list_SuburbCandidate__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SuburbCandidate'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[SuburbCandidate]]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

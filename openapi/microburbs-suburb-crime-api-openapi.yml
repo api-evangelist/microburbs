@@ -1,0 +1,705 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Crime API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Crime
+  description: Crime benchmark, breakdown and mesh-block map values.
+paths:
+  /v1/suburbs/{suburb_name}/crime/summary:
+    get:
+      tags:
+      - Suburb - Crime
+      summary: Crime — suburb vs national benchmark
+      description: 'Suburb and national total-crime medians (predicted incidents per
+
+        100,000 residents per year) with a vs-national verdict.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_crime_summary_v1_suburbs__suburb_name__crime_summary_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_CrimeSummary_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  national_median: 2787.6
+                  suburb_median: 2248.0
+                  unit: predicted incidents per 100,000 residents per year
+                  verdict: Below average
+                  vs_national_pct: -19
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/crime/breakdown:
+    get:
+      tags:
+      - Suburb - Crime
+      summary: Crime — breakdown by type
+      description: 'Per-crime-type rates (predicted incidents per 100,000 residents
+
+        per year) for the suburb vs national medians.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_crime_breakdown_v1_suburbs__suburb_name__crime_breakdown_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_CrimeBreakdown_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  breakdown:
+                  - diff_pct: 12
+                    label: Property
+                    national_median: 898
+                    rate: 1008
+                    type: property
+                    verdict: Above average
+                  - diff_pct: -12
+                    label: Drugs
+                    national_median: 409
+                    rate: 358
+                    type: drugs
+                    verdict: Below average
+                  unit: predicted incidents per 100,000 residents per year
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/crime/by-mesh-block:
+    get:
+      tags:
+      - Suburb - Crime
+      summary: Crime — rate per mesh block
+      description: 'Total crime rate for every mesh block in the suburb, keyed by ABS
+
+        mesh-block code. Values are predicted incidents per 100,000 residents
+
+        per year (see the payload''s `unit` / `definition` keys).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_suburb_crime_by_mesh_block_v1_suburbs__suburb_name__crime_by_mesh_block_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_CrimeByMeshBlock_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  definition: Sum of the 8 modelled per-category crime rates for the mesh block (model trained on QLD Police mesh-block incidents averaged over 2020-2022, predicted for all Australian mesh blocks).
+                  mesh_blocks:
+                    '10431160000': 12128.8
+                    '10431170000': 1755.8
+                    '10431200000': 2050.2
+                  metric: total_predicted_crime_rate
+                  period: annual
+                  unit: predicted incidents per 100,000 residents per year
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 15
+components:
+  schemas:
+    CrimeBreakdown:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        unit:
+          type: string
+          title: Unit
+          description: Unit of every rate / national_median value — always 'predicted incidents per 100,000 residents per year'.
+        breakdown:
+          items:
+            $ref: '#/components/schemas/CrimeBreakdownRow'
+          type: array
+          title: Breakdown
+          description: One row per crime type, sorted by rate descending.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - unit
+      - breakdown
+      title: CrimeBreakdown
+      description: Per-crime-type breakdown table, highest rate first.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        breakdown:
+        - diff_pct: 12
+          label: Property
+          national_median: 898
+          rate: 1008
+          type: property
+          verdict: Above average
+        - diff_pct: -12
+          label: Drugs
+          national_median: 409
+          rate: 358
+          type: drugs
+          verdict: Below average
+        unit: predicted incidents per 100,000 residents per year
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CrimeBreakdownRow:
+      properties:
+        type:
+          type: string
+          title: Type
+          description: Machine key (e.g. 'property', 'public_order').
+        label:
+          type: string
+          title: Label
+          description: Display label (e.g. 'Property', 'Public Order').
+        rate:
+          type: integer
+          title: Rate
+          description: Average rate across this suburb's mesh blocks — predicted incidents per 100,000 residents per year — rounded.
+        national_median:
+          type: number
+          title: National Median
+          description: National per-mesh-block median rate for this crime type.
+        diff_pct:
+          type: integer
+          title: Diff Pct
+          description: Suburb rate vs national median, rounded percentage delta.
+        verdict:
+          type: string
+          title: Verdict
+          description: 'Band for the delta: ''Very low'', ''Below average'', ''Average'', ''Above average'' or ''High''.'
+      additionalProperties: true
+      type: object
+      required:
+      - type
+      - label
+      - rate
+      - national_median
+      - diff_pct
+      - verdict
+      title: CrimeBreakdownRow
+      description: One crime type's suburb rate vs the national median.
+    CrimeByMeshBlock:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        metric:
+          type: string
+          title: Metric
+          description: Always 'total_predicted_crime_rate' — what the mesh_blocks values measure.
+        unit:
+          type: string
+          title: Unit
+          description: Unit of the mesh_blocks values — always 'predicted incidents per 100,000 residents per year'.
+        period:
+          type: string
+          title: Period
+          description: Always 'annual' — the rates are yearly figures.
+        definition:
+          type: string
+          title: Definition
+          description: One-sentence definition of the metric, including model provenance.
+        mesh_blocks:
+          additionalProperties:
+            type: number
+          type: object
+          title: Mesh Blocks
+          description: 'ABS 2021 mesh-block code → total crime rate: sum of all 8 modelled crime-type rates, predicted incidents per 100,000 residents per year.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - metric
+      - unit
+      - period
+      - definition
+      - mesh_blocks
+      title: CrimeByMeshBlock
+      description: Total crime rate per mesh block (choropleth-ready).
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        definition: Sum of the 8 modelled per-category crime rates for the mesh block (model trained on QLD Police mesh-block incidents averaged over 2020-2022, predicted for all Australian mesh blocks).
+        mesh_blocks:
+          '10431160000': 12128.8
+          '10431170000': 1755.8
+          '10431200000': 2050.2
+        metric: total_predicted_crime_rate
+        period: annual
+        unit: predicted incidents per 100,000 residents per year
+    CrimeSummary:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        unit:
+          type: string
+          title: Unit
+          description: Unit of suburb_median and national_median — always 'predicted incidents per 100,000 residents per year'.
+        suburb_median:
+          type: number
+          title: Suburb Median
+          description: Median total crime rate across this suburb's mesh blocks — predicted incidents per 100,000 residents per year (model trained on QLD Police 2020-2022 incident averages, predicted for all Australian mesh blocks).
+        national_median:
+          type: number
+          title: National Median
+          description: Median total crime rate across all Australian mesh blocks, same unit as suburb_median.
+        vs_national_pct:
+          type: integer
+          title: Vs National Pct
+          description: Suburb median vs national median, as a rounded percentage delta (negative = less crime than the national median).
+        verdict:
+          type: string
+          title: Verdict
+          description: 'Plain-English band for the delta: ''Very low'', ''Below average'', ''Average'', ''Above average'' or ''High''.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - unit
+      - suburb_median
+      - national_median
+      - vs_national_pct
+      - verdict
+      title: CrimeSummary
+      description: Suburb vs national total-crime benchmark medians.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        national_median: 2787.6
+        suburb_median: 2248.0
+        unit: predicted incidents per 100,000 residents per year
+        verdict: Below average
+        vs_national_pct: -19
+    ApiResponse_CrimeSummary_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CrimeSummary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[CrimeSummary]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_CrimeByMeshBlock_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CrimeByMeshBlock'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[CrimeByMeshBlock]
+    ApiResponse_CrimeBreakdown_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CrimeBreakdown'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[CrimeBreakdown]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

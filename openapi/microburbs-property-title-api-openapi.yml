@@ -1,0 +1,317 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - Title API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - Title
+  description: Cadastral attributes — neighbours, owner.
+paths:
+  /v1/properties/{gnaf_id}/neighbours:
+    get:
+      tags:
+      - Property - Title
+      summary: Neighbours
+      description: 'Adjoining-parcel neighbours, enriched with address + property
+
+        type + bed/bath/garage from the latest matching listing.
+
+
+        **Price: 30¢ per call.**'
+      operationId: get_property_neighbours_v1_properties__gnaf_id__neighbours_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_Neighbours_'
+              example:
+                data:
+                  neighbours:
+                  - address: 3 TAMAR STREET
+                    gnaf_pid: GANSW704083204
+                    property_type: house
+                  - address: 16 HARRISON STREET
+                    gnaf_pid: GANSW704073018
+                    property_type: house
+                  - address: 14 HARRISON STREET
+                    gnaf_pid: GANSW704073016
+                    property_type: house
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 30
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_Neighbours_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/Neighbours'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[Neighbours]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    Neighbour:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: GNAF persistent identifier.
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Full address from the GNAF feed.
+        property_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Property Type
+          description: Property type (house, unit, townhouse, ...). Lowercase.
+        bedrooms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bedrooms
+          description: Bedroom count from the most recent listing, if any.
+        bathrooms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bathrooms
+          description: Bathroom count from the most recent listing, if any.
+        garage_spaces:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Garage Spaces
+          description: Garage spaces from the most recent listing, if any.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      title: Neighbour
+      description: One neighbouring property (adjoining cadastral parcel).
+    Neighbours:
+      properties:
+        neighbours:
+          items:
+            $ref: '#/components/schemas/Neighbour'
+          type: array
+          title: Neighbours
+          description: Adjoining cadastral parcels, with address + attributes when available.
+      type: object
+      required:
+      - neighbours
+      title: Neighbours
+      example:
+        neighbours:
+        - address: 3 TAMAR STREET
+          gnaf_pid: GANSW704083204
+          property_type: house
+        - address: 16 HARRISON STREET
+          gnaf_pid: GANSW704073018
+          property_type: house
+        - address: 14 HARRISON STREET
+          gnaf_pid: GANSW704073016
+          property_type: house
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

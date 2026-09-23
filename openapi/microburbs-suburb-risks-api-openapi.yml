@@ -1,0 +1,2276 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Risks API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Risks
+  description: Suburb-aggregated risk coverages.
+paths:
+  /v1/suburbs/{suburb_name}/risks/bushfire:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Bushfire coverage
+      description: 'Share of the suburb AREA covered by bushfire-prone designation.
+
+
+        Area, not properties — and the two differ a lot. Belmont North is 45.72%
+
+        by area but 23.62% by property count, because designated land is not
+
+        evenly built on. If you want "what share of homes here are affected",
+
+        which is the figure our own reports headline, use
+
+        `GET /v1/suburbs/{suburb_name}/risks/property-hazard-counts` — it returns
+
+        a count and pct per hazard against the suburb''s actual dwellings.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_risk_bushfire_v1_suburbs__suburb_name__risks_bushfire_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, add a `geojson` FeatureCollection of the bushfire polygons clipped to the suburb boundary (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, add a `geojson` FeatureCollection of the bushfire polygons clipped to the suburb boundary (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbRisk_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  name: Bushfire
+                  coverage_pct: 45.72
+                  value_unit: '% of suburb area'
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        name: Bushfire
+        coverage_pct: 45.72
+        value_unit: '% of suburb area'
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/risks/flood:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Flood area coverage + optional polygon map
+      description: 'Share of the suburb AREA covered by modelled flood overlays.
+
+
+        Area, not properties. For the share of DWELLINGS affected — the figure our
+
+        own reports headline — use
+
+        `GET /v1/suburbs/{suburb_name}/risks/property-hazard-counts`.
+
+
+        To answer **where** the flood zone is, pass `geojson=true`. The response
+
+        then includes the actual modelled flood polygons clipped to the suburb
+
+        boundary, suitable for a street map, plus truncation/simplification
+
+        metadata. Do not infer street location from `coverage_pct` alone.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 6¢ per call.**'
+      operationId: get_suburb_risk_flood_v1_suburbs__suburb_name__risks_flood_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, add a `geojson` FeatureCollection of the flood polygons clipped to the suburb boundary (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, add a `geojson` FeatureCollection of the flood polygons clipped to the suburb boundary (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbRisk_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  name: Flood
+                  coverage_pct: 7.2
+                  value_unit: '% of suburb area'
+                  risk_band: moderate
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        name: Flood
+        coverage_pct: 7.2
+        value_unit: '% of suburb area'
+        risk_band: moderate
+      x-price-cents: 6
+  /v1/suburbs/{suburb_name}/risks/all:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Bushfire + flood — bundle
+      description: '**Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 11¢ per call.**'
+      operationId: get_suburb_risks_all_v1_suburbs__suburb_name__risks_all_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, each sub-risk additionally carries a `geojson` FeatureCollection clipped to the suburb boundary — one call returns coverage plus every risk shape (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, each sub-risk additionally carries a `geojson` FeatureCollection clipped to the suburb boundary — one call returns coverage plus every risk shape (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbRisksAll_'
+              example:
+                data:
+                  bushfire:
+                    area_level: suburb
+                    area_name: Belmont North
+                    coverage_pct: 45.72
+                    name: Bushfire
+                    value_unit: '% of suburb area'
+                  flood:
+                    area_level: suburb
+                    area_name: Belmont North
+                    coverage_pct: 7.2
+                    name: Flood
+                    risk_band: moderate
+                    value_unit: '% of suburb area'
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 11
+  /v1/suburbs/{suburb_name}/risks/property-hazard-counts:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Property hazard counts
+      description: 'Counts and shares of the suburb''s properties flagged bushfire / flood / mine-subsidence / contamination / aircraft-noise / acid-sulfate.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_suburb_property_hazard_counts_v1_suburbs__suburb_name__risks_property_hazard_counts_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_PropertyHazardCounts_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  total_properties: 2727
+                  bushfire:
+                    count: 644
+                    pct: 23.62
+                  flood:
+                    count: 154
+                    pct: 5.65
+                  mine_subsidence:
+                    count: 2727
+                    pct: 100.0
+                  contamination:
+                    within_250m_count: 180
+                    within_250m_pct: 6.6
+                    within_500m_count: 496
+                    within_500m_pct: 18.19
+                    nearest_m: 1.7
+                  aircraft_noise: {}
+                  acid_sulfate:
+                    any_high_count: 0
+                    any_high_pct: 0.0
+                    surface_high_count: 0
+                    surface_high_pct: 0.0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        total_properties: 2727
+        bushfire:
+          count: 644
+          pct: 23.62
+        flood:
+          count: 154
+          pct: 5.65
+        mine_subsidence:
+          count: 2727
+          pct: 100.0
+        contamination:
+          within_250m_count: 180
+          within_250m_pct: 6.6
+          within_500m_count: 496
+          within_500m_pct: 18.19
+          nearest_m: 1.7
+        aircraft_noise: {}
+        acid_sulfate:
+          any_high_count: 0
+          any_high_pct: 0.0
+          surface_high_count: 0
+          surface_high_pct: 0.0
+      x-price-cents: 15
+  /v1/suburbs/{suburb_name}/risks/extras:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Extra risk indicators
+      description: 'Landslide / storm-tide coverage, EPA notices, landlord-insurance medians and crime benchmark, with per-microburb detail.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_risk_extras_v1_suburbs__suburb_name__risks_extras_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_RiskExtras_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  landslide_pct: 0.0
+                  storm_tide_high_pct: 0.0
+                  epa_notices_n: 3
+                  insurance:
+                    n: 77
+                    comp_med: 2542.0
+                    basic_med: 479.0
+                    rent_med: 433.0
+                  crime_bench:
+                    nat_med: 2787.56
+                    sub_med: 2248.01
+                  per_mb:
+                    insurance:
+                    - mb: '10431160000'
+                      score: 2551.0
+                    risks:
+                    - mb: '10431160000'
+                      contam_pct: 100.0
+                      mine_pct: 100.0
+                      acid_pct: 0.0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        landslide_pct: 0.0
+        storm_tide_high_pct: 0.0
+        epa_notices_n: 3
+        insurance:
+          n: 77
+          comp_med: 2542.0
+          basic_med: 479.0
+          rent_med: 433.0
+        crime_bench:
+          nat_med: 2787.56
+          sub_med: 2248.01
+        per_mb:
+          insurance:
+          - mb: '10431160000'
+            score: 2551.0
+          risks:
+          - mb: '10431160000'
+            contam_pct: 100.0
+            mine_pct: 100.0
+            acid_pct: 0.0
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/risks/counts:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Hazard item counts
+      description: 'Counts of contamination points, heritage items and erosion-prone polygons inside the suburb.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_risk_counts_v1_suburbs__suburb_name__risks_counts_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_RiskCounts_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  contamination_points_n: 3
+                  heritage_items_n: 0
+                  erosion_n: 0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        contamination_points_n: 3
+        heritage_items_n: 0
+        erosion_n: 0
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/risks/slope:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Terrain slope profile
+      description: 'Median / 90th-percentile property gradient and share of steep (>10°) properties.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_risk_slope_v1_suburbs__suburb_name__risks_slope_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SlopeProfile_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  n_properties: 2727
+                  median_slope_deg: 4.43
+                  p90_slope_deg: 8.29
+                  steep_pct: 4.44
+                  steep_threshold_deg: 10.0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        n_properties: 2727
+        median_slope_deg: 4.43
+        p90_slope_deg: 8.29
+        steep_pct: 4.44
+        steep_threshold_deg: 10.0
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/risks/heritage-share:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Heritage share of properties
+      description: 'Share of the suburb''s properties inside a heritage polygon.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_risk_heritage_share_v1_suburbs__suburb_name__risks_heritage_share_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_HeritageShare_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  heritage_pct: 10.39
+                  value_unit: '% of properties'
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        heritage_pct: 10.39
+        value_unit: '% of properties'
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/risks/hv-power-lines:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: High-voltage power lines
+      description: 'Whether high-voltage transmission lines cross the suburb, how many, and the highest voltage class (overhead lines only).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_hv_power_lines_v1_suburbs__suburb_name__risks_hv_power_lines_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbHvPowerLines_'
+              example:
+                data:
+                  area_name: Blacktown
+                  area_level: suburb
+                  present: true
+                  line_count: 6
+                  max_kv: 132
+                  overhead_only: true
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Blacktown
+        area_level: suburb
+        present: true
+        line_count: 6
+        max_kv: 132
+        overhead_only: true
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/risks/capital-growth-impact:
+    get:
+      tags:
+      - Suburb - Risks
+      summary: Capital-growth impact per hazard
+      description: 'Matched-study capital-growth impact (%/yr) for bushfire, flood, contamination, mine subsidence, aircraft noise and surface acid sulfate, scaled by the share of properties affected.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 12¢ per call.**'
+      operationId: get_suburb_risk_capital_growth_impact_v1_suburbs__suburb_name__risks_capital_growth_impact_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbRiskCgImpact_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  total_properties: 2727
+                  study: Microburbs matched capital-growth study (DBYD) — treated minus control CAGR
+                  hazards:
+                  - key: bushfire
+                    label: Bushfire
+                    present: true
+                    affected_pct: 23.62
+                    coefficient_pct_per_year: 0.9
+                    impact_pct_per_year: 0.2126
+                    impact: +0.21%/yr
+                    color_class: neutral
+                  - key: mine_subsidence
+                    label: Mine subsidence
+                    present: true
+                    affected_pct: 100.0
+                    coefficient_pct_per_year: 0.2
+                    impact_pct_per_year: 0.2
+                    impact: +0.2%/yr
+                    color_class: neutral
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        total_properties: 2727
+        study: Microburbs matched capital-growth study (DBYD) — treated minus control CAGR
+        hazards:
+        - key: bushfire
+          label: Bushfire
+          present: true
+          affected_pct: 23.62
+          coefficient_pct_per_year: 0.9
+          impact_pct_per_year: 0.2126
+          impact: +0.21%/yr
+          color_class: neutral
+        - key: mine_subsidence
+          label: Mine subsidence
+          present: true
+          affected_pct: 100.0
+          coefficient_pct_per_year: 0.2
+          impact_pct_per_year: 0.2
+          impact: +0.2%/yr
+          color_class: neutral
+      x-price-cents: 12
+components:
+  schemas:
+    ApiResponse_SuburbRiskCgImpact_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRiskCgImpact'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbRiskCgImpact]
+    PropertyHazardCounts:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        total_properties:
+          type: integer
+          title: Total Properties
+          description: Principal GNAF addresses in the suburb.
+        bushfire:
+          $ref: '#/components/schemas/HazardCount'
+          description: Bushfire-prone-land flags.
+        flood:
+          $ref: '#/components/schemas/HazardCount'
+          description: Flood-planning-overlay flags.
+        mine_subsidence:
+          $ref: '#/components/schemas/HazardCount'
+          description: Mine-subsidence-district flags.
+        contamination:
+          $ref: '#/components/schemas/ContaminationCounts'
+          description: Contamination-register proximity.
+        aircraft_noise:
+          $ref: '#/components/schemas/AircraftNoise'
+          description: Aircraft-noise (ANEF) exposure.
+        acid_sulfate:
+          $ref: '#/components/schemas/AcidSulfateCounts'
+          description: Acid-sulfate soil exposure.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - total_properties
+      - bushfire
+      - flood
+      - mine_subsidence
+      - contamination
+      - aircraft_noise
+      - acid_sulfate
+      title: PropertyHazardCounts
+      description: 'Per-property hazard flags aggregated to the suburb — counts and
+
+        shares of addresses flagged bushfire / flood / mine-subsidence /
+
+        contamination / aircraft-noise / acid-sulfate.'
+      example:
+        acid_sulfate:
+          any_high_count: 0
+          any_high_pct: 0.0
+          surface_high_count: 0
+          surface_high_pct: 0.0
+        aircraft_noise: {}
+        area_level: suburb
+        area_name: Belmont North
+        bushfire:
+          count: 644
+          pct: 23.62
+        contamination:
+          nearest_m: 1.7
+          within_250m_count: 180
+          within_250m_pct: 6.6
+          within_500m_count: 496
+          within_500m_pct: 18.19
+        flood:
+          count: 154
+          pct: 5.65
+        mine_subsidence:
+          count: 2727
+          pct: 100.0
+        total_properties: 2727
+    AcidSulfateCounts:
+      properties:
+        any_high_count:
+          type: integer
+          title: Any High Count
+          description: Properties in any high acid-sulfate tier (surface/shallow/deep).
+        any_high_pct:
+          type: number
+          title: Any High Pct
+          description: Share of properties in any high tier (%).
+        surface_high_count:
+          type: integer
+          title: Surface High Count
+          description: Properties in the surface-high tier.
+        surface_high_pct:
+          type: number
+          title: Surface High Pct
+          description: Share of properties in the surface-high tier (%).
+      type: object
+      required:
+      - any_high_count
+      - any_high_pct
+      - surface_high_count
+      - surface_high_pct
+      title: AcidSulfateCounts
+      description: Acid-sulfate soil exposure by high-risk tier.
+    HazardCgImpact:
+      properties:
+        key:
+          type: string
+          title: Key
+          description: Hazard key (bushfire, flood, contamination, mine_subsidence, aircraft_noise, acid_sulfate_surface).
+        label:
+          type: string
+          title: Label
+          description: Human-readable hazard name.
+        present:
+          type: boolean
+          title: Present
+          description: Whether the hazard is material in this suburb (report's own threshold).
+        affected_pct:
+          type: number
+          title: Affected Pct
+          description: Share of the suburb's properties affected (%).
+        coefficient_pct_per_year:
+          type: number
+          title: Coefficient Pct Per Year
+          description: 'Matched-study coefficient: treated-minus-control CAGR difference (%/yr) for a fully-affected suburb.'
+        impact_pct_per_year:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Impact Pct Per Year
+          description: Coefficient scaled by the affected share (%/yr). Null when the report shows no impact for this hazard here.
+        impact:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Impact
+          description: Impact as the report renders it, e.g. '+0.2%/yr'. Null when not shown.
+        color_class:
+          anyOf:
+          - type: string
+            enum:
+            - positive
+            - negative
+            - neutral
+          - type: 'null'
+          title: Color Class
+          description: 'Report''s colour band: |impact| >= 0.3 %/yr is positive/negative, else neutral.'
+      additionalProperties: true
+      type: object
+      required:
+      - key
+      - label
+      - present
+      - affected_pct
+      - coefficient_pct_per_year
+      title: HazardCgImpact
+      description: One hazard's matched-study capital-growth impact for this suburb.
+    SlopeProfile:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        n_properties:
+          type: integer
+          title: N Properties
+          description: Properties with a terrain sample.
+        median_slope_deg:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Slope Deg
+          description: Median property gradient (degrees).
+        p90_slope_deg:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: P90 Slope Deg
+          description: 90th-percentile property gradient (degrees).
+        steep_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Steep Pct
+          description: Share of properties steeper than the threshold (%).
+        steep_threshold_deg:
+          type: number
+          title: Steep Threshold Deg
+          description: Gradient threshold used for steep_pct (degrees).
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - n_properties
+      - steep_threshold_deg
+      title: SlopeProfile
+      description: Terrain gradient across the suburb's properties (degrees).
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        median_slope_deg: 4.43
+        n_properties: 2727
+        p90_slope_deg: 8.29
+        steep_pct: 4.44
+        steep_threshold_deg: 10.0
+    CrimeBench:
+      properties:
+        nat_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nat Med
+          description: National median total crime rate (predicted incidents per 100,000 residents per year).
+        sub_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sub Med
+          description: This suburb's median total crime rate (predicted incidents per 100,000 residents per year).
+      type: object
+      title: CrimeBench
+      description: 'Crime benchmark — median of summed per-100k predicted crime rates
+
+        across microburbs, suburb vs national.'
+    InsurancePerMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Score
+          description: Comprehensive landlord premium estimate ($/yr).
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: InsurancePerMb
+      description: One microburb's landlord-insurance premium score.
+    SuburbRisk:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        name:
+          type: string
+          title: Name
+          description: Risk overlay name — 'Bushfire' or 'Flood'.
+        coverage_pct:
+          type: number
+          title: Coverage Pct
+          description: Share of suburb area inside the overlay (%).
+        value_unit:
+          type: string
+          title: Value Unit
+          description: Unit for coverage_pct — '% of suburb area'.
+        risk_band:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Risk Band
+          description: Coarse band — 'low' / 'moderate' / 'high'. Currently flood only.
+        geojson:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Geojson
+          description: GeoJSON FeatureCollection of the hazard polygons for this layer, ST_Intersection-clipped to the suburb boundary and simplified for browser use. Present only when the request passes `?geojson=true`; absent (and the response byte-identical to before) otherwise.
+        geojson_meta:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Geojson Meta
+          description: Clip / simplify / truncation metadata for `geojson` (clip method, simplify tolerance, coordinate precision, feature cap, and whether the size cap truncated the output). Present only with `?geojson=true`.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - name
+      - coverage_pct
+      - value_unit
+      title: SuburbRisk
+      description: 'One suburb-level risk record (bushfire or flood).
+
+
+        `coverage_pct` is the share of the SAL covered by the modelled
+
+        risk overlay. `risk_band` is a coarse low/moderate/high band — only
+
+        populated for flood today; bushfire reports the raw percentage.'
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        coverage_pct: 45.72
+        name: Bushfire
+        value_unit: '% of suburb area'
+    ApiResponse_SuburbHvPowerLines_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbHvPowerLines'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbHvPowerLines]
+    RiskExtrasPerMb:
+      properties:
+        insurance:
+          items:
+            $ref: '#/components/schemas/InsurancePerMb'
+          type: array
+          title: Insurance
+          description: Per-MB insurance premium scores.
+        risks:
+          items:
+            $ref: '#/components/schemas/RiskPerMb'
+          type: array
+          title: Risks
+          description: Per-MB contamination / mine / ANEF / acid shares.
+      type: object
+      required:
+      - insurance
+      - risks
+      title: RiskExtrasPerMb
+      description: Per-microburb detail split out from the suburb scalars.
+    ApiResponse_PropertyHazardCounts_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PropertyHazardCounts'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PropertyHazardCounts]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    RiskInsurance:
+      properties:
+        n:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: N
+          description: Microburbs with an insurance estimate.
+        comp_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Comp Med
+          description: Median comprehensive landlord premium ($/yr).
+        basic_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Basic Med
+          description: Median basic landlord premium ($/yr).
+        rent_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Rent Med
+          description: Median weekly rent ($) — for premium-vs-rent context.
+      type: object
+      title: RiskInsurance
+      description: Landlord-insurance premium estimate medians for the suburb.
+    ApiResponse_RiskCounts_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/RiskCounts'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[RiskCounts]
+    ApiResponse_RiskExtras_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/RiskExtras'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[RiskExtras]
+    ApiResponse_SuburbRisk_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRisk'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbRisk]
+    HazardCount:
+      properties:
+        count:
+          type: integer
+          title: Count
+          description: Properties flagged for this hazard.
+        pct:
+          type: number
+          title: Pct
+          description: Share of the suburb's properties (%).
+      type: object
+      required:
+      - count
+      - pct
+      title: HazardCount
+      description: Count + share of the suburb's properties flagged for one hazard.
+    SuburbRiskCgImpact:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        total_properties:
+          type: integer
+          title: Total Properties
+          description: Principal GNAF addresses in the suburb.
+        study:
+          type: string
+          title: Study
+          description: Provenance of the coefficients.
+        hazards:
+          items:
+            $ref: '#/components/schemas/HazardCgImpact'
+          type: array
+          title: Hazards
+          description: One entry per studied hazard.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - total_properties
+      - study
+      - hazards
+      title: SuburbRiskCgImpact
+      description: Per-hazard capital-growth impact (%/yr) across the suburb's risks.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        hazards:
+        - affected_pct: 23.62
+          coefficient_pct_per_year: 0.9
+          color_class: neutral
+          impact: +0.21%/yr
+          impact_pct_per_year: 0.2126
+          key: bushfire
+          label: Bushfire
+          present: true
+        - affected_pct: 100.0
+          coefficient_pct_per_year: 0.2
+          color_class: neutral
+          impact: +0.2%/yr
+          impact_pct_per_year: 0.2
+          key: mine_subsidence
+          label: Mine subsidence
+          present: true
+        study: Microburbs matched capital-growth study (DBYD) — treated minus control CAGR
+        total_properties: 2727
+    SuburbRisksAll:
+      properties:
+        bushfire:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRisk'
+          - type: 'null'
+          example:
+            area_level: suburb
+            area_name: Belmont North
+            coverage_pct: 45.72
+            name: Bushfire
+            value_unit: '% of suburb area'
+        flood:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRisk'
+          - type: 'null'
+          example:
+            area_level: suburb
+            area_name: Belmont North
+            coverage_pct: 7.2
+            name: Flood
+            risk_band: moderate
+            value_unit: '% of suburb area'
+      type: object
+      title: SuburbRisksAll
+    RiskCounts:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        contamination_points_n:
+          type: integer
+          title: Contamination Points N
+          description: Contamination-register points inside the suburb.
+        heritage_items_n:
+          type: integer
+          title: Heritage Items N
+          description: Heritage items inside the suburb.
+        erosion_n:
+          type: integer
+          title: Erosion N
+          description: Coastal-erosion-prone polygons intersecting the suburb.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - contamination_points_n
+      - heritage_items_n
+      - erosion_n
+      title: RiskCounts
+      description: Cached hazard-item counts inside the suburb boundary.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        contamination_points_n: 3
+        erosion_n: 0
+        heritage_items_n: 0
+    ApiResponse_SlopeProfile_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SlopeProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SlopeProfile]
+    RiskPerMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        contam_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Contam Pct
+          description: '% of properties within 500 m of contamination.'
+        mine_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mine Pct
+          description: '% of properties in a mine-subsidence district.'
+        anef_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Anef Med
+          description: Median aircraft-noise ANEF (null = no exposure).
+        acid_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Acid Pct
+          description: '% of properties at high acid-sulfate risk.'
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: RiskPerMb
+      description: One microburb's per-property risk shares.
+    ApiResponse_SuburbRisksAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRisksAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbRisksAll]
+    SuburbHvPowerLines:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        present:
+          type: boolean
+          title: Present
+          description: True when at least one HV line crosses the suburb.
+        line_count:
+          type: integer
+          title: Line Count
+          description: Transmission-line features intersecting the suburb boundary.
+        max_kv:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Kv
+          description: Highest voltage class among the intersecting lines, in kV (null when none intersect or the source carries no voltage class).
+        overhead_only:
+          type: boolean
+          const: true
+          title: Overhead Only
+          description: Underground segments are excluded from the count — only overhead (and unclassified) transmission is counted.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - present
+      - line_count
+      - overhead_only
+      title: SuburbHvPowerLines
+      description: High-voltage electricity transmission lines crossing the suburb.
+      example:
+        area_level: suburb
+        area_name: Blacktown
+        line_count: 6
+        max_kv: 132
+        overhead_only: true
+        present: true
+    ApiResponse_HeritageShare_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HeritageShare'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HeritageShare]
+    AircraftNoise:
+      properties:
+        anef_avg:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Anef Avg
+          description: Mean ANEF across properties (null = no exposure data).
+        anef_max:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Anef Max
+          description: Max ANEF across properties (null = no exposure data).
+      type: object
+      title: AircraftNoise
+      description: Aircraft-noise exposure (ANEF) across the suburb's properties.
+    RiskExtras:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        landslide_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Landslide Pct
+          description: '% of suburb area in a landslide-risk overlay.'
+        storm_tide_high_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Storm Tide High Pct
+          description: '% of suburb area in the high storm-tide band.'
+        epa_notices_n:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Epa Notices N
+          description: EPA notices inside the suburb.
+        insurance:
+          $ref: '#/components/schemas/RiskInsurance'
+          description: Landlord-insurance medians.
+        crime_bench:
+          $ref: '#/components/schemas/CrimeBench'
+          description: Suburb vs national crime benchmark.
+        per_mb:
+          $ref: '#/components/schemas/RiskExtrasPerMb'
+          description: Per-microburb detail arrays.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - insurance
+      - crime_bench
+      - per_mb
+      title: RiskExtras
+      description: 'Extra suburb risk indicators — landslide and storm-tide coverage,
+
+        EPA notices, landlord-insurance medians and crime benchmark, plus
+
+        per-microburb detail under ``per_mb``.'
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        crime_bench:
+          nat_med: 2787.56
+          sub_med: 2248.01
+        epa_notices_n: 3
+        insurance:
+          basic_med: 479.0
+          comp_med: 2542.0
+          n: 77
+          rent_med: 433.0
+        landslide_pct: 0.0
+        per_mb:
+          insurance:
+          - mb: '10431160000'
+            score: 2551.0
+          risks:
+          - acid_pct: 0.0
+            contam_pct: 100.0
+            mb: '10431160000'
+            mine_pct: 100.0
+        storm_tide_high_pct: 0.0
+    HeritageShare:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        heritage_pct:
+          type: number
+          title: Heritage Pct
+          description: '% of properties inside a heritage polygon.'
+        value_unit:
+          type: string
+          title: Value Unit
+          description: Unit label ('% of properties').
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - heritage_pct
+      - value_unit
+      title: HeritageShare
+      description: Share of the suburb's properties inside a heritage polygon.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        heritage_pct: 10.39
+        value_unit: '% of properties'
+    ContaminationCounts:
+      properties:
+        within_250m_count:
+          type: integer
+          title: Within 250M Count
+          description: Properties within 250 m of a contamination site.
+        within_250m_pct:
+          type: number
+          title: Within 250M Pct
+          description: Share of properties within 250 m (%).
+        within_500m_count:
+          type: integer
+          title: Within 500M Count
+          description: Properties within 500 m of a contamination site.
+        within_500m_pct:
+          type: number
+          title: Within 500M Pct
+          description: Share of properties within 500 m (%).
+        nearest_m:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nearest M
+          description: Distance (m) from the closest property to the nearest contamination site.
+      type: object
+      required:
+      - within_250m_count
+      - within_250m_pct
+      - within_500m_count
+      - within_500m_pct
+      title: ContaminationCounts
+      description: 'Contamination-register proximity — counts of properties within
+
+        fixed distances of a registered contamination site.'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

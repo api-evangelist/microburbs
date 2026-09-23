@@ -1,0 +1,2264 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Lifestyle API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Lifestyle
+  description: POIs, livability, landmarks, narrative.
+paths:
+  /v1/suburbs/{suburb_name}/lifestyle/livability-map:
+    get:
+      tags:
+      - Suburb - Lifestyle
+      summary: Livability scores per microburb
+      description: 'All seven livability dimensions — affluence, lifestyle, hip,
+
+        convenience, family, safety, tranquility — scored 0-100 for every
+
+        microburb (mesh block) in the suburb, each with its human band. Averaging
+
+        a dimension across the microburbs reproduces the suburb figure at
+
+        ``/lifestyle/livability``. Values only; polygons come from
+
+        ``/shapes/mesh-blocks``.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_lifestyle_livability_map_v1_suburbs__suburb_name__lifestyle_livability_map_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbLivabilityMap_'
+              example:
+                data:
+                  suburb: Belmont North
+                  metric: livability_scores
+                  unit: score_0_100
+                  definition: Seven livability dimensions scored for each mesh block ('microburb', the smallest ABS geography, ~30-60 dwellings), rescaled from the source 0-10 to 0-100. Higher is better on every dimension, safety included — it is an inverse-scaled crime score built from the same per-mesh-block crime model /crime/by-mesh-block exposes as raw rates. Averaging a dimension across the microburbs here gives the suburb figure at /lifestyle/livability. Dimensions with no score for a microburb are omitted, not zeroed.
+                  dimensions:
+                  - key: safety
+                    label: Safety
+                    description: Reported crime rates across personal, property, drug and public-order offences compared with the state average. Inverse-scaled, so a higher score means less predicted crime.
+                  n_microburbs: 63
+                  microburbs:
+                  - mb: '10431160000'
+                    street: Floraville
+                    scores:
+                      affluence: 43
+                      lifestyle: 34
+                      hip: 50
+                      convenience: 46
+                      family: 52
+                      safety: 53
+                      tranquility: 8
+                    levels:
+                      affluence: Low
+                      lifestyle: Low
+                      hip: Moderate
+                      convenience: Low
+                      family: Moderate
+                      safety: Moderate
+                      tranquility: Very low
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        suburb: Belmont North
+        metric: livability_scores
+        unit: score_0_100
+        definition: Seven livability dimensions scored for each mesh block ('microburb', the smallest ABS geography, ~30-60 dwellings), rescaled from the source 0-10 to 0-100. Higher is better on every dimension, safety included — it is an inverse-scaled crime score built from the same per-mesh-block crime model /crime/by-mesh-block exposes as raw rates. Averaging a dimension across the microburbs here gives the suburb figure at /lifestyle/livability. Dimensions with no score for a microburb are omitted, not zeroed.
+        dimensions:
+        - key: safety
+          label: Safety
+          description: Reported crime rates across personal, property, drug and public-order offences compared with the state average. Inverse-scaled, so a higher score means less predicted crime.
+        n_microburbs: 63
+        microburbs:
+        - mb: '10431160000'
+          street: Floraville
+          scores:
+            affluence: 43
+            lifestyle: 34
+            hip: 50
+            convenience: 46
+            family: 52
+            safety: 53
+            tranquility: 8
+          levels:
+            affluence: Low
+            lifestyle: Low
+            hip: Moderate
+            convenience: Low
+            family: Moderate
+            safety: Moderate
+            tranquility: Very low
+      x-price-cents: 20
+  /v1/suburbs/{suburb_name}/lifestyle/summary:
+    get:
+      tags:
+      - Suburb - Lifestyle
+      summary: Lifestyle summary — POIs, terrain, landmarks
+      description: 'POI category breakdown, terrain scalars, nearest train/shop and beach/hospital flags.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_lifestyle_summary_v1_suburbs__suburb_name__lifestyle_summary_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LifestyleSummary_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  has_beach: true
+                  has_hospital: true
+                  nearest_beach_km: 1.5
+                  nearest_hospital_km: 1.4
+                  nearest_shop:
+                    category: Supermarket
+                    dist_km: 1.2
+                    name: Coles
+                  nearest_train:
+                    dist_km: 1.4
+                    name: Jewells railway station
+                  poi_categories:
+                  - category: Education
+                    count: 9
+                    top_subtypes:
+                    - count: 5
+                      label: School
+                    - count: 3
+                      label: Childcare
+                    - count: 1
+                      label: Preschool
+                  terrain:
+                    aspect_compass: SE
+                    avg_aspect_deg: 149
+                    median_elevation_m: 26.0
+                    median_slope_deg: 5.6
+                    n_flat: 698
+                    n_moderate: 830
+                    n_properties: 1759
+                    n_steep: 231
+                    pct_steep: 13
+                  total_pois: 43
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/lifestyle/poi-impacts:
+    get:
+      tags:
+      - Suburb - Lifestyle
+      summary: Amenity price impacts
+      description: 'What the absence of petrol stations, fast food and bottle shops near sold properties was worth.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_lifestyle_poi_impacts_v1_suburbs__suburb_name__lifestyle_poi_impacts_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LifestylePoiImpacts_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Castlecrag
+                  drivers:
+                  - coverage_pct: 100.0
+                    detail: 100% of 9 recent sales in Castlecrag were at properties with no petrol station nearby. Those sales cleared about $184,500 more than comparable suburbs with petrol stations, equivalent to 4.1% of the $4,500,000 median price here.
+                    label: No petrol station nearby
+                    pct_of_median: 4.1
+                    premium_dollars: 184500
+                  median_price: 4500000
+                  n_sales: 9
+                  total_premium: 263000
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/lifestyle/livability:
+    get:
+      tags:
+      - Suburb - Lifestyle
+      summary: Livability scores + regional benchmark
+      description: 'Livability scores (0–100) per dimension, aggregated from mesh-block scores, with the SA4 benchmark.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_lifestyle_livability_v1_suburbs__suburb_name__lifestyle_livability_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LifestyleLivability_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  benchmark:
+                    n_suburbs: 149
+                    region: Newcastle and Lake Macquarie
+                    scores:
+                      affluence: 66.9
+                      hip: 59.5
+                      lifestyle: 73.4
+                      safety: 84.8
+                  n_mesh_blocks: 63
+                  scores:
+                  - key: affluence
+                    label: Affluence
+                    level: Moderate
+                    value: 56
+                  - key: lifestyle
+                    label: Lifestyle
+                    level: Moderate
+                    value: 72
+                  - key: safety
+                    label: Safety
+                    level: High
+                    value: 76
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/lifestyle/pois:
+    get:
+      tags:
+      - Suburb - Lifestyle
+      summary: POIs / amenities in the suburb (pubs, cafes, gyms, schools, …)
+      description: 'Every named venue / amenity in the suburb as GeoJSON Point features, plus a
+
+        per-category count.
+
+
+        Each point carries `name`, a broad `category` (Restaurant / Cafe, Shopping,
+
+        Health, Entertainment, Sport & Fitness, Education, …) and a finer `subtype`
+
+        (e.g. `pub`, `bar`, `cafe`, `restaurant`, `gym`, `supermarket`, `school`,
+
+        `pharmacy`). This is the endpoint for "what / how many are in
+
+        this suburb" and "name the pubs / cafes / gyms in X" — filter or count the
+
+        features on `subtype`, and read real venue names from `name`. The top-level
+
+        `categories` array gives the broad-category counts without walking the list.
+
+
+        Unpaged by default. Big suburbs are big — Sydney is ~3.7 MB of features — so
+
+        pass `limit`/`offset` (or narrow with `category`) when you don''t need them
+
+        all. `count` and `categories` always describe the whole suburb, so paging
+
+        never hides the totals. Flat price per call regardless of page size.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 25¢ per call.**'
+      operationId: get_suburb_lifestyle_pois_v1_suburbs__suburb_name__lifestyle_pois_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            minimum: 1
+          - type: 'null'
+          description: 'Features to return (default: all).'
+          title: Limit
+        description: 'Features to return (default: all).'
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          description: Feature offset — page with `limit`.
+          default: 0
+          title: Offset
+        description: Feature offset — page with `limit`.
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Only this display category (e.g. `Shopping`). Case-insensitive.
+          title: Category
+        description: Only this display category (e.g. `Shopping`). Case-insensitive.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LifestylePois_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  categories:
+                  - category: Shopping
+                    count: 32
+                  - category: Sport & Fitness
+                    count: 26
+                  count: 177
+                  pois:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - 151.66231
+                        - -33.02463
+                        type: Point
+                      properties:
+                        name: Ampol Foodary
+                        category: Shopping
+                        subtype: newsagent
+                        dim: convenience
+                      type: Feature
+                    type: FeatureCollection
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 25
+  /v1/suburbs/{suburb_name}/lifestyle/landmarks:
+    get:
+      tags:
+      - Suburb - Lifestyle
+      summary: Nearest beach + hospital
+      description: 'Nearest beach and hospital with straight-line distances (null = none within ~50 km).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_lifestyle_landmarks_v1_suburbs__suburb_name__lifestyle_landmarks_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LifestyleLandmarks_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  nearest_beach:
+                    dist_km: 1.5
+                    name: Redhead Beach, NSW
+                  nearest_hospital:
+                    dist_km: 1.4
+                    name: Narla Village
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/lifestyle/narrative:
+    get:
+      tags:
+      - Suburb - Lifestyle
+      summary: Livability narrative sentences
+      description: 'One plain-English sentence per livability dimension for the suburb.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_lifestyle_narrative_v1_suburbs__suburb_name__lifestyle_narrative_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LifestyleNarrative_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  sentences:
+                    affluence: 37% own outright. Only 10% hold university degrees. Household income $1,728/wk.
+                    convenience: 'No train nearby (9 km). Nearest supermarket: Coles (851m). Hospital 2.9 km.'
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/lifestyle/cbd:
+    get:
+      tags:
+      - Suburb - Lifestyle
+      summary: Distance to the nearest city and to the nearest capital
+      description: 'Straight-line distance to the nearest city and to the nearest capital, in km.
+
+
+        Both, because they answer different questions and are often nowhere near
+
+        each other: Belmont North is 14 km from Newcastle and 108 km from Sydney.
+
+        `nearest_city` is usually what a buyer means by "how far is town".
+
+
+        The top-level `city` / `distance_km` fields are DEPRECATED. They still
+
+        describe the CAPITAL, unchanged, so existing callers are unaffected —
+
+        read `capital_city` or `nearest_city` instead.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_suburb_lifestyle_cbd_v1_suburbs__suburb_name__lifestyle_cbd_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_LifestyleCbd_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  capital_city:
+                    distance_km: 108.0
+                    name: Sydney
+                  city: Sydney
+                  distance_km: 108.0
+                  nearest_city:
+                    distance_km: 14.0
+                    name: Newcastle
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+components:
+  schemas:
+    PoiFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          description: Always 'Feature'.
+        geometry:
+          $ref: '#/components/schemas/GeoJsonPointGeometry'
+          description: Point location.
+        properties:
+          $ref: '#/components/schemas/PoiFeatureProperties'
+          description: Name/category/dim props.
+      type: object
+      required:
+      - type
+      - geometry
+      - properties
+      title: PoiFeature
+      description: One POI as a GeoJSON Feature.
+    ApiResponse_LifestyleNarrative_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleNarrative'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleNarrative]
+    LifestylePois:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        count:
+          type: integer
+          title: Count
+          description: POIs available in the suburb (after any `category` filter), counted before `limit`/`offset`.
+        returned:
+          type: integer
+          title: Returned
+          description: Features actually in this response — equals `count` when unpaged.
+        categories:
+          items:
+            $ref: '#/components/schemas/PoiCategoryCount'
+          type: array
+          title: Categories
+          description: Per-category counts across the whole suburb, largest first.
+        pois:
+          $ref: '#/components/schemas/PoiFeatureCollection'
+          description: GeoJSON FeatureCollection of points.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - count
+      - returned
+      - categories
+      - pois
+      title: LifestylePois
+      description: Every amenity point in the suburb as GeoJSON, with category counts.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        categories:
+        - category: Shopping
+          count: 32
+        - category: Sport & Fitness
+          count: 26
+        count: 177
+        pois:
+          features:
+          - geometry:
+              coordinates:
+              - 151.66231
+              - -33.02463
+              type: Point
+            properties:
+              name: Ampol Foodary
+              category: Shopping
+              subtype: newsagent
+              dim: convenience
+            type: Feature
+          type: FeatureCollection
+    PoiSubtypeCount:
+      properties:
+        label:
+          type: string
+          title: Label
+          description: Subtype label, title-cased (e.g. 'Restaurant').
+        count:
+          type: integer
+          title: Count
+          description: Number of POIs of this subtype.
+      type: object
+      required:
+      - label
+      - count
+      title: PoiSubtypeCount
+      description: One L2 subtype count inside a POI category.
+    PoiCategoryBreakdown:
+      properties:
+        category:
+          type: string
+          title: Category
+          description: Friendly category name (e.g. 'Food Drink').
+        count:
+          type: integer
+          title: Count
+          description: Total POIs in this category.
+        top_subtypes:
+          items:
+            $ref: '#/components/schemas/PoiSubtypeCount'
+          type: array
+          title: Top Subtypes
+          description: Most common subtypes inside the category.
+      additionalProperties: true
+      type: object
+      required:
+      - category
+      - count
+      - top_subtypes
+      title: PoiCategoryBreakdown
+      description: One L1 POI category with its top subtypes.
+    LifestyleCbd:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        nearest_city:
+          anyOf:
+          - $ref: '#/components/schemas/CityDistance'
+          - type: 'null'
+          description: Nearest city of any size, and the distance to it.
+        capital_city:
+          anyOf:
+          - $ref: '#/components/schemas/CityDistance'
+          - type: 'null'
+          description: Nearest state/territory capital, and the distance to it.
+        city:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: City
+          description: DEPRECATED — the CAPITAL's name. Use `capital_city.name`.
+          deprecated: true
+        distance_km:
+          type: number
+          title: Distance Km
+          description: DEPRECATED — distance to the CAPITAL, not to the nearest city. Use `capital_city.distance_km`, or `nearest_city.distance_km`.
+          deprecated: true
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - distance_km
+      title: LifestyleCbd
+      description: 'Distance to the nearest city and to the nearest capital.
+
+
+        These are different places and often very different distances — Belmont
+
+        North is 14 km from Newcastle and 108 km from Sydney. Read whichever
+
+        answers your question; `nearest_city` is usually the one a buyer means.'
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        capital_city:
+          distance_km: 108.0
+          name: Sydney
+        city: Sydney
+        distance_km: 108.0
+        nearest_city:
+          distance_km: 14.0
+          name: Newcastle
+    ApiResponse_SuburbLivabilityMap_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbLivabilityMap'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbLivabilityMap]
+    ApiResponse_LifestyleLandmarks_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleLandmarks'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleLandmarks]
+    NearestShop:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Shop name (e.g. 'Coles').
+        category:
+          type: string
+          title: Category
+          description: Shop category (e.g. 'Supermarket').
+        dist_km:
+          type: number
+          title: Dist Km
+          description: Straight-line distance (km).
+      additionalProperties: true
+      type: object
+      required:
+      - name
+      - category
+      - dist_km
+      title: NearestShop
+      description: Nearest major shop / shopping centre to the suburb centroid.
+    PoiCategoryCount:
+      properties:
+        category:
+          type: string
+          title: Category
+          description: Display category.
+        count:
+          type: integer
+          title: Count
+          description: POIs in the category.
+      type: object
+      required:
+      - category
+      - count
+      title: PoiCategoryCount
+      description: Per-display-category POI count.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CityDistance:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: City name (e.g. 'Newcastle').
+        distance_km:
+          type: number
+          title: Distance Km
+          description: Straight-line distance (km).
+      additionalProperties: true
+      type: object
+      required:
+      - distance_km
+      title: CityDistance
+      description: A named city and the straight-line distance to it.
+    PoiFeatureProperties:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: POI name; null for unnamed points.
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Display category (e.g. 'Restaurant / Cafe').
+        subtype:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subtype
+          description: 'L2 subtype — the specific venue type. Filter/count on this for a question like ''how many pubs'': e.g. ''pub'', ''bar'', ''cafe'', ''restaurant'', ''gym'', ''supermarket'', ''school'', ''pharmacy''.'
+        dim:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dim
+          description: Livability dimension the POI contributes to (e.g. 'convenience').
+      additionalProperties: true
+      type: object
+      title: PoiFeatureProperties
+      description: Properties carried on each POI feature.
+    LifestyleLandmarks:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        nearest_beach:
+          anyOf:
+          - $ref: '#/components/schemas/LandmarkPlace'
+          - type: 'null'
+          description: Nearest beach.
+        nearest_hospital:
+          anyOf:
+          - $ref: '#/components/schemas/LandmarkPlace'
+          - type: 'null'
+          description: Nearest hospital.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: LifestyleLandmarks
+      description: Nearest beach and hospital (null = none within ~50 km).
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        nearest_beach:
+          dist_km: 1.5
+          name: Redhead Beach, NSW
+        nearest_hospital:
+          dist_km: 1.4
+          name: Narla Village
+    LifestyleSummary:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        total_pois:
+          type: integer
+          title: Total Pois
+          description: Total POIs across all categories.
+        poi_categories:
+          items:
+            $ref: '#/components/schemas/PoiCategoryBreakdown'
+          type: array
+          title: Poi Categories
+          description: Per-category POI counts, largest first.
+        terrain:
+          anyOf:
+          - $ref: '#/components/schemas/TerrainSummary'
+          - type: 'null'
+          description: Terrain scalars; null when no terrain data.
+        nearest_train:
+          anyOf:
+          - $ref: '#/components/schemas/NearestTrain'
+          - type: 'null'
+          description: Nearest train station.
+        nearest_shop:
+          anyOf:
+          - $ref: '#/components/schemas/NearestShop'
+          - type: 'null'
+          description: Nearest major shop.
+        has_beach:
+          type: boolean
+          title: Has Beach
+          description: A beach exists within ~50 km.
+        nearest_beach_km:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nearest Beach Km
+          description: Distance to the nearest beach (km); null when none within ~50 km.
+        has_hospital:
+          type: boolean
+          title: Has Hospital
+          description: A hospital exists within ~50 km.
+        nearest_hospital_km:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nearest Hospital Km
+          description: Distance to the nearest hospital (km); null when none within ~50 km.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - total_pois
+      - poi_categories
+      - has_beach
+      - has_hospital
+      title: LifestyleSummary
+      description: POI category breakdown, terrain scalars and landmark flags.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        has_beach: true
+        has_hospital: true
+        nearest_beach_km: 1.5
+        nearest_hospital_km: 1.4
+        nearest_shop:
+          category: Supermarket
+          dist_km: 1.2
+          name: Coles
+        nearest_train:
+          dist_km: 1.4
+          name: Jewells railway station
+        poi_categories:
+        - category: Education
+          count: 9
+          top_subtypes:
+          - count: 5
+            label: School
+          - count: 3
+            label: Childcare
+          - count: 1
+            label: Preschool
+        terrain:
+          aspect_compass: SE
+          avg_aspect_deg: 149
+          median_elevation_m: 26.0
+          median_slope_deg: 5.6
+          n_flat: 698
+          n_moderate: 830
+          n_properties: 1759
+          n_steep: 231
+          pct_steep: 13
+        total_pois: 43
+    NearestTrain:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Station name.
+        dist_km:
+          type: number
+          title: Dist Km
+          description: Straight-line distance (km).
+      type: object
+      required:
+      - name
+      - dist_km
+      title: NearestTrain
+      description: Nearest train station to the suburb centroid.
+    LifestyleLivability:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        n_mesh_blocks:
+          type: integer
+          title: N Mesh Blocks
+          description: Mesh blocks the scores aggregate over.
+        scores:
+          items:
+            $ref: '#/components/schemas/LivabilityScore'
+          type: array
+          title: Scores
+          description: One entry per dimension.
+        benchmark:
+          anyOf:
+          - $ref: '#/components/schemas/LivabilityBenchmark'
+          - type: 'null'
+          description: SA4 benchmark; null when the region has no bench row.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - n_mesh_blocks
+      - scores
+      title: LifestyleLivability
+      description: Suburb livability scores (mesh-block average) + regional benchmark.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        benchmark:
+          n_suburbs: 149
+          region: Newcastle and Lake Macquarie
+          scores:
+            affluence: 66.9
+            hip: 59.5
+            lifestyle: 73.4
+            safety: 84.8
+        n_mesh_blocks: 63
+        scores:
+        - key: affluence
+          label: Affluence
+          level: Moderate
+          value: 56
+        - key: lifestyle
+          label: Lifestyle
+          level: Moderate
+          value: 72
+        - key: safety
+          label: Safety
+          level: High
+          value: 76
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_LifestylePoiImpacts_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestylePoiImpacts'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestylePoiImpacts]
+    LivabilityMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name for the mesh block, title-cased.
+        scores:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Scores
+          description: Dimension key → score 0-100, higher is better. Dimensions with no score for this microburb are absent.
+        levels:
+          additionalProperties:
+            type: string
+          type: object
+          title: Levels
+          description: 'Dimension key → human band for the same score: ''Very low'' (<25), ''Low'' (25-49), ''Moderate'' (50-74), ''High'' (75-89), ''Very high'' (90+).'
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      - scores
+      - levels
+      title: LivabilityMb
+      description: Livability scores for one microburb (mesh block).
+    LivabilityDimension:
+      properties:
+        key:
+          type: string
+          title: Key
+          description: Machine key, e.g. 'safety'.
+        label:
+          type: string
+          title: Label
+          description: Display label, e.g. 'Safety'.
+        description:
+          type: string
+          title: Description
+          description: What the dimension measures.
+      additionalProperties: true
+      type: object
+      required:
+      - key
+      - label
+      - description
+      title: LivabilityDimension
+      description: One of the seven scored dimensions.
+    ApiResponse_LifestyleLivability_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleLivability'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleLivability]
+    ApiResponse_LifestylePois_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestylePois'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestylePois]
+    LivabilityScore:
+      properties:
+        key:
+          type: string
+          title: Key
+          description: Dimension key — affluence | lifestyle | hip | convenience | family | safety | tranquility.
+        label:
+          type: string
+          title: Label
+          description: Human dimension label.
+        value:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Value
+          description: Score 0–100; null when no data.
+        level:
+          type: string
+          title: Level
+          description: Human level — Very low / Low / Moderate / High / Very high.
+      additionalProperties: true
+      type: object
+      required:
+      - key
+      - label
+      - level
+      title: LivabilityScore
+      description: One livability dimension score (0–100).
+    LandmarkPlace:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Landmark name.
+        dist_km:
+          type: number
+          title: Dist Km
+          description: Straight-line distance (km).
+      additionalProperties: true
+      type: object
+      required:
+      - dist_km
+      title: LandmarkPlace
+      description: A named landmark with straight-line distance.
+    ApiResponse_LifestyleCbd_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleCbd'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleCbd]
+    TerrainSummary:
+      properties:
+        n_properties:
+          type: integer
+          title: N Properties
+          description: Properties with terrain data.
+        median_slope_deg:
+          type: number
+          title: Median Slope Deg
+          description: Median block slope (degrees).
+        median_elevation_m:
+          type: number
+          title: Median Elevation M
+          description: Median elevation (metres).
+        avg_aspect_deg:
+          type: integer
+          title: Avg Aspect Deg
+          description: Average aspect (compass degrees, 0 = N).
+        aspect_compass:
+          type: string
+          title: Aspect Compass
+          description: Average aspect as a compass point (e.g. 'SE').
+        n_steep:
+          type: integer
+          title: N Steep
+          description: Properties on steep slopes.
+        n_moderate:
+          type: integer
+          title: N Moderate
+          description: Properties on moderate slopes.
+        n_flat:
+          type: integer
+          title: N Flat
+          description: Properties on flat blocks.
+        pct_steep:
+          type: integer
+          title: Pct Steep
+          description: Share of properties on steep slopes (%).
+      additionalProperties: true
+      type: object
+      required:
+      - n_properties
+      - median_slope_deg
+      - median_elevation_m
+      - avg_aspect_deg
+      - aspect_compass
+      - n_steep
+      - n_moderate
+      - n_flat
+      - pct_steep
+      title: TerrainSummary
+      description: Pre-aggregated terrain scalars across the suburb's properties.
+    LivabilityBenchmarkScores:
+      properties:
+        affluence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Affluence
+          description: Region average affluence.
+        safety:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Safety
+          description: Region average safety.
+        hip:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Hip
+          description: Region average hip.
+        lifestyle:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lifestyle
+          description: Region average lifestyle.
+      type: object
+      title: LivabilityBenchmarkScores
+      description: Region-average scores (0–100) for the benchmarked dimensions.
+    PoiImpactDriver:
+      properties:
+        label:
+          type: string
+          title: Label
+          description: Driver label (e.g. 'No petrol station nearby').
+        premium_dollars:
+          type: integer
+          title: Premium Dollars
+          description: Estimated price premium attributable to the absence (AUD).
+        coverage_pct:
+          type: number
+          title: Coverage Pct
+          description: Share of recent sales the absence applies to (%).
+        pct_of_median:
+          type: number
+          title: Pct Of Median
+          description: Premium as a share of the median price (%).
+        detail:
+          type: string
+          title: Detail
+          description: Plain-English explanation of the driver.
+      additionalProperties: true
+      type: object
+      required:
+      - label
+      - premium_dollars
+      - coverage_pct
+      - pct_of_median
+      - detail
+      title: PoiImpactDriver
+      description: One amenity-absence price driver.
+    LivabilityBenchmark:
+      properties:
+        region:
+          type: string
+          title: Region
+          description: SA4 region name.
+        n_suburbs:
+          type: integer
+          title: N Suburbs
+          description: Suburbs in the region.
+        scores:
+          $ref: '#/components/schemas/LivabilityBenchmarkScores'
+          description: Region-average scores.
+      additionalProperties: true
+      type: object
+      required:
+      - region
+      - n_suburbs
+      - scores
+      title: LivabilityBenchmark
+      description: SA4-region benchmark for comparing the suburb's scores.
+    LifestyleNarrative:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        sentences:
+          $ref: '#/components/schemas/NarrativeSentences'
+          description: Per-dimension sentences.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - sentences
+      title: LifestyleNarrative
+      description: Suburb livability narrative sentences.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        sentences:
+          affluence: 37% own outright. Only 10% hold university degrees. Household income $1,728/wk.
+          convenience: 'No train nearby (9 km). Nearest supermarket: Coles (851m). Hospital 2.9 km.'
+    SuburbLivabilityMap:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        metric:
+          type: string
+          title: Metric
+          description: Always 'livability_scores'.
+        unit:
+          type: string
+          title: Unit
+          description: Always 'score_0_100'.
+        definition:
+          type: string
+          title: Definition
+          description: How the scores are derived.
+        dimensions:
+          items:
+            $ref: '#/components/schemas/LivabilityDimension'
+          type: array
+          title: Dimensions
+          description: The seven dimensions, with what each measures.
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Microburbs with at least one score.
+        microburbs:
+          items:
+            $ref: '#/components/schemas/LivabilityMb'
+          type: array
+          title: Microburbs
+          description: Per-microburb scores, ordered by mesh-block code.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - metric
+      - unit
+      - definition
+      - dimensions
+      - n_microburbs
+      - microburbs
+      title: SuburbLivabilityMap
+      description: Per-microburb livability scores — the report's Livability overlays.
+      example:
+        definition: Seven livability dimensions scored for each mesh block ('microburb', the smallest ABS geography, ~30-60 dwellings), rescaled from the source 0-10 to 0-100. Higher is better on every dimension, safety included — it is an inverse-scaled crime score built from the same per-mesh-block crime model /crime/by-mesh-block exposes as raw rates. Averaging a dimension across the microburbs here gives the suburb figure at /lifestyle/livability. Dimensions with no score for a microburb are omitted, not zeroed.
+        dimensions:
+        - description: Reported crime rates across personal, property, drug and public-order offences compared with the state average. Inverse-scaled, so a higher score means less predicted crime.
+          key: safety
+          label: Safety
+        metric: livability_scores
+        microburbs:
+        - levels:
+            affluence: Low
+            convenience: Low
+            family: Moderate
+            hip: Moderate
+            lifestyle: Low
+            safety: Moderate
+            tranquility: Very low
+          mb: '10431160000'
+          scores:
+            affluence: 43
+            convenience: 46
+            family: 52
+            hip: 50
+            lifestyle: 34
+            safety: 53
+            tranquility: 8
+          street: Floraville
+        n_microburbs: 63
+        suburb: Belmont North
+        unit: score_0_100
+    ApiResponse_LifestyleSummary_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleSummary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleSummary]
+    LifestylePoiImpacts:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        n_sales:
+          type: integer
+          title: N Sales
+          description: Recent sales in the analysis window.
+        median_price:
+          type: integer
+          title: Median Price
+          description: Median sale price across those sales (AUD).
+        total_premium:
+          type: integer
+          title: Total Premium
+          description: Combined absence premium across all drivers (AUD).
+        drivers:
+          items:
+            $ref: '#/components/schemas/PoiImpactDriver'
+          type: array
+          title: Drivers
+          description: Drivers, largest premium first.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - n_sales
+      - median_price
+      - total_premium
+      - drivers
+      title: LifestylePoiImpacts
+      description: 'What the absence of petrol / fast food / bottle shops near sold
+
+        properties was worth in this suburb.'
+      example:
+        area_level: suburb
+        area_name: Castlecrag
+        drivers:
+        - coverage_pct: 100.0
+          detail: 100% of 9 recent sales in Castlecrag were at properties with no petrol station nearby. Those sales cleared about $184,500 more than comparable suburbs with petrol stations, equivalent to 4.1% of the $4,500,000 median price here.
+          label: No petrol station nearby
+          pct_of_median: 4.1
+          premium_dollars: 184500
+        median_price: 4500000
+        n_sales: 9
+        total_premium: 263000
+    NarrativeSentences:
+      properties:
+        affluence:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Affluence
+          description: Affluence narrative.
+        community:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Community
+          description: Community narrative.
+        family:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Family
+          description: Family narrative.
+        hip:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hip
+          description: Hip narrative.
+        lifestyle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Lifestyle
+          description: Lifestyle narrative.
+        convenience:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Convenience
+          description: Convenience narrative.
+        tranquility:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tranquility
+          description: Tranquility narrative.
+      additionalProperties: true
+      type: object
+      title: NarrativeSentences
+      description: 'One plain-English sentence per livability dimension. A dimension
+
+        is omitted when no sentence exists for it. No ``safety`` key —
+
+        the upstream crime sentence is SEIFA text, deliberately excluded.'
+    PoiFeatureCollection:
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+          title: Type
+          description: Always 'FeatureCollection'.
+        features:
+          items:
+            $ref: '#/components/schemas/PoiFeature'
+          type: array
+          title: Features
+          description: One feature per POI.
+      type: object
+      required:
+      - type
+      - features
+      title: PoiFeatureCollection
+      description: GeoJSON FeatureCollection of POI points.
+    GeoJsonPointGeometry:
+      properties:
+        type:
+          type: string
+          const: Point
+          title: Type
+          description: Always 'Point'.
+        coordinates:
+          items:
+            type: number
+          type: array
+          title: Coordinates
+          description: '`[longitude, latitude]` — 2 numbers, lon first per GeoJSON.'
+      type: object
+      required:
+      - type
+      - coordinates
+      title: GeoJsonPointGeometry
+      description: RFC 7946 GeoJSON Point — `[longitude, latitude]` coordinates.
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

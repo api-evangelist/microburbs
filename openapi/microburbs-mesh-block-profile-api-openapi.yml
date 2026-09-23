@@ -1,0 +1,477 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Mesh Block - Profile API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Mesh Block - Profile
+  description: ABS geo profile for a mesh block — upward chain.
+paths:
+  /v1/mbs/list:
+    get:
+      tags:
+      - Mesh Block - Profile
+      summary: List mesh blocks in a suburb
+      description: 'Mesh-block codes inside a suburb. ``sal`` is required for now —
+
+        nationwide / by-LGA / by-SA3 listings will land later when there''s
+
+        a story for the large payloads (a single LGA can hit a few
+
+        thousand mesh blocks).
+
+
+        **Price: 3¢ per call.**'
+      operationId: list_mbs_v1_mbs_list_get
+      parameters:
+      - name: sal
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Required. Suburb (SAL) to list mesh blocks for.
+          title: Sal
+          example: Belmont North
+        description: Required. Suburb (SAL) to list mesh blocks for.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_MeshBlockListItem__'
+              example:
+                data:
+                - mb_code: '10434270000'
+                  state: NSW
+                  suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+  /v1/mbs/{mb_code}/profile:
+    get:
+      tags:
+      - Mesh Block - Profile
+      summary: ABS geo profile
+      description: 'The mesh block''s upward ABS chain — SA1, SA2/3/4, GCCSA, state —
+
+        plus the parallel admin chain (LGA, suburb (SAL), postcode).
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_mb_profile_v1_mbs__mb_code__profile_get
+      parameters:
+      - name: mb_code
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Mb Code
+          example: '10434270000'
+        example: '10434270000'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_MeshBlockProfile_'
+              example:
+                data:
+                  gccsa: Rest of NSW
+                  lga: Lake Macquarie
+                  mesh_block: '10434270000'
+                  postcode: '2280'
+                  sa1: '11101120618'
+                  sa2: Belmont - Bennetts Green
+                  sa3: Lake Macquarie - East
+                  sa4: Newcastle and Lake Macquarie
+                  state: NSW
+                  suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_list_MeshBlockListItem__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/MeshBlockListItem'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[MeshBlockListItem]]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_MeshBlockProfile_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/MeshBlockProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[MeshBlockProfile]
+    MeshBlockListItem:
+      properties:
+        mb_code:
+          type: string
+          title: Mb Code
+          description: ABS Mesh Block code.
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL) the MB sits in.
+        state:
+          type: string
+          title: State
+          description: State / Territory abbreviation.
+      type: object
+      required:
+      - mb_code
+      - suburb
+      - state
+      title: MeshBlockListItem
+      description: 'One row in the MB directory — code + the suburb / state it
+
+        sits in (so the customer can read it back without a profile
+
+        round-trip).'
+      example:
+        mb_code: '10434270000'
+        state: NSW
+        suburb: Belmont North
+    MeshBlockProfile:
+      properties:
+        mesh_block:
+          type: string
+          title: Mesh Block
+          description: ABS Mesh Block code.
+        sa1:
+          type: string
+          title: Sa1
+          description: SA1 code.
+        sa2:
+          type: string
+          title: Sa2
+          description: SA2 name.
+        sa3:
+          type: string
+          title: Sa3
+          description: SA3 name.
+        sa4:
+          type: string
+          title: Sa4
+          description: SA4 name.
+        gccsa:
+          type: string
+          title: Gccsa
+          description: Greater Capital City Statistical Area.
+        state:
+          type: string
+          title: State
+          description: State / Territory.
+        lga:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Lga
+          description: Local Government Area.
+        suburb:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suburb
+          description: Suburb (SAL).
+        postcode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Postcode
+          description: Postcode (POA).
+      type: object
+      required:
+      - mesh_block
+      - sa1
+      - sa2
+      - sa3
+      - sa4
+      - gccsa
+      - state
+      title: MeshBlockProfile
+      description: Upward ABS chain for a mesh block, plus admin attributes.
+      example:
+        gccsa: Rest of NSW
+        lga: Lake Macquarie
+        mesh_block: '10434270000'
+        postcode: '2280'
+        sa1: '11101120618'
+        sa2: Belmont - Bennetts Green
+        sa3: Lake Macquarie - East
+        sa4: Newcastle and Lake Macquarie
+        state: NSW
+        suburb: Belmont North
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

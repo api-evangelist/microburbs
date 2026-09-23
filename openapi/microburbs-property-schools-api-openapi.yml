@@ -1,0 +1,651 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - Schools API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - Schools
+  description: Nearby schools and rankings.
+paths:
+  /v1/properties/{gnaf_id}/schools/nearby:
+    get:
+      tags:
+      - Property - Schools
+      summary: Nearby schools
+      description: 'Schools within ~5km of the property, with rank + student counts.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_property_schools_nearby_v1_properties__gnaf_id__schools_nearby_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_SchoolNearby__'
+              example:
+                data:
+                - distance_m: 612
+                  id: 42002
+                  name: Belmont North Public School
+                  school_level_type: Primary
+                  sector: public
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 5
+  /v1/properties/{gnaf_id}/schools/ranking:
+    get:
+      tags:
+      - Property - Schools
+      summary: Local school ranking
+      description: 'Schools within ~5km of the property, ranked by NAPLAN / socioeconomic score.
+
+
+        **Price: 100¢ per call.**'
+      operationId: get_property_schools_ranking_v1_properties__gnaf_id__schools_ranking_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_SchoolRanking__'
+              example:
+                data:
+                - attendance_rate: 0.89
+                  distance_m: 612
+                  id: 42002
+                  name: Belmont North Public School
+                  naplan_label: Top 40%
+                  naplan_rank: 0.63
+                  school_level_type: Primary
+                  sector: public
+                  socioeconomic_label: Bottom 20%
+                  socioeconomic_rank: 0.17
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 100
+  /v1/properties/{gnaf_id}/schools/all:
+    get:
+      tags:
+      - Property - Schools
+      summary: All schools — bundle
+      description: '**Price: 105¢ per call.**'
+      operationId: get_property_schools_all_v1_properties__gnaf_id__schools_all_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SchoolsAll_'
+              example:
+                data:
+                  nearby:
+                  - distance_m: 612
+                    name: Belmont North Public School
+                    school_level_type: Primary
+                    sector: public
+                  ranking:
+                  - attendance_rate: 0.89
+                    distance_m: 612
+                    name: Belmont North Public School
+                    naplan_label: Top 40%
+                    naplan_rank: 0.63
+                    school_level_type: Primary
+                    sector: public
+                    socioeconomic_label: Bottom 20%
+                    socioeconomic_rank: 0.17
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 105
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SchoolRanking:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+          description: School identifier (MySchool ID).
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: School name.
+        sector:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sector
+          description: public / private.
+        school_level_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: School Level Type
+          description: Primary / Secondary / Combined.
+        distance_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Distance M
+          description: Distance from the property in metres.
+        naplan_rank:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Naplan Rank
+          description: NAPLAN rank percentile (0–1, higher = better).
+        naplan_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Naplan Label
+          description: Human-readable NAPLAN band — 'Top 5%', 'Top 40%', etc.
+        socioeconomic_rank:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Socioeconomic Rank
+          description: Socio-economic rank percentile (0–1, higher = more advantaged).
+        socioeconomic_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Socioeconomic Label
+          description: Human-readable affluence band.
+        attendance_rate:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Attendance Rate
+          description: Mean attendance rate (0–1).
+      additionalProperties: true
+      type: object
+      title: SchoolRanking
+      description: One school within ~5km, ranked by NAPLAN + socio-economic percentiles.
+      example:
+        attendance_rate: 0.89
+        distance_m: 612
+        id: 42002
+        name: Belmont North Public School
+        naplan_label: Top 40%
+        naplan_rank: 0.63
+        school_level_type: Primary
+        sector: public
+        socioeconomic_label: Bottom 20%
+        socioeconomic_rank: 0.17
+    SchoolsAll:
+      properties:
+        nearby:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SchoolNearby'
+            type: array
+          - type: 'null'
+          title: Nearby
+        ranking:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SchoolRanking'
+            type: array
+          - type: 'null'
+          title: Ranking
+      type: object
+      title: SchoolsAll
+      description: All nearby schools — list + ranking.
+      example:
+        nearby:
+        - distance_m: 612
+          name: Belmont North Public School
+          school_level_type: Primary
+          sector: public
+        ranking:
+        - attendance_rate: 0.89
+          distance_m: 612
+          name: Belmont North Public School
+          naplan_label: Top 40%
+          naplan_rank: 0.63
+          school_level_type: Primary
+          sector: public
+          socioeconomic_label: Bottom 20%
+          socioeconomic_rank: 0.17
+    ApiResponse_list_SchoolNearby__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SchoolNearby'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[SchoolNearby]]
+    ApiResponse_list_SchoolRanking__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SchoolRanking'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[SchoolRanking]]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_SchoolsAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SchoolsAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SchoolsAll]
+    SchoolNearby:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+          description: School identifier (MySchool ID).
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: School name.
+        sector:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sector
+          description: public / private.
+        school_level_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: School Level Type
+          description: Primary / Secondary / Combined.
+        distance_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Distance M
+          description: Distance from the property in metres.
+      additionalProperties: true
+      type: object
+      title: SchoolNearby
+      description: One school within ~5km of the property.
+      example:
+        distance_m: 612
+        id: 42002
+        name: Belmont North Public School
+        school_level_type: Primary
+        sector: public
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

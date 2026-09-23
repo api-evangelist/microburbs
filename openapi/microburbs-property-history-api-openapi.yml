@@ -1,0 +1,801 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - History API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - History
+  description: Sale and rental transaction history.
+paths:
+  /v1/properties/{gnaf_id}/sale-history:
+    get:
+      tags:
+      - Property - History
+      summary: Sale & for-sale history
+      description: 'All Sold + For Sale records, most-recent first.
+
+
+        **Price: 30¢ per call.**'
+      operationId: get_property_sale_history_v1_properties__gnaf_id__sale_history_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_HistoryRecord__'
+              example:
+                data:
+                - date: '2025-06-05'
+                  price: 990000
+                  type: Sold
+                  address: 9 Mcdowall Place
+                - date: '2025-05-22'
+                  type: For Sale
+                  address: 9 Mcdowall Place
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - date: '2025-06-05'
+        price: 990000
+        type: Sold
+        address: 9 Mcdowall Place
+      - date: '2025-05-22'
+        type: For Sale
+        address: 9 Mcdowall Place
+      x-price-cents: 30
+  /v1/properties/{gnaf_id}/sale-history-latest:
+    get:
+      tags:
+      - Property - History
+      summary: Most-recent sale record
+      description: 'Most-recent Sold or For Sale record.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_property_sale_history_latest_v1_properties__gnaf_id__sale_history_latest_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_HistoryRecord_'
+              example:
+                data:
+                  date: '2025-06-05'
+                  price: 990000
+                  type: Sold
+                  address: 9 Mcdowall Place
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        date: '2025-06-05'
+        price: 990000
+        type: Sold
+        address: 9 Mcdowall Place
+      x-price-cents: 10
+  /v1/properties/{gnaf_id}/rent-history:
+    get:
+      tags:
+      - Property - History
+      summary: Rental listing history
+      description: 'All For Rent records, most-recent first.
+
+
+        **Price: 30¢ per call.**'
+      operationId: get_property_rent_history_v1_properties__gnaf_id__rent_history_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_HistoryRecord__'
+              example:
+                data:
+                - date: '2025-07-24'
+                  price: 750
+                  type: For Rent
+                  address: 9 Mcdowall Place
+                - date: '2022-10-10'
+                  type: For Rent
+                  address: 9 Mcdowall Place
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - date: '2025-07-24'
+        price: 750
+        type: For Rent
+        address: 9 Mcdowall Place
+      - date: '2022-10-10'
+        type: For Rent
+        address: 9 Mcdowall Place
+      x-price-cents: 30
+  /v1/properties/{gnaf_id}/rent-history-latest:
+    get:
+      tags:
+      - Property - History
+      summary: Most-recent rent observation
+      description: 'Most-recent For Rent record.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_property_rent_history_latest_v1_properties__gnaf_id__rent_history_latest_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_HistoryRecord_'
+              example:
+                data:
+                  date: '2025-07-24'
+                  price: 750
+                  type: For Rent
+                  address: 9 Mcdowall Place
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        date: '2025-07-24'
+        price: 750
+        type: For Rent
+        address: 9 Mcdowall Place
+      x-price-cents: 10
+  /v1/properties/{gnaf_id}/history/all:
+    get:
+      tags:
+      - Property - History
+      summary: All sale + rent history — bundle
+      description: '**Price: 80¢ per call.**'
+      operationId: get_property_history_all_v1_properties__gnaf_id__history_all_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_HistoryAll_'
+              example:
+                data:
+                  rent_history:
+                  - address: 9 Mcdowall Place
+                    date: '2025-07-24'
+                    price: 750
+                    type: For Rent
+                  - address: 9 Mcdowall Place
+                    date: '2022-10-10'
+                    type: For Rent
+                  rent_history_latest:
+                    address: 9 Mcdowall Place
+                    date: '2025-07-24'
+                    price: 750
+                    type: For Rent
+                  sale_history:
+                  - address: 9 Mcdowall Place
+                    date: '2025-06-05'
+                    price: 990000
+                    type: Sold
+                  - address: 9 Mcdowall Place
+                    date: '2025-05-22'
+                    type: For Sale
+                  sale_history_latest:
+                    address: 9 Mcdowall Place
+                    date: '2025-06-05'
+                    price: 990000
+                    type: Sold
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 80
+components:
+  schemas:
+    ApiResponse_HistoryAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HistoryAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HistoryAll]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HistoryRecord:
+      properties:
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date
+          description: 'When the event happened, as `YYYY-MM-DD`. For a `Sold` record this is the sale date; for `For Sale` / `For Rent` it is the date the listing appeared. Note for sold records: where the state land registry is the source this is the contract date rather than settlement, but sold dates sourced from listing portals are not guaranteed to be one or the other — treat it as accurate to the month, not the day.'
+        price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price
+          description: The money figure attached to the event, in AUD. On `Sold` and `For Sale` records that is the whole price of the property; on `For Rent` it is the advertised rent, normally per week (the Australian convention) — but it is taken from the advertised text as-is and is not converted, so an agent who advertised monthly can leave a monthly figure here. Sanity-check rents that look ~4x too high. Null when the listing showed no number (e.g. 'Auction', 'Contact Agent').
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+          description: 'Which kind of event this is. One of exactly three values: `''Sold''`, `''For Sale''` (advertised for sale, outcome not necessarily known) or `''For Rent''`. Determines how to read `price` and `date` above.'
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: The property's address, title-cased. This is its current address as recorded in the national address file, repeated on every record — not the address text used in that particular listing, so it will not reflect a renumbering or a name change since.
+      additionalProperties: true
+      type: object
+      title: HistoryRecord
+      description: 'One event in a property''s market history — a sale, or a time it was
+
+        advertised for sale or for rent.
+
+
+        Records come from listing feeds, so this is the property''s *advertised*
+
+        history rather than a title/transfer register: a sale that never went to
+
+        market may be absent. Records are returned newest first.'
+    ApiResponse_HistoryRecord_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HistoryRecord'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HistoryRecord]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HistoryAll:
+      properties:
+        sale_history:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/HistoryRecord'
+            type: array
+          - type: 'null'
+          title: Sale History
+        sale_history_latest:
+          anyOf:
+          - $ref: '#/components/schemas/HistoryRecord'
+          - type: 'null'
+        rent_history:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/HistoryRecord'
+            type: array
+          - type: 'null'
+          title: Rent History
+        rent_history_latest:
+          anyOf:
+          - $ref: '#/components/schemas/HistoryRecord'
+          - type: 'null'
+      type: object
+      title: HistoryAll
+      description: Full sale + rent history (lists + latest record) in one call.
+      example:
+        rent_history:
+        - address: 9 Mcdowall Place
+          date: '2025-07-24'
+          price: 750
+          type: For Rent
+        - address: 9 Mcdowall Place
+          date: '2022-10-10'
+          type: For Rent
+        rent_history_latest:
+          address: 9 Mcdowall Place
+          date: '2025-07-24'
+          price: 750
+          type: For Rent
+        sale_history:
+        - address: 9 Mcdowall Place
+          date: '2025-06-05'
+          price: 990000
+          type: Sold
+        - address: 9 Mcdowall Place
+          date: '2025-05-22'
+          type: For Sale
+        sale_history_latest:
+          address: 9 Mcdowall Place
+          date: '2025-06-05'
+          price: 990000
+          type: Sold
+    ApiResponse_list_HistoryRecord__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/HistoryRecord'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[HistoryRecord]]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

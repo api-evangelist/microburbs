@@ -1,0 +1,1761 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Shapes API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Shapes
+  description: GeoJSON — boundary, neighbours, mesh blocks, hazard overlays, noise.
+paths:
+  /v1/suburbs/{suburb_name}/shapes/boundary:
+    get:
+      tags:
+      - Suburb - Shapes
+      summary: Suburb boundary polygon
+      description: 'Simplified SAL boundary polygon (GeoJSON Feature) plus centroid.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_shapes_boundary_v1_suburbs__suburb_name__shapes_boundary_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbBoundary_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  centroid:
+                    lat: -32.9931
+                    lng: 151.6688
+                  geojson:
+                    geometry:
+                      coordinates:
+                      - - - 151.66
+                          - -32.99
+                        - - 151.67
+                          - -32.99
+                        - - 151.67
+                          - -33.0
+                        - - 151.66
+                          - -32.99
+                      type: Polygon
+                    properties:
+                      suburb: Belmont North
+                    type: Feature
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/shapes/neighbours:
+    get:
+      tags:
+      - Suburb - Shapes
+      summary: Neighbouring suburb boundaries
+      description: 'Neighbouring suburbs as a GeoJSON FeatureCollection — each with its boundary polygon and distance in km.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_suburb_shapes_neighbours_v1_suburbs__suburb_name__shapes_neighbours_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbNeighbours_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  count: 2
+                  geojson:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - - 151.65
+                            - -33.02
+                          - - 151.66
+                            - -33.02
+                          - - 151.66
+                            - -33.03
+                          - - 151.65
+                            - -33.02
+                        type: Polygon
+                      properties:
+                        suburb: Belmont (NSW)
+                        sa3: Lake Macquarie - East
+                        dist_km: 1.2
+                      type: Feature
+                    type: FeatureCollection
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 15
+  /v1/suburbs/{suburb_name}/shapes/mesh-blocks:
+    get:
+      tags:
+      - Suburb - Shapes
+      summary: Mesh-block polygons
+      description: 'ABS 2021 mesh-block polygons covering the suburb (GeoJSON FeatureCollection, MB code per feature).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_shapes_mesh_blocks_v1_suburbs__suburb_name__shapes_mesh_blocks_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbMeshBlocks_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  count: 85
+                  geojson:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - - 151.66
+                            - -32.99
+                          - - 151.67
+                            - -32.99
+                          - - 151.67
+                            - -33.0
+                          - - 151.66
+                            - -32.99
+                        type: Polygon
+                      properties:
+                        mb: '10693740000'
+                      type: Feature
+                    type: FeatureCollection
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+  /v1/suburbs/{suburb_name}/shapes/hazards:
+    get:
+      tags:
+      - Suburb - Shapes
+      summary: Hazard-overlay polygons by layer
+      description: 'Hazard polygons for one layer, clipped to the suburb boundary (empty collection = hazard not present).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_shapes_hazards_v1_suburbs__suburb_name__shapes_hazards_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: layer
+        in: query
+        required: true
+        schema:
+          enum:
+          - bushfire
+          - flood
+          - heritage
+          - erosion
+          - landslide
+          - acid-sulfate
+          type: string
+          description: Hazard layer to return.
+          examples:
+          - flood
+          title: Layer
+        description: Hazard layer to return.
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbHazards_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  count: 36
+                  geojson:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - - 151.66
+                            - -32.99
+                          - - 151.67
+                            - -32.99
+                          - - 151.67
+                            - -33.0
+                          - - 151.66
+                            - -32.99
+                        type: Polygon
+                      properties:
+                        category: High Potential Bushfire Intensity
+                      type: Feature
+                    type: FeatureCollection
+                  layer: bushfire
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+  /v1/suburbs/{suburb_name}/shapes/public-housing-sa1:
+    get:
+      tags:
+      - Suburb - Shapes
+      summary: Public-housing share by SA1
+      description: 'SA1 polygons in the suburb with their 2021 census public-housing share (only SA1s above 0%).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_shapes_public_housing_sa1_v1_suburbs__suburb_name__shapes_public_housing_sa1_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbPublicHousingSa1_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  count: 7
+                  geojson:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - - 151.66
+                            - -32.99
+                          - - 151.67
+                            - -32.99
+                          - - 151.67
+                            - -33.0
+                          - - 151.66
+                            - -32.99
+                        type: Polygon
+                      properties:
+                        sa1: '11102130801'
+                        public_housing_pct: 36.9
+                      type: Feature
+                    type: FeatureCollection
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+  /v1/suburbs/{suburb_name}/shapes/noise-heatmap:
+    get:
+      tags:
+      - Suburb - Shapes
+      summary: Noise-map regions
+      description: 'Precomputed noise colour regions clipped to the suburb, plus cell-centre heat points.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_shapes_noise_heatmap_v1_suburbs__suburb_name__shapes_noise_heatmap_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbNoiseHeatmap_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  count: 6
+                  geojson:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - - 151.66
+                            - -32.99
+                          - - 151.67
+                            - -32.99
+                          - - 151.67
+                            - -33.0
+                          - - 151.66
+                            - -32.99
+                        type: Polygon
+                      properties:
+                        color: '#990000'
+                        fill_opacity: 0.7
+                      type: Feature
+                    type: FeatureCollection
+                  heat:
+                  - - -32.9931
+                    - 151.6688
+                    - 0.8
+                  intensity_definition: Relative noise intensity, 0-1 (scaled composite of road-traffic and noisy-POI proximity; 1 = noisiest cell in the source grid). Not a decibel measurement.
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+  /v1/suburbs/{suburb_name}/shapes/easements:
+    get:
+      tags:
+      - Suburb - Shapes
+      summary: Easement geometries
+      description: 'Registered easement geometries intersecting the suburb (GeoJSON FeatureCollection).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_suburb_shapes_easements_v1_suburbs__suburb_name__shapes_easements_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbEasements_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  count: 8
+                  geojson:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - - 151.66
+                            - -32.99
+                          - - 151.67
+                            - -32.99
+                          - - 151.67
+                            - -33.0
+                          - - 151.66
+                            - -32.99
+                        type: Polygon
+                      properties:
+                        category: drainage
+                      type: Feature
+                    type: FeatureCollection
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 15
+  /v1/suburbs/{suburb_name}/shapes/busy-roads:
+    get:
+      tags:
+      - Suburb - Shapes
+      summary: Busy-road segments
+      description: 'Busy-road line segments clipped to the suburb — the report''s road-noise exposure proxy.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_shapes_busy_roads_v1_suburbs__suburb_name__shapes_busy_roads_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+          default: true
+          title: Geojson
+        description: When false, geometry is dropped — every Feature keeps its `properties` but its `geometry` is null. Use it to fetch the counts and per-feature attributes without the coordinates (default true — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbBusyRoads_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  count: 71
+                  geojson:
+                    features:
+                    - geometry:
+                        coordinates:
+                        - - 151.66
+                          - -32.99
+                        - - 151.67
+                          - -33.0
+                        type: LineString
+                      properties:
+                        road_class: primary
+                      type: Feature
+                    type: FeatureCollection
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 10
+components:
+  schemas:
+    SuburbNeighbours:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name of the subject suburb.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        count:
+          type: integer
+          title: Count
+          description: Number of neighbouring suburbs returned.
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: 'GeoJSON FeatureCollection — one Feature per neighbouring suburb. Properties: `suburb` (SAL name), `sa3`, `dist_km` (centroid distance in km). Geometry is null on every Feature when the request passes `?geojson=false`.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - count
+      - geojson
+      title: SuburbNeighbours
+      description: Neighbouring suburbs with their boundary polygons.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        count: 2
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.65
+                  - -33.02
+                - - 151.66
+                  - -33.02
+                - - 151.66
+                  - -33.03
+                - - 151.65
+                  - -33.02
+              type: Polygon
+            properties:
+              suburb: Belmont (NSW)
+              sa3: Lake Macquarie - East
+              dist_km: 1.2
+            type: Feature
+          type: FeatureCollection
+    ApiResponse_SuburbEasements_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbEasements'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbEasements]
+    ApiResponse_SuburbBusyRoads_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbBusyRoads'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbBusyRoads]
+    SuburbHazards:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        layer:
+          type: string
+          enum:
+          - bushfire
+          - flood
+          - heritage
+          - erosion
+          - landslide
+          - acid-sulfate
+          title: Layer
+          description: The hazard layer requested.
+        count:
+          type: integer
+          title: Count
+          description: Number of hazard polygons returned (0 = none of this hazard here).
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: 'GeoJSON FeatureCollection — hazard polygons clipped to the suburb boundary. Feature properties: `category` + `name` (per hazard layer), `tier` (acid-sulfate), none (landslide). Geometry is null on every Feature when the request passes `?geojson=false`.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - layer
+      - count
+      - geojson
+      title: SuburbHazards
+      description: Hazard-overlay polygons for one layer, clipped to the suburb.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        count: 36
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.66
+                  - -32.99
+                - - 151.67
+                  - -32.99
+                - - 151.67
+                  - -33.0
+                - - 151.66
+                  - -32.99
+              type: Polygon
+            properties:
+              category: High Potential Bushfire Intensity
+            type: Feature
+          type: FeatureCollection
+        layer: bushfire
+    SuburbBoundary:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        centroid:
+          $ref: '#/components/schemas/Centroid'
+          description: Boundary centroid (map-centre hint).
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: GeoJSON Feature — the SAL boundary polygon, simplified (topology-preserving, ~10 m tolerance, 6 dp coordinates). Geometry is null on every Feature when the request passes `?geojson=false`.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - centroid
+      - geojson
+      title: SuburbBoundary
+      description: Simplified suburb boundary polygon plus centroid.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        centroid:
+          lat: -32.9931
+          lng: 151.6688
+        geojson:
+          geometry:
+            coordinates:
+            - - - 151.66
+                - -32.99
+              - - 151.67
+                - -32.99
+              - - 151.67
+                - -33.0
+              - - 151.66
+                - -32.99
+            type: Polygon
+          properties:
+            suburb: Belmont North
+          type: Feature
+    SuburbBusyRoads:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        count:
+          type: integer
+          title: Count
+          description: Number of road-segment features returned.
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: 'GeoJSON FeatureCollection — line geometries of busy road segments clipped to the suburb boundary. Properties: `road_class` (OSM fclass, e.g. motorway/primary/secondary). Geometry is null on every Feature when the request passes `?geojson=false`.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - count
+      - geojson
+      title: SuburbBusyRoads
+      description: Busy-road segments (road-noise proxy) clipped to the suburb.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        count: 71
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - 151.66
+                - -32.99
+              - - 151.67
+                - -33.0
+              type: LineString
+            properties:
+              road_class: primary
+            type: Feature
+          type: FeatureCollection
+    SuburbMeshBlocks:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        count:
+          type: integer
+          title: Count
+          description: Number of mesh blocks returned.
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: 'GeoJSON FeatureCollection — one simplified polygon Feature per mesh block. Properties: `mb` (ABS MB_CODE21). Geometry is null on every Feature when the request passes `?geojson=false`.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - count
+      - geojson
+      title: SuburbMeshBlocks
+      description: ABS 2021 mesh-block polygons covering the suburb.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        count: 85
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.66
+                  - -32.99
+                - - 151.67
+                  - -32.99
+                - - 151.67
+                  - -33.0
+                - - 151.66
+                  - -32.99
+              type: Polygon
+            properties:
+              mb: '10693740000'
+            type: Feature
+          type: FeatureCollection
+    SuburbPublicHousingSa1:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        count:
+          type: integer
+          title: Count
+          description: Number of SA1s returned (only SA1s with a non-zero share).
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: 'GeoJSON FeatureCollection — one Feature per SA1 whose centroid falls inside the suburb and whose 2021 public-housing share is > 0. Properties: `sa1` (ABS SA1 code), `public_housing_pct` (0–100). Geometry is null on every Feature when the request passes `?geojson=false`.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - count
+      - geojson
+      title: SuburbPublicHousingSa1
+      description: SA1 polygons in the suburb shaded by 2021 census public-housing share.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        count: 7
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.66
+                  - -32.99
+                - - 151.67
+                  - -32.99
+                - - 151.67
+                  - -33.0
+                - - 151.66
+                  - -32.99
+              type: Polygon
+            properties:
+              sa1: '11102130801'
+              public_housing_pct: 36.9
+            type: Feature
+          type: FeatureCollection
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_SuburbHazards_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbHazards'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbHazards]
+    Centroid:
+      properties:
+        lat:
+          type: number
+          title: Lat
+          description: Latitude (WGS84).
+        lng:
+          type: number
+          title: Lng
+          description: Longitude (WGS84).
+      type: object
+      required:
+      - lat
+      - lng
+      title: Centroid
+      description: Suburb centroid — WGS84 lat/lng.
+      example:
+        lat: -32.9931
+        lng: 151.6688
+    SuburbEasements:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        count:
+          type: integer
+          title: Count
+          description: Number of easement features returned.
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: 'GeoJSON FeatureCollection — easement geometries intersecting the suburb. Properties: `category`, `name`. Geometry is null on every Feature when the request passes `?geojson=false`.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - count
+      - geojson
+      title: SuburbEasements
+      description: Registered easement geometries intersecting the suburb.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        count: 8
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.66
+                  - -32.99
+                - - 151.67
+                  - -32.99
+                - - 151.67
+                  - -33.0
+                - - 151.66
+                  - -32.99
+              type: Polygon
+            properties:
+              category: drainage
+            type: Feature
+          type: FeatureCollection
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_SuburbMeshBlocks_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbMeshBlocks'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbMeshBlocks]
+    SuburbNoiseHeatmap:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        count:
+          type: integer
+          title: Count
+          description: Number of colour-region features returned.
+        intensity_definition:
+          type: string
+          title: Intensity Definition
+          description: What the intensity numbers mean — a relative 0-1 noise score (composite road-traffic + noisy-POI proximity), not decibels.
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: 'GeoJSON FeatureCollection — precomputed noise colour regions clipped to the suburb polygon. Feature properties are render-ready styling: `color` (hex fill) and `fill_opacity`; the numeric intensity values live in `heat`. Geometry is null on every Feature when the request passes `?geojson=false`.'
+        heat:
+          items:
+            items:
+              type: number
+            type: array
+          type: array
+          title: Heat
+          description: Cell-centre points inside the suburb as `[lat, lng, intensity]` triples, ready for heatmap-style rendering. `intensity` is the relative 0-1 noise score described by intensity_definition.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - count
+      - intensity_definition
+      - geojson
+      - heat
+      title: SuburbNoiseHeatmap
+      description: Noise-map colour regions clipped to the suburb boundary.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        count: 6
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.66
+                  - -32.99
+                - - 151.67
+                  - -32.99
+                - - 151.67
+                  - -33.0
+                - - 151.66
+                  - -32.99
+              type: Polygon
+            properties:
+              color: '#990000'
+              fill_opacity: 0.7
+            type: Feature
+          type: FeatureCollection
+        heat:
+        - - -32.9931
+          - 151.6688
+          - 0.8
+        intensity_definition: Relative noise intensity, 0-1 (scaled composite of road-traffic and noisy-POI proximity; 1 = noisiest cell in the source grid). Not a decibel measurement.
+    ApiResponse_SuburbNoiseHeatmap_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbNoiseHeatmap'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbNoiseHeatmap]
+    ApiResponse_SuburbNeighbours_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbNeighbours'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbNeighbours]
+    ApiResponse_SuburbPublicHousingSa1_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbPublicHousingSa1'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbPublicHousingSa1]
+    ApiResponse_SuburbBoundary_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbBoundary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbBoundary]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

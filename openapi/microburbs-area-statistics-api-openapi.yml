@@ -1,0 +1,805 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Area Statistics API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Area Statistics
+paths:
+  /v1/area-stats/fields:
+    get:
+      tags:
+      - Area Statistics
+      summary: Search area-statistics fields
+      description: 'Discover which statistical fields exist. Free (0c). Fuzzy, token-based
+
+        matching covers table topics and clean column labels as well as terse field
+
+        codes. Common natural-language plurals and Census synonyms are handled, so
+
+        the verbatim `query=couples with children` discovers the exact 2021 ABS
+
+        family-composition count fields rather than substituting the broader
+
+        `census_family_households` metric. Use the returned field code(s) with the
+
+        priced `/area-stats/SAL/{suburb}/values` route. ~17k fields available.
+
+
+        **Price: 0¢ per call.**'
+      operationId: area_stats_fields_v1_area_stats_fields_get
+      parameters:
+      - name: query
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Fuzzy search over ABS field names/codes, table topics and column labels (e.g. 'total population', 'couple family children', 'tenure owned outright', or 'median rent'). Omit to list.
+          examples:
+          - couple family children
+          title: Query
+        description: Fuzzy search over ABS field names/codes, table topics and column labels (e.g. 'total population', 'couple family children', 'tenure owned outright', or 'median rent'). Omit to list.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Max fields to return.
+          default: 50
+          title: Limit
+        description: Max fields to return.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_AreaStatFieldsResponse_'
+              example:
+                data:
+                  count: 1
+                  fields:
+                  - field_code: Median_rent_weekly
+                    field_name: Median rent weekly
+                    label: Median rent ($/weekly)
+                    topic: Selected Medians and Averages
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 0
+  /v1/area-stats/regions:
+    get:
+      tags:
+      - Area Statistics
+      summary: List regions at a level
+      description: 'List the regions that exist at a level — every suburb, LGA, postcode, etc.
+
+        Free (0c). Use it to discover the exact region names to pass to /values.
+
+
+        **Price: 0¢ per call.**'
+      operationId: area_stats_regions_v1_area_stats_regions_get
+      parameters:
+      - name: region_level
+        in: query
+        required: true
+        schema:
+          type: string
+          description: 'Region level: SAL (suburb), SA1, SA2, SA3, SA4, LGA, POA, GCCSA, STE, AUS.'
+          examples:
+          - SAL
+          title: Region Level
+        description: 'Region level: SAL (suburb), SA1, SA2, SA3, SA4, LGA, POA, GCCSA, STE, AUS.'
+      - name: query
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by region name (substring, case-insensitive). Omit to list.
+          examples:
+          - lake
+          title: Query
+        description: Filter by region name (substring, case-insensitive). Omit to list.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          description: Max regions to return.
+          default: 100
+          title: Limit
+        description: Max regions to return.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_AreaStatRegionsResponse_'
+              example:
+                data:
+                  count: 1
+                  region_level: LGA
+                  regions:
+                  - region_code: '14750'
+                    region_name: Lake Macquarie
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 0
+  /v1/area-stats/{region_level}/{region}/values:
+    get:
+      tags:
+      - Area Statistics
+      summary: Area statistics for a region
+      description: 'Statistical field values for one region. Pass `fields` — 1 to 5 field
+
+        codes (from /fields) — to fetch.
+
+
+        At SAL level, `mode=sa1` switches from the suburb-aggregate value to a
+
+        per-SA1 breakdown — every SA1 that falls inside the suburb, each with its
+
+        own values.
+
+
+        **Price: 3¢ per call.**'
+      operationId: area_stats_values_v1_area_stats__region_level___region__values_get
+      parameters:
+      - name: region_level
+        in: path
+        required: true
+        schema:
+          type: string
+          description: 'Region level: SAL (suburb), SA1, SA2, SA3, SA4, LGA, POA, GCCSA, STE, AUS.'
+          examples:
+          - SAL
+          title: Region Level
+        description: 'Region level: SAL (suburb), SA1, SA2, SA3, SA4, LGA, POA, GCCSA, STE, AUS.'
+      - name: region
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Region name (case-insensitive). For SA1, the SA1 code (SA1s are unnamed).
+          examples:
+          - Belmont North
+          title: Region
+        description: Region name (case-insensitive). For SA1, the SA1 code (SA1s are unnamed).
+      - name: fields
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Comma-separated field codes (from /fields). Required, 1-5 per call.
+          examples:
+          - Median_age_persons
+          title: Fields
+        description: Comma-separated field codes (from /fields). Required, 1-5 per call.
+      - name: mode
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'SAL only: ''sa1'' returns values for every SA1 in the suburb, instead of the suburb aggregate.'
+          title: Mode
+        description: 'SAL only: ''sa1'' returns values for every SA1 in the suburb, instead of the suburb aggregate.'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_AreaStatValues_'
+              example:
+                data:
+                  fields:
+                  - field_code: Median_rent_weekly
+                    field_name: Median rent weekly
+                    label: Median rent ($/weekly)
+                    topic: Selected Medians and Averages
+                    value: 656.0
+                  region_code: '11303'
+                  region_level: SAL
+                  region_name: Bondi
+                  year: 2021
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+components:
+  schemas:
+    AreaStatRegionsResponse:
+      properties:
+        region_level:
+          type: string
+          title: Region Level
+          description: Region level (SAL, SA1-4, LGA, POA, GCCSA, STE, AUS).
+        count:
+          type: integer
+          title: Count
+          description: Number of regions returned.
+        regions:
+          items:
+            $ref: '#/components/schemas/AreaStatRegion'
+          type: array
+          title: Regions
+          description: Regions, name-sorted.
+      type: object
+      required:
+      - region_level
+      - count
+      - regions
+      title: AreaStatRegionsResponse
+      description: The regions available at one level.
+      example:
+        count: 1
+        region_level: LGA
+        regions:
+        - region_code: '14750'
+          region_name: Lake Macquarie
+    AreaStatValues:
+      properties:
+        region_level:
+          type: string
+          title: Region Level
+          description: Region level (SAL, SA1-4, LGA, POA, …).
+        region_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Region Code
+          description: Region code.
+        region_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Region Name
+          description: Region name (the SA1 code for SA1 — SA1s are unnamed).
+        year:
+          type: integer
+          title: Year
+          description: Reference year.
+          default: 2021
+        fields:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/AreaStatValueRow'
+            type: array
+          - type: 'null'
+          title: Fields
+          description: Field values for the region (default mode).
+        mode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Mode
+          description: '''sa1'' when this is a per-SA1 breakdown of a suburb.'
+        sa1_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sa1 Count
+          description: Number of SA1s in the suburb (mode=sa1).
+        sa1s:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/AreaStatSa1'
+            type: array
+          - type: 'null'
+          title: Sa1S
+          description: Per-SA1 values (mode=sa1).
+      type: object
+      required:
+      - region_level
+      title: AreaStatValues
+      description: 'Statistical field values for one region.
+
+
+        Default: `fields` holds the region''s values. At SAL level with `mode=sa1`,
+
+        `fields` is omitted and `sa1s` holds a per-SA1 breakdown instead.'
+      example:
+        fields:
+        - field_code: Median_rent_weekly
+          field_name: Median rent weekly
+          label: Median rent ($/weekly)
+          topic: Selected Medians and Averages
+          value: 656.0
+        region_code: '11303'
+        region_level: SAL
+        region_name: Bondi
+        year: 2021
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    AreaStatField:
+      properties:
+        field_code:
+          type: string
+          title: Field Code
+          description: Stable field identifier — pass this to /values (e.g. 'Median_rent_weekly').
+        field_name:
+          type: string
+          title: Field Name
+          description: Human-readable field name (e.g. 'Median rent weekly').
+        topic:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+          description: Subject of the source table — the context for cross-tab fields (e.g. 'Mortgage Repayment (Monthly) by Family Composition').
+        label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Label
+          description: Clean column label for the field (e.g. 'Couple family with no children').
+      additionalProperties: true
+      type: object
+      required:
+      - field_code
+      - field_name
+      title: AreaStatField
+      description: One statistical field in the catalog.
+    AreaStatSa1:
+      properties:
+        region_code:
+          type: string
+          title: Region Code
+          description: SA1 code.
+        fields:
+          items:
+            $ref: '#/components/schemas/AreaStatValueRow'
+          type: array
+          title: Fields
+          description: Field values for this SA1.
+      additionalProperties: true
+      type: object
+      required:
+      - region_code
+      - fields
+      title: AreaStatSa1
+      description: Values for one SA1 within a suburb (mode=sa1).
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    AreaStatValueRow:
+      properties:
+        field_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field Code
+          description: Stable field identifier.
+        field_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field Name
+          description: Human-readable field name (e.g. 'Median rent weekly').
+        topic:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+          description: Subject of the source table — context for cross-tab fields.
+        label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Label
+          description: Clean column label for the field.
+        value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Value
+          description: Field value for the region.
+      additionalProperties: true
+      type: object
+      title: AreaStatValueRow
+      description: One field value for a region.
+    AreaStatRegion:
+      properties:
+        region_code:
+          type: string
+          title: Region Code
+          description: Region code.
+        region_name:
+          type: string
+          title: Region Name
+          description: Region name (the SA1 code for SA1 — SA1s are unnamed).
+      type: object
+      required:
+      - region_code
+      - region_name
+      title: AreaStatRegion
+      description: One region at a given level.
+    ApiResponse_AreaStatValues_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AreaStatValues'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AreaStatValues]
+    ApiResponse_AreaStatFieldsResponse_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AreaStatFieldsResponse'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AreaStatFieldsResponse]
+    AreaStatFieldsResponse:
+      properties:
+        count:
+          type: integer
+          title: Count
+          description: Number of fields returned.
+        fields:
+          items:
+            $ref: '#/components/schemas/AreaStatField'
+          type: array
+          title: Fields
+          description: Matching fields, best match first.
+      type: object
+      required:
+      - count
+      - fields
+      title: AreaStatFieldsResponse
+      description: A page of matching fields.
+      example:
+        count: 1
+        fields:
+        - field_code: Median_rent_weekly
+          field_name: Median rent weekly
+          label: Median rent ($/weekly)
+          topic: Selected Medians and Averages
+    ApiResponse_AreaStatRegionsResponse_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AreaStatRegionsResponse'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AreaStatRegionsResponse]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

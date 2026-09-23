@@ -1,0 +1,985 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Finder API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Finder
+  description: Cross-suburb range-filter search — filter on ~36 metrics, sort, paginate.
+paths:
+  /v1/suburbs/finder/fields:
+    get:
+      tags:
+      - Suburb - Finder
+      summary: Finder field catalog
+      description: 'Every field you can filter / sort on, with its label and unit. 0c.
+
+
+        Houses and units are separate keys: the `unit`-prefixed ones
+
+        (`unitMedianPrice`, `unitGrossYield`, `unitMedianRent`, …) are the
+
+        apartment market, the unprefixed market keys are houses, and both can be
+
+        filtered in the same query. Unit fields are NOT nationally populated — they
+
+        only exist where a suburb has a unit market (roughly 13-54% of suburbs
+
+        depending on the field), so a suburb with no unit market simply won''t match
+
+        a unit filter.
+
+
+        **Price: 0¢ per call.**'
+      operationId: get_finder_fields_v1_suburbs_finder_fields_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_FieldsResponse_'
+              example:
+                data:
+                  fields:
+                  - key: grossYield
+                    label: Gross rental yield
+                    unit: percent
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+      x-price-cents: 0
+  /v1/suburbs/finder/regions:
+    get:
+      tags:
+      - Suburb - Finder
+      summary: Finder scope regions
+      description: 'SA4 regions grouped by state — the values accepted by `states` /
+
+        `regions` on search. 0c.
+
+
+        **Price: 0¢ per call.**'
+      operationId: get_finder_regions_v1_suburbs_finder_regions_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_RegionsResponse_'
+              example:
+                data:
+                  regions:
+                    NSW:
+                    - Sydney - City and Inner South
+                    - Newcastle and Lake Macquarie
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+      x-price-cents: 0
+  /v1/suburbs/finder/count:
+    get:
+      tags:
+      - Suburb - Finder
+      summary: Count matching suburbs
+      description: 'How many suburbs match the filter, without paying per row. 5c.
+
+
+        Use this to size a result before searching: /search is capped at 25 rows
+
+        per call, so `total` here tells you how many `offset` pages you need.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_finder_count_v1_suburbs_finder_count_get
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          description: 'Range filter `fieldKey:min..max` (repeatable). Valid fieldKeys: medianHousePrice, grossYield, medianRent, growthForecast4yr, growth10yrCagr, growth3yrCagr, rentGrowth3yr, soldAtLossPct, daysOnMarket, vacancyRate, unitMedianPrice, unitGrossYield, unitMedianRent, unitGrowthForecast4yr, unitGrowth10yrCagr, unitGrowth3yrCagr, unitRentGrowth3yr, unitSoldAtLossPct, unitDaysOnMarket, unitVacancyRate, stockOnMarket, monthsOfInventory, landValuePerSqm, lifestyleScore, safetyScore, hipScore, affluenceScore, renters, distanceCbdKm, publicHousingPct, overseasBornPct, welfareReliancePct, unemploymentPct, singleParentsPct, familyHouseholdsPct, privateSchoolPct, medianIncomeWeekly, communityDepthIndex, premiumRenovationIndex, homeOfficeIndex, tranquilityIndex, innovationEconomyIndex, alternativeLivingIndex, investorConcentration, negativeGearingExposure, mortgageStress. Apartment/unit metrics are the `unit`-prefixed keys (unitMedianPrice, unitGrossYield, unitMedianRent, …); the unprefixed market keys are houses. Unit data only exists where a suburb has a real unit market — coverage runs ~13-54% of suburbs depending on the field, so a unit filter implicitly excludes house-only suburbs.'
+          title: Filter
+        description: 'Range filter `fieldKey:min..max` (repeatable). Valid fieldKeys: medianHousePrice, grossYield, medianRent, growthForecast4yr, growth10yrCagr, growth3yrCagr, rentGrowth3yr, soldAtLossPct, daysOnMarket, vacancyRate, unitMedianPrice, unitGrossYield, unitMedianRent, unitGrowthForecast4yr, unitGrowth10yrCagr, unitGrowth3yrCagr, unitRentGrowth3yr, unitSoldAtLossPct, unitDaysOnMarket, unitVacancyRate, stockOnMarket, monthsOfInventory, landValuePerSqm, lifestyleScore, safetyScore, hipScore, affluenceScore, renters, distanceCbdKm, publicHousingPct, overseasBornPct, welfareReliancePct, unemploymentPct, singleParentsPct, familyHouseholdsPct, privateSchoolPct, medianIncomeWeekly, communityDepthIndex, premiumRenovationIndex, homeOfficeIndex, tranquilityIndex, innovationEconomyIndex, alternativeLivingIndex, investorConcentration, negativeGearingExposure, mortgageStress. Apartment/unit metrics are the `unit`-prefixed keys (unitMedianPrice, unitGrossYield, unitMedianRent, …); the unprefixed market keys are houses. Unit data only exists where a suburb has a real unit market — coverage runs ~13-54% of suburbs depending on the field, so a unit filter implicitly excludes house-only suburbs.'
+      - name: states
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated states (names or abbreviations), e.g. `VIC`.
+          title: States
+          example: VIC
+        description: Comma-separated states (names or abbreviations), e.g. `VIC`.
+        example: VIC
+      - name: regions
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated EXACT SA4 region names — call GET /v1/suburbs/finder/regions for the list. A metro name like `Melbourne` alone will NOT match.
+          title: Regions
+        description: Comma-separated EXACT SA4 region names — call GET /v1/suburbs/finder/regions for the list. A metro name like `Melbourne` alone will NOT match.
+      - name: property_type
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Legacy flag: ''unit'' re-points the ten unprefixed house-market keys (medianHousePrice, grossYield, ...) at their unit column. It does NOT affect the explicit `unit`-prefixed keys, which are always units. Prefer the `unit` keys — they are visible in /fields and can be mixed with house keys in one query.'
+          default: house
+          title: Property Type
+        description: 'Legacy flag: ''unit'' re-points the ten unprefixed house-market keys (medianHousePrice, grossYield, ...) at their unit column. It does NOT affect the explicit `unit`-prefixed keys, which are always units. Prefer the `unit` keys — they are visible in /fields and can be mixed with house keys in one query.'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_CountResponse_'
+              example:
+                data:
+                  total: 126
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 5
+  /v1/suburbs/finder/search:
+    get:
+      tags:
+      - Suburb - Finder
+      summary: Search suburbs
+      description: 'Boolean-AND range filter over suburb metrics, single-column sort,
+
+        paginated. Every row carries its `rank` — position in the ranked result
+
+        (1 = top of the sort, out of `meta.total`). When sorting by a median or a
+
+        growth, the actual value is also shown for the first 5 and last 5 rows of
+
+        the page; for any other suburb''s number, call the per-field endpoint
+
+        (market/*, forecast/*).
+
+
+        **Paging:** a page is capped at 25 rows. A bigger `limit` is clamped, not
+
+        rejected — so always read `meta`: `total` is the full match count,
+
+        `has_more` says whether rows remain, and `next_offset` is the `offset` to
+
+        pass for the next page. A "top 50" needs two calls, each charged.
+
+
+        Flat 30c.
+
+
+        **Price: 30¢ per call.**'
+      operationId: get_finder_search_v1_suburbs_finder_search_get
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          description: 'Range filter `fieldKey:min..max` (repeatable). Open-ended `min..` / `..max`. Valid fieldKeys: medianHousePrice, grossYield, medianRent, growthForecast4yr, growth10yrCagr, growth3yrCagr, rentGrowth3yr, soldAtLossPct, daysOnMarket, vacancyRate, unitMedianPrice, unitGrossYield, unitMedianRent, unitGrowthForecast4yr, unitGrowth10yrCagr, unitGrowth3yrCagr, unitRentGrowth3yr, unitSoldAtLossPct, unitDaysOnMarket, unitVacancyRate, stockOnMarket, monthsOfInventory, landValuePerSqm, lifestyleScore, safetyScore, hipScore, affluenceScore, renters, distanceCbdKm, publicHousingPct, overseasBornPct, welfareReliancePct, unemploymentPct, singleParentsPct, familyHouseholdsPct, privateSchoolPct, medianIncomeWeekly, communityDepthIndex, premiumRenovationIndex, homeOfficeIndex, tranquilityIndex, innovationEconomyIndex, alternativeLivingIndex, investorConcentration, negativeGearingExposure, mortgageStress. Apartment/unit metrics are the `unit`-prefixed keys (unitMedianPrice, unitGrossYield, unitMedianRent, …); the unprefixed market keys are houses. Unit data only exists where a suburb has a real unit market — coverage runs ~13-54% of suburbs depending on the field, so a unit filter implicitly excludes house-only suburbs.'
+          title: Filter
+        description: 'Range filter `fieldKey:min..max` (repeatable). Open-ended `min..` / `..max`. Valid fieldKeys: medianHousePrice, grossYield, medianRent, growthForecast4yr, growth10yrCagr, growth3yrCagr, rentGrowth3yr, soldAtLossPct, daysOnMarket, vacancyRate, unitMedianPrice, unitGrossYield, unitMedianRent, unitGrowthForecast4yr, unitGrowth10yrCagr, unitGrowth3yrCagr, unitRentGrowth3yr, unitSoldAtLossPct, unitDaysOnMarket, unitVacancyRate, stockOnMarket, monthsOfInventory, landValuePerSqm, lifestyleScore, safetyScore, hipScore, affluenceScore, renters, distanceCbdKm, publicHousingPct, overseasBornPct, welfareReliancePct, unemploymentPct, singleParentsPct, familyHouseholdsPct, privateSchoolPct, medianIncomeWeekly, communityDepthIndex, premiumRenovationIndex, homeOfficeIndex, tranquilityIndex, innovationEconomyIndex, alternativeLivingIndex, investorConcentration, negativeGearingExposure, mortgageStress. Apartment/unit metrics are the `unit`-prefixed keys (unitMedianPrice, unitGrossYield, unitMedianRent, …); the unprefixed market keys are houses. Unit data only exists where a suburb has a real unit market — coverage runs ~13-54% of suburbs depending on the field, so a unit filter implicitly excludes house-only suburbs.'
+      - name: states
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated states — abbreviation or full name, e.g. `VIC` or `Victoria`. Anything else is a 422 listing the valid values (a city name is not a state — use `regions`).
+          title: States
+          example: VIC
+        description: Comma-separated states — abbreviation or full name, e.g. `VIC` or `Victoria`. Anything else is a 422 listing the valid values (a city name is not a state — use `regions`).
+        example: VIC
+      - name: regions
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated EXACT SA4 region names — call GET /v1/suburbs/finder/regions for the list. e.g. `Melbourne - Inner`, `Melbourne - West`. A metro name like `Melbourne` alone will NOT match; an unknown value 422s with the closest real names.
+          title: Regions
+        description: Comma-separated EXACT SA4 region names — call GET /v1/suburbs/finder/regions for the list. e.g. `Melbourne - Inner`, `Melbourne - West`. A metro name like `Melbourne` alone will NOT match; an unknown value 422s with the closest real names.
+      - name: property_type
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Legacy flag: ''unit'' re-points the ten unprefixed house-market keys (medianHousePrice, grossYield, ...) at their unit column. It does NOT affect the explicit `unit`-prefixed keys, which are always units. Prefer the `unit` keys — they are visible in /fields and can be mixed with house keys in one query.'
+          default: house
+          title: Property Type
+        description: 'Legacy flag: ''unit'' re-points the ten unprefixed house-market keys (medianHousePrice, grossYield, ...) at their unit column. It does NOT affect the explicit `unit`-prefixed keys, which are always units. Prefer the `unit` keys — they are visible in /fields and can be mixed with house keys in one query.'
+      - name: sort
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Sort field. Prefix '-' for descending (highest first), e.g. `-growth10yrCagr`. Must be one of the field keys (see enum). Works on its own — you do NOT need a filter on the field you sort by; to rank without a threshold, pass `sort` and no filter. Only when `sort` is omitted does it default to the first filter field, desc. Apartment/unit metrics are the `unit`-prefixed keys (unitMedianPrice, unitGrossYield, unitMedianRent, …); the unprefixed market keys are houses. Unit data only exists where a suburb has a real unit market — coverage runs ~13-54% of suburbs depending on the field, so a unit filter implicitly excludes house-only suburbs.
+          enum:
+          - medianHousePrice
+          - grossYield
+          - medianRent
+          - growthForecast4yr
+          - growth10yrCagr
+          - growth3yrCagr
+          - rentGrowth3yr
+          - soldAtLossPct
+          - daysOnMarket
+          - vacancyRate
+          - unitMedianPrice
+          - unitGrossYield
+          - unitMedianRent
+          - unitGrowthForecast4yr
+          - unitGrowth10yrCagr
+          - unitGrowth3yrCagr
+          - unitRentGrowth3yr
+          - unitSoldAtLossPct
+          - unitDaysOnMarket
+          - unitVacancyRate
+          - stockOnMarket
+          - monthsOfInventory
+          - landValuePerSqm
+          - lifestyleScore
+          - safetyScore
+          - hipScore
+          - affluenceScore
+          - renters
+          - distanceCbdKm
+          - publicHousingPct
+          - overseasBornPct
+          - welfareReliancePct
+          - unemploymentPct
+          - singleParentsPct
+          - familyHouseholdsPct
+          - privateSchoolPct
+          - medianIncomeWeekly
+          - communityDepthIndex
+          - premiumRenovationIndex
+          - homeOfficeIndex
+          - tranquilityIndex
+          - innovationEconomyIndex
+          - alternativeLivingIndex
+          - investorConcentration
+          - negativeGearingExposure
+          - mortgageStress
+          - -medianHousePrice
+          - -grossYield
+          - -medianRent
+          - -growthForecast4yr
+          - -growth10yrCagr
+          - -growth3yrCagr
+          - -rentGrowth3yr
+          - -soldAtLossPct
+          - -daysOnMarket
+          - -vacancyRate
+          - -unitMedianPrice
+          - -unitGrossYield
+          - -unitMedianRent
+          - -unitGrowthForecast4yr
+          - -unitGrowth10yrCagr
+          - -unitGrowth3yrCagr
+          - -unitRentGrowth3yr
+          - -unitSoldAtLossPct
+          - -unitDaysOnMarket
+          - -unitVacancyRate
+          - -stockOnMarket
+          - -monthsOfInventory
+          - -landValuePerSqm
+          - -lifestyleScore
+          - -safetyScore
+          - -hipScore
+          - -affluenceScore
+          - -renters
+          - -distanceCbdKm
+          - -publicHousingPct
+          - -overseasBornPct
+          - -welfareReliancePct
+          - -unemploymentPct
+          - -singleParentsPct
+          - -familyHouseholdsPct
+          - -privateSchoolPct
+          - -medianIncomeWeekly
+          - -communityDepthIndex
+          - -premiumRenovationIndex
+          - -homeOfficeIndex
+          - -tranquilityIndex
+          - -innovationEconomyIndex
+          - -alternativeLivingIndex
+          - -investorConcentration
+          - -negativeGearingExposure
+          - -mortgageStress
+          title: Sort
+        description: Sort field. Prefix '-' for descending (highest first), e.g. `-growth10yrCagr`. Must be one of the field keys (see enum). Works on its own — you do NOT need a filter on the field you sort by; to rank without a threshold, pass `sort` and no filter. Only when `sort` is omitted does it default to the first filter field, desc. Apartment/unit metrics are the `unit`-prefixed keys (unitMedianPrice, unitGrossYield, unitMedianRent, …); the unprefixed market keys are houses. Unit data only exists where a suburb has a real unit market — coverage runs ~13-54% of suburbs depending on the field, so a unit filter implicitly excludes house-only suburbs.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Page size. Hard cap 25 — a larger value is clamped, NOT an error, and `meta.requested_limit` says so. For more than 25 results, page with `offset`.
+          default: 25
+          title: Limit
+        description: Page size. Hard cap 25 — a larger value is clamped, NOT an error, and `meta.requested_limit` says so. For more than 25 results, page with `offset`.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Row offset — page through results more than 25 deep. `meta.next_offset` gives the value for the next page.
+          default: 0
+          title: Offset
+        description: Row offset — page through results more than 25 deep. `meta.next_offset` gives the value for the next page.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_FinderSearchResponse_'
+              example:
+                data:
+                  meta:
+                    limit: 25
+                    offset: 0
+                    returned: 25
+                    total: 126
+                  suburbs:
+                  - lga: Lake Macquarie
+                    rank: 3
+                    sa4: Newcastle and Lake Macquarie
+                    state: NSW
+                    suburb: Windale
+                    value: 0.163
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 30
+components:
+  schemas:
+    FieldsResponse:
+      properties:
+        fields:
+          items:
+            $ref: '#/components/schemas/FinderField'
+          type: array
+          title: Fields
+          description: Every filterable / returnable field.
+      type: object
+      required:
+      - fields
+      title: FieldsResponse
+      description: The finder field catalog.
+      example:
+        fields:
+        - key: grossYield
+          label: Gross rental yield
+          unit: percent
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    FinderField:
+      properties:
+        key:
+          type: string
+          title: Key
+          description: camelCase field key — pass this in `filter` / `sort`.
+        label:
+          type: string
+          title: Label
+          description: Human-readable label.
+        unit:
+          type: string
+          title: Unit
+          description: Unit of the value — currency | percent | count | days | km | score | index.
+      type: object
+      required:
+      - key
+      - label
+      - unit
+      title: FinderField
+      description: One filterable / sortable metric in the finder catalog.
+      example:
+        key: grossYield
+        label: Gross rental yield
+        unit: percent
+    RegionsResponse:
+      properties:
+        regions:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+          title: Regions
+          description: '`{state: [sa4, ...]}` — pass a state to `states` and/or an SA4 to `regions`.'
+      type: object
+      required:
+      - regions
+      title: RegionsResponse
+      description: Scope options — SA4 regions grouped by state abbreviation.
+      example:
+        regions:
+          NSW:
+          - Sydney - City and Inner South
+          - Newcastle and Lake Macquarie
+    FinderRow:
+      properties:
+        rank:
+          type: integer
+          title: Rank
+          description: Position in the ranked result, 1 = top of the sort (out of `meta.total`).
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL) name.
+        state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State
+          description: State abbreviation (NSW, VIC, ...).
+        sa4:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa4
+          description: SA4 region name.
+        lga:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Lga
+          description: Local Government Area name.
+        value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Value
+          description: Value of the sort field (as ranked). Present only for the first 5 and last 5 rows of the page, and only for a median or growth sort. Absent = not shown — call the per-field endpoint for this suburb.
+      type: object
+      required:
+      - rank
+      - suburb
+      title: FinderRow
+      description: 'One matched suburb — rank + identity, plus the value for the first/last few.
+
+
+        `rank` (the row''s position in the ranked result, 1 = top of the sort, out of
+
+        `meta.total`) is present on every row. `value` (the sort field''s actual number)
+
+        is present only for the first 5 and last 5 rows of the page, and only when the
+
+        sort field is a median or a growth. For any other suburb''s number, call the
+
+        per-field endpoint (market/*, forecast/*).'
+      example:
+        lga: Lake Macquarie
+        rank: 3
+        sa4: Newcastle and Lake Macquarie
+        state: NSW
+        suburb: Windale
+        value: 0.163
+    FinderSearchResponse:
+      properties:
+        suburbs:
+          items:
+            $ref: '#/components/schemas/FinderRow'
+          type: array
+          title: Suburbs
+          description: Matched suburbs, sorted.
+        meta:
+          $ref: '#/components/schemas/FinderMeta'
+          description: Total + pagination.
+      type: object
+      required:
+      - suburbs
+      - meta
+      title: FinderSearchResponse
+      description: A page of matched suburbs.
+      example:
+        meta:
+          limit: 25
+          offset: 0
+          returned: 25
+          total: 126
+        suburbs:
+        - lga: Lake Macquarie
+          rank: 3
+          sa4: Newcastle and Lake Macquarie
+          state: NSW
+          suburb: Windale
+          value: 0.163
+    ApiResponse_FieldsResponse_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/FieldsResponse'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[FieldsResponse]
+    ApiResponse_FinderSearchResponse_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/FinderSearchResponse'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[FinderSearchResponse]
+    ApiResponse_RegionsResponse_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/RegionsResponse'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[RegionsResponse]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_CountResponse_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CountResponse'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[CountResponse]
+    FinderMeta:
+      properties:
+        total:
+          type: integer
+          title: Total
+          description: Total suburbs matching the filter (ignores limit/offset).
+        limit:
+          type: integer
+          title: Limit
+          description: Applied page size (clamped to 25).
+        offset:
+          type: integer
+          title: Offset
+          description: Applied row offset.
+        returned:
+          type: integer
+          title: Returned
+          description: Rows in this page.
+        sort_field:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sort Field
+          description: Field the results are ranked by.
+        values:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Values
+          description: How values are exposed for this search (top/bottom-5 reveal, or withheld).
+      additionalProperties: true
+      type: object
+      required:
+      - total
+      - limit
+      - offset
+      - returned
+      title: FinderMeta
+      description: Pagination + total + the value-reveal policy for a search.
+    CountResponse:
+      properties:
+        total:
+          type: integer
+          title: Total
+          description: Suburbs matching every range filter (after the hard exclusions).
+      type: object
+      required:
+      - total
+      title: CountResponse
+      description: How many suburbs match the filter — without paying for the rows.
+      example:
+        total: 126
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

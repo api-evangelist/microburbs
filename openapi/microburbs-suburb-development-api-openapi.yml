@@ -1,0 +1,3037 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Development API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Development
+  description: Development applications.
+paths:
+  /v1/suburbs/{suburb_name}/development/da-count:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Recent DA count
+      description: 'Count of recent development applications in the suburb.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 6¢ per call.**'
+      operationId: get_suburb_planning_da_count_v1_suburbs__suburb_name__development_da_count_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_DaCount_'
+              example:
+                data:
+                  da_count: 0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 6
+  /v1/suburbs/{suburb_name}/development/da-list:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Recent DA list
+      description: 'Recent development applications lodged in the suburb.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 18¢ per call.**'
+      operationId: get_suburb_planning_da_list_v1_suburbs__suburb_name__development_da_list_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_DaRow__'
+              example:
+                data:
+                - area_name: ''
+                  area_level: address
+                  suburb: Belmont North
+                  description: One storey Two Bedroom Secondary Dwelling - Lake Macquarie City Council CDC/103/2024
+                  date: '2024-01-26'
+                  category: New Dwelling
+                - area_name: ''
+                  area_level: address
+                  suburb: Belmont North
+                  description: Staged Development - Attached and Detached Dual Occupancy and Subdivision - Lake Macquarie City Council CC/164/2024
+                  date: '2024-01-23'
+                  category: New Dwelling
+                - area_name: ''
+                  area_level: address
+                  suburb: Belmont North
+                  description: 1 into 3 lot Torrens Title Subdivision - Lake Macquarie City Council SWC/3/2024
+                  date: '2024-01-23'
+                  category: Subdivision
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_name: ''
+        area_level: address
+        suburb: Belmont North
+        description: One storey Two Bedroom Secondary Dwelling - Lake Macquarie City Council CDC/103/2024
+        date: '2024-01-26'
+        category: New Dwelling
+      - area_name: ''
+        area_level: address
+        suburb: Belmont North
+        description: Staged Development - Attached and Detached Dual Occupancy and Subdivision - Lake Macquarie City Council CC/164/2024
+        date: '2024-01-23'
+        category: New Dwelling
+      - area_name: ''
+        area_level: address
+        suburb: Belmont North
+        description: 1 into 3 lot Torrens Title Subdivision - Lake Macquarie City Council SWC/3/2024
+        date: '2024-01-23'
+        category: Subdivision
+      x-price-cents: 18
+  /v1/suburbs/{suburb_name}/development/all:
+    get:
+      tags:
+      - Suburb - Development
+      summary: DA count + DA list — bundle
+      description: '**Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 24¢ per call.**'
+      operationId: get_suburb_planning_all_v1_suburbs__suburb_name__development_all_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbPlanningAll_'
+              example:
+                data:
+                  da_count: 0
+                  da_list:
+                  - area_level: address
+                    area_name: ''
+                    category: Renovation
+                    date: '2026-04-15'
+                    description: Alterations and additions to existing dwelling.
+                    suburb: Belmont North
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 24
+  /v1/suburbs/{suburb_name}/development/zoning-map:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Zoning map (polygons)
+      description: 'Zoning polygons clipped to the suburb, with per-class and parent-group area shares.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 25¢ per call.**'
+      operationId: get_suburb_development_zoning_map_v1_suburbs__suburb_name__development_zoning_map_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbZoningMap_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  legend:
+                  - lay_class: Low Density Residential
+                    sym_code: R2
+                    parent: Residential
+                    color: '#e85d75'
+                    pct: 62.4
+                  - lay_class: Environmental Conservation
+                    sym_code: C2
+                    parent: Environmental
+                    color: '#27ae60'
+                    pct: 21.9
+                  groups:
+                  - label: Environmental
+                    pct: 24.3
+                    color: '#27ae60'
+                  - label: Residential
+                    pct: 64.1
+                    color: '#e85d75'
+                  - label: Commercial
+                    pct: 1.6
+                    color: '#f6c445'
+                  - label: Other
+                    pct: 10.0
+                    color: '#b8b8b8'
+                  geojson:
+                    type: FeatureCollection
+                    features:
+                    - type: Feature
+                      geometry:
+                        type: Polygon
+                        coordinates:
+                        - - - 151.6695
+                            - -33.0018
+                          - - 151.6702
+                            - -33.0021
+                          - - 151.6698
+                            - -33.0027
+                          - - 151.6695
+                            - -33.0018
+                      properties:
+                        lay_class: Environmental Conservation
+                        sym_code: C2
+                        parent: Environmental
+                        color: '#27ae60'
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        legend:
+        - lay_class: Low Density Residential
+          sym_code: R2
+          parent: Residential
+          color: '#e85d75'
+          pct: 62.4
+        - lay_class: Environmental Conservation
+          sym_code: C2
+          parent: Environmental
+          color: '#27ae60'
+          pct: 21.9
+        groups:
+        - label: Environmental
+          pct: 24.3
+          color: '#27ae60'
+        - label: Residential
+          pct: 64.1
+          color: '#e85d75'
+        - label: Commercial
+          pct: 1.6
+          color: '#f6c445'
+        - label: Other
+          pct: 10.0
+          color: '#b8b8b8'
+        geojson:
+          type: FeatureCollection
+          features:
+          - type: Feature
+            geometry:
+              type: Polygon
+              coordinates:
+              - - - 151.6695
+                  - -33.0018
+                - - 151.6702
+                  - -33.0021
+                - - 151.6698
+                  - -33.0027
+                - - 151.6695
+                  - -33.0018
+            properties:
+              lay_class: Environmental Conservation
+              sym_code: C2
+              parent: Environmental
+              color: '#27ae60'
+      x-price-cents: 25
+  /v1/suburbs/{suburb_name}/development/building-controls:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Building controls — height & FSR
+      description: 'Height-of-building and floor-space-ratio control polygons with band summaries.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_development_building_controls_v1_suburbs__suburb_name__development_building_controls_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbBuildingControls_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  hob:
+                    zones_mapped: 17
+                    most_common_height_m: 8.5
+                    pct_most_common: 71.0
+                    legend:
+                    - label: ≤ 8.5m
+                      color: '#fef9c3'
+                      pct: 84.2
+                    - label: 8.5–12m
+                      color: '#fbbf24'
+                      pct: 15.8
+                    geojson:
+                      type: FeatureCollection
+                      features:
+                      - type: Feature
+                        geometry:
+                          type: Polygon
+                          coordinates:
+                          - - - 151.668
+                              - -33.017
+                            - - 151.672
+                              - -33.017
+                            - - 151.672
+                              - -33.02
+                            - - 151.668
+                              - -33.017
+                        properties:
+                          height_m: 8.5
+                          units: m
+                          band: ≤ 8.5m
+                          color: '#fef9c3'
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        hob:
+          zones_mapped: 17
+          most_common_height_m: 8.5
+          pct_most_common: 71.0
+          legend:
+          - label: ≤ 8.5m
+            color: '#fef9c3'
+            pct: 84.2
+          - label: 8.5–12m
+            color: '#fbbf24'
+            pct: 15.8
+          geojson:
+            type: FeatureCollection
+            features:
+            - type: Feature
+              geometry:
+                type: Polygon
+                coordinates:
+                - - - 151.668
+                    - -33.017
+                  - - 151.672
+                    - -33.017
+                  - - 151.672
+                    - -33.02
+                  - - 151.668
+                    - -33.017
+              properties:
+                height_m: 8.5
+                units: m
+                band: ≤ 8.5m
+                color: '#fef9c3'
+      x-price-cents: 20
+  /v1/suburbs/{suburb_name}/development/construction-activity:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Construction activity per mesh block
+      description: 'Satellite-detected construction change per mesh block plus a suburb rollup.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_development_construction_activity_v1_suburbs__suburb_name__development_construction_activity_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbConstructionActivity_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  summary:
+                    mb_count: 66
+                    active_mb_count: 3
+                    avg_construction_score: -0.0456
+                    avg_ndbi_change: -0.02
+                  mesh_blocks:
+                  - mb_code: '10436570000'
+                    construction_score: 0.0849
+                    ndbi_change: 0.0423
+                    ndbi_2019: -0.148
+                    ndbi_2023: -0.1056
+                    ndvi_change: -0.0426
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        summary:
+          mb_count: 66
+          active_mb_count: 3
+          avg_construction_score: -0.0456
+          avg_ndbi_change: -0.02
+        mesh_blocks:
+        - mb_code: '10436570000'
+          construction_score: 0.0849
+          ndbi_change: 0.0423
+          ndbi_2019: -0.148
+          ndbi_2023: -0.1056
+          ndvi_change: -0.0426
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/development/supply:
+    get:
+      tags:
+      - Suburb - Development
+      summary: New supply — units vs houses
+      description: 'New dwellings (last 24 months) split units vs houses per mesh block plus a rollup.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_suburb_development_supply_v1_suburbs__suburb_name__development_supply_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbDevelopmentSupply_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  summary:
+                    new_houses: 650
+                    new_units: 410
+                    total_new: 1060
+                    pct_houses: 61.3
+                    pct_units: 38.7
+                  mesh_blocks:
+                  - mb_code: '10694560000'
+                    new_houses: 15
+                    new_units: 3
+                    total_new: 18
+                    pct_units: 16.7
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        summary:
+          new_houses: 650
+          new_units: 410
+          total_new: 1060
+          pct_houses: 61.3
+          pct_units: 38.7
+        mesh_blocks:
+        - mb_code: '10694560000'
+          new_houses: 15
+          new_units: 3
+          total_new: 18
+          pct_units: 16.7
+      x-price-cents: 10
+  /v1/suburbs/{suburb_name}/development/profile:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Development profile
+      description: 'Dwelling-mix scalars — apartment share and average lot size.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_development_profile_v1_suburbs__suburb_name__development_profile_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbDevelopmentProfile_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  apartment_pct: 1.2
+                  avg_lot_m2: 758
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        apartment_pct: 1.2
+        avg_lot_m2: 758
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/development/council-rates:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Average council rates
+      description: 'Average annual residential council rate for the suburb''s LGA.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_development_council_rates_v1_suburbs__suburb_name__development_council_rates_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbCouncilRates_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  lga: Lake Macquarie
+                  avg_rate_aud_yr: 1584
+                  data_source: NSW_OLG_AVG
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        lga: Lake Macquarie
+        avg_rate_aud_yr: 1584
+        data_source: NSW_OLG_AVG
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/development/applications:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Development applications
+      description: 'Recent development applications (up to 100, newest first) with category counts.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_suburb_development_applications_v1_suburbs__suburb_name__development_applications_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbDevelopmentApplications_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  total: 100
+                  min_date: '2019-12-02'
+                  max_date: '2026-06-18'
+                  categories:
+                  - category: New Dwelling
+                    count: 21
+                  - category: Renovation
+                    count: 48
+                  - category: Demolition
+                    count: 9
+                  - category: Other
+                    count: 22
+                  applications:
+                  - id: 99033512
+                    title: Secondary dwelling
+                    address: 38 Buttaba Avenue Belmont North NSW 2280
+                    lat: -33.02082551
+                    lng: 151.676206648
+                    stage: under_assessment
+                    stage_display: Under Assessment
+                    date: '2026-06-18'
+                    category: New Dwelling
+                    dollar_value: 271740.0
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        total: 100
+        min_date: '2019-12-02'
+        max_date: '2026-06-18'
+        categories:
+        - category: New Dwelling
+          count: 21
+        - category: Renovation
+          count: 48
+        - category: Demolition
+          count: 9
+        - category: Other
+          count: 22
+        applications:
+        - id: 99033512
+          title: Secondary dwelling
+          address: 38 Buttaba Avenue Belmont North NSW 2280
+          lat: -33.02082551
+          lng: 151.676206648
+          stage: under_assessment
+          stage_display: Under Assessment
+          date: '2026-06-18'
+          category: New Dwelling
+          dollar_value: 271740.0
+      x-price-cents: 15
+  /v1/suburbs/{suburb_name}/development/density:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Dwelling & population density
+      description: 'Dwellings and people per km², plus the land area and counts behind them.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_development_density_v1_suburbs__suburb_name__development_density_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbDensity_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  dwellings_per_km2: 1002
+                  people_per_km2: 2575
+                  density_level: Mid
+                  area_km2: 3.6314
+                  dwellings: 2453
+                  population: 6280
+                  boundary_dwellings_per_km2: 675.5
+                  boundary_people_per_km2: 1729.4
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        dwellings_per_km2: 1002
+        people_per_km2: 2575
+        density_level: Mid
+        area_km2: 3.6314
+        dwellings: 2453
+        population: 6280
+        boundary_dwellings_per_km2: 675.5
+        boundary_people_per_km2: 1729.4
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/development/council-intelligence:
+    get:
+      tags:
+      - Suburb - Development
+      summary: Council intelligence signals
+      description: 'Council capex / project-pipeline signals extracted from the LGA''s meeting
+
+        minutes — each with stage, dollar value, location and time horizon — plus a
+
+        rollup of the total pipeline in dollars.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_development_council_intelligence_v1_suburbs__suburb_name__development_council_intelligence_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_SuburbCouncilIntelligence_'
+              example:
+                data:
+                  area_name: Belmont North
+                  area_level: suburb
+                  definition: Council meeting-minute signals — capex commitments, infrastructure and community-facility projects, zoning amendments and environmental programs — extracted from the LGA's published minutes. pipeline_dollars is the sum of every signal's committed/estimated dollar value; signals with no stated value contribute 0.
+                  summary:
+                    total_signals: 32
+                    active_signals: 21
+                    pipeline_dollars: 335562658.31
+                    pipeline_display: $335.6M
+                    n_types: 9
+                  signals:
+                  - type: infrastructure_capex
+                    title: 10 Year Road Renewal Program
+                    description: Council has approved an additional $20 million for road renewal projects over the next four years, enhancing road infrastructure across the region.
+                    evidence: Endorses the inclusion of an additional $20 million in Council funding to support an increase in Council's planned capital Road Renewal Program over the next four years.
+                    stage: approved
+                    bucket: active
+                    dollar_value: 20000000.0
+                    dollar_display: $20M
+                    meeting_date: 25 March 2025
+                    location: LGA-wide
+                    time_horizon: 2-5 years
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+        area_name: Belmont North
+        area_level: suburb
+        definition: Council meeting-minute signals — capex commitments, infrastructure and community-facility projects, zoning amendments and environmental programs — extracted from the LGA's published minutes. pipeline_dollars is the sum of every signal's committed/estimated dollar value; signals with no stated value contribute 0.
+        summary:
+          total_signals: 32
+          active_signals: 21
+          pipeline_dollars: 335562658.31
+          pipeline_display: $335.6M
+          n_types: 9
+        signals:
+        - type: infrastructure_capex
+          title: 10 Year Road Renewal Program
+          description: Council has approved an additional $20 million for road renewal projects over the next four years, enhancing road infrastructure across the region.
+          evidence: Endorses the inclusion of an additional $20 million in Council funding to support an increase in Council's planned capital Road Renewal Program over the next four years.
+          stage: approved
+          bucket: active
+          dollar_value: 20000000.0
+          dollar_display: $20M
+          meeting_date: 25 March 2025
+          location: LGA-wide
+          time_horizon: 2-5 years
+      x-price-cents: 20
+components:
+  schemas:
+    CouncilIntelligenceSummary:
+      properties:
+        total_signals:
+          type: integer
+          title: Total Signals
+          description: Distinct signals (deduped by title).
+        active_signals:
+          type: integer
+          title: Active Signals
+          description: Signals whose stage buckets as 'active'.
+        pipeline_dollars:
+          type: number
+          title: Pipeline Dollars
+          description: Sum of every signal's dollar_value (AUD).
+        pipeline_display:
+          type: string
+          title: Pipeline Display
+          description: Compact rendering of pipeline_dollars, e.g. '$335.6M'.
+        n_types:
+          type: integer
+          title: N Types
+          description: Distinct signal types present.
+      type: object
+      required:
+      - total_signals
+      - active_signals
+      - pipeline_dollars
+      - pipeline_display
+      - n_types
+      title: CouncilIntelligenceSummary
+      description: Headline rollup over the signal list.
+    ApiResponse_SuburbBuildingControls_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbBuildingControls'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbBuildingControls]
+    SupplySummary:
+      properties:
+        new_houses:
+          type: integer
+          title: New Houses
+          description: Total new houses across mesh blocks.
+        new_units:
+          type: integer
+          title: New Units
+          description: Total new units across mesh blocks.
+        total_new:
+          type: integer
+          title: Total New
+          description: Total new dwellings.
+        pct_houses:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct Houses
+          description: House share of new supply (%); null when zero supply.
+        pct_units:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct Units
+          description: Unit share of new supply (%); null when zero supply.
+      type: object
+      required:
+      - new_houses
+      - new_units
+      - total_new
+      title: SupplySummary
+      description: Suburb rollup of new supply (sum of per-mesh-block counts).
+    GeoJsonFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          description: Always 'Feature'.
+        geometry:
+          additionalProperties: true
+          type: object
+          title: Geometry
+          description: GeoJSON geometry (Polygon or MultiPolygon).
+        properties:
+          additionalProperties: true
+          type: object
+          title: Properties
+          description: Per-feature attributes — see the endpoint's example.
+      type: object
+      required:
+      - type
+      - geometry
+      - properties
+      title: GeoJsonFeature
+      description: RFC 7946 Feature — geometry + endpoint-specific properties.
+    SupplyMb:
+      properties:
+        mb_code:
+          type: string
+          title: Mb Code
+          description: ABS mesh-block code.
+        new_houses:
+          type: integer
+          title: New Houses
+          description: New houses appearing in GNAF.
+        new_units:
+          type: integer
+          title: New Units
+          description: New units appearing in GNAF.
+        total_new:
+          type: integer
+          title: Total New
+          description: Total new dwellings (houses + units).
+        pct_units:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct Units
+          description: Unit share of new supply (%); null when no new supply.
+      additionalProperties: true
+      type: object
+      required:
+      - mb_code
+      - new_houses
+      - new_units
+      - total_new
+      title: SupplyMb
+      description: New supply near one mesh block (0.5 km radius, last 24 months).
+    ApiResponse_SuburbPlanningAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbPlanningAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbPlanningAll]
+    ApiResponse_SuburbDensity_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbDensity'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbDensity]
+    ApiResponse_SuburbDevelopmentSupply_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbDevelopmentSupply'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbDevelopmentSupply]
+    ApiResponse_SuburbCouncilIntelligence_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbCouncilIntelligence'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbCouncilIntelligence]
+    ApiResponse_SuburbDevelopmentProfile_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbDevelopmentProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbDevelopmentProfile]
+    ApiResponse_SuburbConstructionActivity_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbConstructionActivity'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbConstructionActivity]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ZoningGroup:
+      properties:
+        label:
+          type: string
+          title: Label
+          description: Parent group name.
+        pct:
+          type: number
+          title: Pct
+          description: Share of zoned area (%).
+        color:
+          type: string
+          title: Color
+          description: Hex colour for map styling.
+      type: object
+      required:
+      - label
+      - pct
+      - color
+      title: ZoningGroup
+      description: Parent-group share of the suburb's zoned area.
+    SuburbDevelopmentSupply:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        summary:
+          $ref: '#/components/schemas/SupplySummary'
+          description: Suburb rollup.
+        mesh_blocks:
+          items:
+            $ref: '#/components/schemas/SupplyMb'
+          type: array
+          title: Mesh Blocks
+          description: Per-mesh-block rows, most new supply first.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - summary
+      - mesh_blocks
+      title: SuburbDevelopmentSupply
+      description: New dwelling supply — units vs houses per mesh block + rollup.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        mesh_blocks:
+        - mb_code: '10694560000'
+          new_houses: 15
+          new_units: 3
+          pct_units: 16.7
+          total_new: 18
+        summary:
+          new_houses: 650
+          new_units: 410
+          pct_houses: 61.3
+          pct_units: 38.7
+          total_new: 1060
+    ZoningLegendRow:
+      properties:
+        lay_class:
+          type: string
+          title: Lay Class
+          description: Zoning layer class (e.g. 'Low Density Residential').
+        sym_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sym Code
+          description: Zoning symbol code (e.g. 'R2').
+        parent:
+          type: string
+          title: Parent
+          description: Parent group — Environmental / Residential / Commercial / Other.
+        color:
+          type: string
+          title: Color
+          description: Hex colour for map styling.
+        pct:
+          type: number
+          title: Pct
+          description: Share of zoned area (%).
+      additionalProperties: true
+      type: object
+      required:
+      - lay_class
+      - parent
+      - color
+      - pct
+      title: ZoningLegendRow
+      description: One zoning class with its share of the suburb's zoned area.
+    ApiResponse_SuburbDevelopmentApplications_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbDevelopmentApplications'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbDevelopmentApplications]
+    HobControls:
+      properties:
+        zones_mapped:
+          type: integer
+          title: Zones Mapped
+          description: Number of height-control zones counted (RL reference levels >30m excluded).
+        most_common_height_m:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Most Common Height M
+          description: Modal height limit across mapped zones (metres).
+        pct_most_common:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct Most Common
+          description: Share of zones at the modal height (%).
+        legend:
+          items:
+            $ref: '#/components/schemas/BandShare'
+          type: array
+          title: Legend
+          description: Area share per height band.
+        geojson:
+          $ref: '#/components/schemas/GeoJsonFeatureCollection'
+          description: 'HOB polygons. Feature properties: height_m, units, band, color.'
+      additionalProperties: true
+      type: object
+      required:
+      - zones_mapped
+      - legend
+      - geojson
+      title: HobControls
+      description: Height-of-building controls summary + polygons.
+    SuburbDensity:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        dwellings_per_km2:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dwellings Per Km2
+          description: Dwelling density from the Microburbs suburb profile — the figure the suburb report headlines. Measured around the suburb's properties, so it differs from `boundary_dwellings_per_km2`. Null for suburbs with no profile row (mostly rural / non-residential SALs).
+        people_per_km2:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: People Per Km2
+          description: Population density from the same suburb profile, on the same denominator as `dwellings_per_km2`.
+        density_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Density Level
+          description: 'Band the report labels `dwellings_per_km2` with: Low (<1,000), Mid (1,000–2,999), High (3,000+).'
+        area_km2:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Area Km2
+          description: Land area of the ABS SAL boundary in km², summed from the equal-area mesh-block areas ABS publishes.
+        dwellings:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dwellings
+          description: Census dwelling count across the suburb's mesh blocks.
+        population:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Population
+          description: Census usual-resident population across the suburb's mesh blocks.
+        boundary_dwellings_per_km2:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Boundary Dwellings Per Km2
+          description: '`dwellings / area_km2` — the whole-of-boundary ratio.'
+        boundary_people_per_km2:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Boundary People Per Km2
+          description: '`population / area_km2` — the whole-of-boundary ratio.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: SuburbDensity
+      description: "Dwelling and population density for a suburb, plus the land area and\ncounts behind it.\n\nTwo density measures ship together on purpose — they are computed on\ndifferent denominators and do not agree:\n\n* ``dwellings_per_km2`` / ``people_per_km2`` are the Microburbs\n  suburb-profile figures, and are what the Microburbs suburb report\n  headlines.\n* ``boundary_dwellings_per_km2`` / ``boundary_people_per_km2`` are the\n  plain whole-of-boundary ratios — exactly ``dwellings / area_km2`` and\n  ``population / area_km2``.\n\nThe profile figures are measured around the suburb's properties, not\nacross its whole polygon, so they differ from the boundary ratios in\neither direction (Belmont North: 1,002 vs 676; Bondi: 4,970 vs 6,193).\nPick the one that matches your question: profile density for \"how\nbuilt-up is the area people actually live in\", boundary density for\n\"how many dwellings per km² of suburb\"."
+      example:
+        area_km2: 3.6314
+        area_level: suburb
+        area_name: Belmont North
+        boundary_dwellings_per_km2: 675.5
+        boundary_people_per_km2: 1729.4
+        density_level: Mid
+        dwellings: 2453
+        dwellings_per_km2: 1002
+        people_per_km2: 2575
+        population: 6280
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    GeoJsonFeatureCollection:
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+          title: Type
+          description: Always 'FeatureCollection'.
+        features:
+          items:
+            $ref: '#/components/schemas/GeoJsonFeature'
+          type: array
+          title: Features
+          description: Feature list.
+      type: object
+      required:
+      - type
+      - features
+      title: GeoJsonFeatureCollection
+      description: RFC 7946 FeatureCollection.
+    ApiResponse_SuburbZoningMap_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbZoningMap'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbZoningMap]
+    ConstructionSummary:
+      properties:
+        mb_count:
+          type: integer
+          title: Mb Count
+          description: Mesh blocks with satellite coverage.
+        active_mb_count:
+          type: integer
+          title: Active Mb Count
+          description: Mesh blocks with a positive construction score.
+        avg_construction_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Construction Score
+          description: Mean construction score across mesh blocks (signed composite index, ~-1 to +1; positive = net building activity).
+        avg_ndbi_change:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Ndbi Change
+          description: Mean NDBI change across mesh blocks.
+      type: object
+      required:
+      - mb_count
+      - active_mb_count
+      title: ConstructionSummary
+      description: Suburb rollup of per-mesh-block construction signals.
+    SuburbZoningMap:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        legend:
+          items:
+            $ref: '#/components/schemas/ZoningLegendRow'
+          type: array
+          title: Legend
+          description: Per-class area shares, largest first.
+        groups:
+          items:
+            $ref: '#/components/schemas/ZoningGroup'
+          type: array
+          title: Groups
+          description: Parent-group area shares (Environmental / Residential / Commercial / Other).
+        geojson:
+          $ref: '#/components/schemas/GeoJsonFeatureCollection'
+          description: 'Zoning polygons. Feature properties: lay_class, sym_code, parent, color.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - legend
+      - groups
+      - geojson
+      title: SuburbZoningMap
+      description: Zoning polygons clipped to the suburb boundary, plus legend shares.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.6695
+                  - -33.0018
+                - - 151.6702
+                  - -33.0021
+                - - 151.6698
+                  - -33.0027
+                - - 151.6695
+                  - -33.0018
+              type: Polygon
+            properties:
+              lay_class: Environmental Conservation
+              sym_code: C2
+              parent: Environmental
+              color: '#27ae60'
+            type: Feature
+          type: FeatureCollection
+        groups:
+        - color: '#27ae60'
+          label: Environmental
+          pct: 24.3
+        - color: '#e85d75'
+          label: Residential
+          pct: 64.1
+        - color: '#f6c445'
+          label: Commercial
+          pct: 1.6
+        - color: '#b8b8b8'
+          label: Other
+          pct: 10.0
+        legend:
+        - color: '#e85d75'
+          lay_class: Low Density Residential
+          parent: Residential
+          pct: 62.4
+          sym_code: R2
+        - color: '#27ae60'
+          lay_class: Environmental Conservation
+          parent: Environmental
+          pct: 21.9
+          sym_code: C2
+    SuburbDevelopmentProfile:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        apartment_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Apartment Pct
+          description: Apartments as a share of the dwelling stock (%).
+        avg_lot_m2:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Avg Lot M2
+          description: Average residential lot size (m²).
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: SuburbDevelopmentProfile
+      description: Dwelling-mix scalars from the suburb-profile build.
+      example:
+        apartment_pct: 1.2
+        area_level: suburb
+        area_name: Belmont North
+        avg_lot_m2: 758
+    DevelopmentDa:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+          description: Source DA record id.
+        title:
+          type: string
+          title: Title
+          description: Proposed works description.
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Cleaned site address.
+        lat:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lat
+          description: Latitude (null for some sources, e.g. VIC).
+        lng:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lng
+          description: Longitude.
+        stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stage
+          description: Raw stage code (e.g. 'under_assessment').
+        stage_display:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stage Display
+          description: Human-readable stage.
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date
+          description: Lodged date (YYYY-MM-DD).
+        category:
+          type: string
+          title: Category
+          description: Coarse category from the title classifier.
+        dollar_value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Dollar Value
+          description: Estimated works value (AUD).
+      additionalProperties: true
+      type: object
+      required:
+      - title
+      - category
+      title: DevelopmentDa
+      description: One development application.
+    ApiResponse_SuburbCouncilRates_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbCouncilRates'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbCouncilRates]
+    ApiResponse_list_DaRow__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/DaRow'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[DaRow]]
+    SuburbCouncilRates:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        lga:
+          type: string
+          title: Lga
+          description: Local government area the suburb belongs to.
+        avg_rate_aud_yr:
+          type: integer
+          title: Avg Rate Aud Yr
+          description: Average annual residential rate (AUD per year).
+        data_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Data Source
+          description: Provenance of the rate figure (e.g. 'NSW_OLG_AVG').
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - lga
+      - avg_rate_aud_yr
+      title: SuburbCouncilRates
+      description: Average annual residential council rate for the suburb's LGA.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        avg_rate_aud_yr: 1584
+        data_source: NSW_OLG_AVG
+        lga: Lake Macquarie
+    SuburbDevelopmentApplications:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        total:
+          type: integer
+          title: Total
+          description: Applications returned (capped at 100).
+        min_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Min Date
+          description: Earliest DA on record for the suburb (full history, not just the returned list).
+        max_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Max Date
+          description: Most recent DA date on record.
+        categories:
+          items:
+            $ref: '#/components/schemas/DaCategoryCount'
+          type: array
+          title: Categories
+          description: Category counts across the returned applications.
+        applications:
+          items:
+            $ref: '#/components/schemas/DevelopmentDa'
+          type: array
+          title: Applications
+          description: DA records, newest first.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - total
+      - categories
+      - applications
+      title: SuburbDevelopmentApplications
+      description: Recent development applications (up to 100, newest first).
+      example:
+        applications:
+        - address: 38 Buttaba Avenue Belmont North NSW 2280
+          category: New Dwelling
+          date: '2026-06-18'
+          dollar_value: 271740.0
+          id: 99033512
+          lat: -33.02082551
+          lng: 151.676206648
+          stage: under_assessment
+          stage_display: Under Assessment
+          title: Secondary dwelling
+        area_level: suburb
+        area_name: Belmont North
+        categories:
+        - category: New Dwelling
+          count: 21
+        - category: Renovation
+          count: 48
+        - category: Demolition
+          count: 9
+        - category: Other
+          count: 22
+        max_date: '2026-06-18'
+        min_date: '2019-12-02'
+        total: 100
+    DaRow:
+      properties:
+        area_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Name
+          description: Suburb (SAL) name — may be empty for per-address rows.
+        area_level:
+          type: string
+          title: Area Level
+          description: '''suburb'' or ''address''.'
+        suburb:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suburb
+          description: Suburb the DA is in (when area_level=='address').
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Free-text description of the proposed works.
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date
+          description: DA lodged date (YYYY-MM-DD).
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Coarse category — 'Renovation', 'New Dwelling', etc.
+      additionalProperties: true
+      type: object
+      required:
+      - area_level
+      title: DaRow
+      description: One development-application record near the suburb.
+    SuburbConstructionActivity:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        summary:
+          $ref: '#/components/schemas/ConstructionSummary'
+          description: Suburb rollup.
+        mesh_blocks:
+          items:
+            $ref: '#/components/schemas/ConstructionMb'
+          type: array
+          title: Mesh Blocks
+          description: Per-mesh-block rows, highest score first.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - summary
+      - mesh_blocks
+      title: SuburbConstructionActivity
+      description: Satellite-detected construction activity per mesh block + rollup.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        mesh_blocks:
+        - construction_score: 0.0849
+          mb_code: '10436570000'
+          ndbi_2019: -0.148
+          ndbi_2023: -0.1056
+          ndbi_change: 0.0423
+          ndvi_change: -0.0426
+        summary:
+          active_mb_count: 3
+          avg_construction_score: -0.0456
+          avg_ndbi_change: -0.02
+          mb_count: 66
+    DaCount:
+      properties:
+        da_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Da Count
+          description: Number of recent DAs in the suburb.
+      type: object
+      required:
+      - da_count
+      title: DaCount
+      example:
+        da_count: 0
+    DaCategoryCount:
+      properties:
+        category:
+          type: string
+          title: Category
+          description: Education / New Dwelling / Renovation / Demolition / Commercial / Other.
+        count:
+          type: integer
+          title: Count
+          description: Applications in this category.
+      type: object
+      required:
+      - category
+      - count
+      title: DaCategoryCount
+      description: DA count for one category.
+    SuburbPlanningAll:
+      properties:
+        da_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Da Count
+        da_list:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/DaRow'
+            type: array
+          - type: 'null'
+          title: Da List
+      type: object
+      title: SuburbPlanningAll
+      example:
+        da_count: 0
+        da_list:
+        - area_level: address
+          area_name: ''
+          category: Renovation
+          date: '2026-04-15'
+          description: Alterations and additions to existing dwelling.
+          suburb: Belmont North
+    ApiResponse_DaCount_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/DaCount'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[DaCount]
+    SuburbBuildingControls:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        hob:
+          anyOf:
+          - $ref: '#/components/schemas/HobControls'
+          - type: 'null'
+          description: Height-of-building controls.
+        fsr:
+          anyOf:
+          - $ref: '#/components/schemas/FsrControls'
+          - type: 'null'
+          description: Floor-space-ratio controls.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: SuburbBuildingControls
+      description: 'Height-of-building + floor-space-ratio planning controls.
+
+
+        Either block can be null — many LGAs map HOB but not FSR (or vice
+
+        versa). A 404 means neither layer exists for the suburb.'
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        hob:
+          geojson:
+            features:
+            - geometry:
+                coordinates:
+                - - - 151.668
+                    - -33.017
+                  - - 151.672
+                    - -33.017
+                  - - 151.672
+                    - -33.02
+                  - - 151.668
+                    - -33.017
+                type: Polygon
+              properties:
+                height_m: 8.5
+                units: m
+                band: ≤ 8.5m
+                color: '#fef9c3'
+              type: Feature
+            type: FeatureCollection
+          legend:
+          - color: '#fef9c3'
+            label: ≤ 8.5m
+            pct: 84.2
+          - color: '#fbbf24'
+            label: 8.5–12m
+            pct: 15.8
+          most_common_height_m: 8.5
+          pct_most_common: 71.0
+          zones_mapped: 17
+    FsrControls:
+      properties:
+        median_fsr:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Fsr
+          description: Area-weighted median FSR (e.g. 1.5 = 1.5:1).
+        breakdown:
+          items:
+            $ref: '#/components/schemas/BandShare'
+          type: array
+          title: Breakdown
+          description: Area share per FSR band.
+        geojson:
+          $ref: '#/components/schemas/GeoJsonFeatureCollection'
+          description: 'FSR polygons. Feature properties: fsr, band, color.'
+      additionalProperties: true
+      type: object
+      required:
+      - breakdown
+      - geojson
+      title: FsrControls
+      description: Floor-space-ratio controls summary + polygons.
+    SuburbCouncilIntelligence:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        definition:
+          type: string
+          title: Definition
+          description: What these signals are and how measured.
+        summary:
+          $ref: '#/components/schemas/CouncilIntelligenceSummary'
+          description: Headline rollup.
+        signals:
+          items:
+            $ref: '#/components/schemas/CouncilSignal'
+          type: array
+          title: Signals
+          description: Signals, largest dollar_value first.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - definition
+      - summary
+      - signals
+      title: SuburbCouncilIntelligence
+      description: Council capex / project-pipeline signals for the suburb's LGA.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        definition: Council meeting-minute signals — capex commitments, infrastructure and community-facility projects, zoning amendments and environmental programs — extracted from the LGA's published minutes. pipeline_dollars is the sum of every signal's committed/estimated dollar value; signals with no stated value contribute 0.
+        signals:
+        - bucket: active
+          description: Council has approved an additional $20 million for road renewal projects over the next four years, enhancing road infrastructure across the region.
+          dollar_display: $20M
+          dollar_value: 20000000.0
+          evidence: Endorses the inclusion of an additional $20 million in Council funding to support an increase in Council's planned capital Road Renewal Program over the next four years.
+          location: LGA-wide
+          meeting_date: 25 March 2025
+          stage: approved
+          time_horizon: 2-5 years
+          title: 10 Year Road Renewal Program
+          type: infrastructure_capex
+        summary:
+          active_signals: 21
+          n_types: 9
+          pipeline_display: $335.6M
+          pipeline_dollars: 335562658.31
+          total_signals: 32
+    CouncilSignal:
+      properties:
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+          description: Signal category slug — e.g. 'infrastructure_capex', 'community_facility', 'zoning_amendment', 'environmental', 'transport', 'other'.
+        title:
+          type: string
+          title: Title
+          description: Signal title as minuted. Unique within the list.
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Plain-English summary of what the council resolved.
+        evidence:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Evidence
+          description: Supporting quote from the council minutes.
+        stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stage
+          description: Raw stage slug — 'approved', 'funded', 'proposed', 'under_review', …
+        bucket:
+          type: string
+          title: Bucket
+          description: 'Stage rollup: ''active'' (funded/approved/committed/in_progress/under_construction), ''proposals'' (proposed/planning/consultation/draft/under_review), or ''other''.'
+        dollar_value:
+          type: number
+          title: Dollar Value
+          description: Committed / estimated value in AUD. 0 when the minutes state no figure (or the stated figure is unparseable).
+        dollar_display:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dollar Display
+          description: Compact rendering of dollar_value, e.g. '$20M'. None when 0.
+        meeting_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Meeting Date
+          description: Council meeting date as minuted — free text, format varies ('25 March 2025', '22/03/2021'). None when unstated.
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+          description: Where the signal applies, e.g. 'LGA-wide'.
+        time_horizon:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Time Horizon
+          description: Stated delivery horizon, e.g. 'immediate', '2-5 years'.
+      additionalProperties: true
+      type: object
+      required:
+      - title
+      - bucket
+      - dollar_value
+      title: CouncilSignal
+      description: One council-minute signal — a project, capex commitment or decision.
+    ConstructionMb:
+      properties:
+        mb_code:
+          type: string
+          title: Mb Code
+          description: ABS mesh-block code for the small area these readings cover, as a digit string. Mesh blocks are the smallest ABS geography — roughly a block of 30–60 dwellings.
+        construction_score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Construction Score
+          description: 'The headline ''has building happened here'' indicator: how much the built-up index rose *net of* how much vegetation fell (`ndbi_change − ndvi_change`). A dimensionless signed index in roughly −1…+1, and in practice much nearer zero than that. Positive means hard surface gained while greenery was lost — the signature of construction; negative means the reverse. Rank mesh blocks by it rather than reading an absolute value, and remember it measures surface change, not dwellings built.'
+        ndbi_change:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Ndbi Change
+          description: Change in built-up surface between 2019 and 2023 — `ndbi_2023 − ndbi_2019`, so positive means more hard surface (roofs, concrete, cleared ground) at the end of the window. Dimensionless, typically a small fraction. On its own it is confounded by dry conditions, since bare dry soil also reads as built-up; `construction_score` is the de-confounded version.
+        ndbi_2019:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Ndbi 2019
+          description: 'The 2019 baseline built-up reading (NDBI — Normalised Difference Built-up Index): a dimensionless ratio in −1…+1 where higher means more hard surface and lower means more vegetation or water. Given so you can see the starting point, e.g. a bare paddock vs an already dense block.'
+        ndbi_2023:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Ndbi 2023
+          description: The same built-up reading for 2023, on the identical −1…+1 scale. The difference against `ndbi_2019` is `ndbi_change`.
+        ndvi_change:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Ndvi Change
+          description: Change in vegetation cover 2019→2023 (NDVI, the greenness counterpart to NDBI, also dimensionless). Negative means vegetation was lost — land cleared — which alongside a rising `ndbi_change` is the strongest sign of development. Positive means the area got greener.
+      additionalProperties: true
+      type: object
+      required:
+      - mb_code
+      title: ConstructionMb
+      description: 'Whether a mesh block looks like it has been built on lately, judged
+
+        from satellite imagery.
+
+
+        The method: compare two satellite readings of the same ground, one from
+
+        2019 and one from 2023. Hard surfaces (roofs, concrete, cleared pads)
+
+        reflect light differently from vegetation, so more hard surface plus
+
+        less greenery is the fingerprint of building work. Every number below is
+
+        a **dimensionless index, not a count of dwellings** — it tells you where
+
+        something changed, never what or how many.
+
+
+        Two limits worth stating to any end user: the window is a single
+
+        2019→2023 comparison, so this is a *presence* signal rather than a
+
+        timeline and it cannot date anything; and dry ground can read like bare
+
+        construction ground, which is exactly why `construction_score` also
+
+        requires vegetation to have fallen.'
+    BandShare:
+      properties:
+        label:
+          type: string
+          title: Label
+          description: Band label (e.g. '8.5–12m', '≤ 0.5:1').
+        color:
+          type: string
+          title: Color
+          description: Hex colour for map styling.
+        pct:
+          type: number
+          title: Pct
+          description: Share of mapped area in this band (%).
+      type: object
+      required:
+      - label
+      - color
+      - pct
+      title: BandShare
+      description: One legend band with its share of the mapped area.
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

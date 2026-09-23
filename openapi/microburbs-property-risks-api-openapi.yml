@@ -1,0 +1,1745 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Property - Risks API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Property - Risks
+  description: Bushfire, flood, heritage, landslide, erosion, etc.
+paths:
+  /v1/properties/{gnaf_id}/risks/bushfire:
+    get:
+      tags:
+      - Property - Risks
+      summary: Bushfire-prone overlay
+      description: 'Bushfire-prone-area overlays within 1 km. Read `on_property` — a returned
+
+        row means "found nearby", not "this property is in a bushfire zone".
+
+
+        **Price: 15¢ per call.**'
+      operationId: get_property_risk_bushfire_v1_properties__gnaf_id__risks_bushfire_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  name: Fire
+                  value: On property
+                  on_property: true
+                  nearest_distance_m: 0.0
+                  search_radius_m: 1000
+                  features_within_radius: 25
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_level: Layer
+        area_name: Risk Layer
+        name: Fire
+        value: On property
+        on_property: true
+        nearest_distance_m: 0.0
+        search_radius_m: 1000
+        features_within_radius: 25
+      x-price-cents: 15
+  /v1/properties/{gnaf_id}/risks/flood:
+    get:
+      tags:
+      - Property - Risks
+      summary: Flood overlay
+      description: 'Modelled flood overlays within 1 km. Read `on_property` — a returned row
+
+        means "found nearby", not "this property floods".
+
+
+        **Price: 10¢ per call.**'
+      operationId: get_property_risk_flood_v1_properties__gnaf_id__risks_flood_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  name: Flood
+                  value: Not on property; nearest 257 m away
+                  on_property: false
+                  nearest_distance_m: 257.0
+                  search_radius_m: 1000
+                  features_within_radius: 9
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_level: Layer
+        area_name: Risk Layer
+        name: Flood
+        value: Not on property; nearest 257 m away
+        on_property: false
+        nearest_distance_m: 257.0
+        search_radius_m: 1000
+        features_within_radius: 9
+      x-price-cents: 10
+  /v1/properties/{gnaf_id}/risks/historical-flood:
+    get:
+      tags:
+      - Property - Risks
+      summary: Historical-flood overlay
+      description: 'Recorded historical flood extents within 1 km. Read `on_property` — a
+
+        returned row means "found nearby", not "this property flooded".
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_property_risk_historical_flood_v1_properties__gnaf_id__risks_historical_flood_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  features_within_radius: 25
+                  name: Fire
+                  nearest_distance_m: 0.0
+                  on_property: true
+                  search_radius_m: 1000
+                  value: On property
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+  /v1/properties/{gnaf_id}/risks/heritage:
+    get:
+      tags:
+      - Property - Risks
+      summary: Heritage overlay
+      description: 'Heritage-listing overlays within 1 km. Read `on_property` — a returned row
+
+        means "found nearby", not "this property is heritage-listed".
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_property_risk_heritage_v1_properties__gnaf_id__risks_heritage_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  name: Heritage
+                  value: Not on property; nearest 174 m away
+                  on_property: false
+                  nearest_distance_m: 174.0
+                  search_radius_m: 1000
+                  features_within_radius: 8
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_level: Layer
+        area_name: Risk Layer
+        name: Heritage
+        value: Not on property; nearest 174 m away
+        on_property: false
+        nearest_distance_m: 174.0
+        search_radius_m: 1000
+        features_within_radius: 8
+      x-price-cents: 3
+  /v1/properties/{gnaf_id}/risks/public-housing:
+    get:
+      tags:
+      - Property - Risks
+      summary: Public-housing overlay
+      description: 'Public-housing concentration overlay near the parcel.
+
+
+        **Price: 4¢ per call.**'
+      operationId: get_property_risk_public_housing_v1_properties__gnaf_id__risks_public_housing_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  name: Public Housing
+                  value: 14.5%
+                  value_unit: Properties Proportion
+                  on_property: true
+                  nearest_distance_m: 0.0
+                  search_radius_m: 1000
+                - area_level: Layer
+                  area_name: Risk Layer
+                  name: Public Housing
+                  value: 3.4%
+                  value_unit: Properties Proportion
+                  on_property: false
+                  nearest_distance_m: 486.0
+                  search_radius_m: 1000
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_level: Layer
+        area_name: Risk Layer
+        name: Public Housing
+        value: 14.5%
+        value_unit: Properties Proportion
+        on_property: true
+        nearest_distance_m: 0.0
+        search_radius_m: 1000
+      - area_level: Layer
+        area_name: Risk Layer
+        name: Public Housing
+        value: 3.4%
+        value_unit: Properties Proportion
+        on_property: false
+        nearest_distance_m: 486.0
+        search_radius_m: 1000
+      x-price-cents: 4
+  /v1/properties/{gnaf_id}/risks/landslide:
+    get:
+      tags:
+      - Property - Risks
+      summary: Landslide overlay
+      description: 'Landslide-risk overlays within 1 km. Read `on_property` — a returned row
+
+        means "found nearby", not "this property is at landslide risk".
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_property_risk_landslide_v1_properties__gnaf_id__risks_landslide_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  name: Landslide
+                  value: On property
+                  on_property: true
+                  nearest_distance_m: 0.0
+                  search_radius_m: 1000
+                  features_within_radius: 2
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_level: Layer
+        area_name: Risk Layer
+        name: Landslide
+        value: On property
+        on_property: true
+        nearest_distance_m: 0.0
+        search_radius_m: 1000
+        features_within_radius: 2
+      x-price-cents: 3
+  /v1/properties/{gnaf_id}/risks/erosion:
+    get:
+      tags:
+      - Property - Risks
+      summary: Erosion overlay
+      description: 'Coastal / soil erosion overlays within 1 km. Read `on_property` — a
+
+        returned row means "found nearby", not "this property is eroding".
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_property_risk_erosion_v1_properties__gnaf_id__risks_erosion_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  features_within_radius: 25
+                  name: Fire
+                  nearest_distance_m: 0.0
+                  on_property: true
+                  search_radius_m: 1000
+                  value: On property
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 3
+  /v1/properties/{gnaf_id}/risks/environment:
+    get:
+      tags:
+      - Property - Risks
+      summary: Environmental-risk overlay
+      description: 'Environmental-risk overlay (contamination, salinity, ...).
+
+
+        **Price: 3¢ per call.**'
+      operationId: get_property_risk_environment_v1_properties__gnaf_id__risks_environment_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  name: Environment
+                  value: Not on property; nearest 640 m away
+                  on_property: false
+                  nearest_distance_m: 640.0
+                  search_radius_m: 1000
+                  features_within_radius: 3
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_level: Layer
+        area_name: Risk Layer
+        name: Environment
+        value: Not on property; nearest 640 m away
+        on_property: false
+        nearest_distance_m: 640.0
+        search_radius_m: 1000
+        features_within_radius: 3
+      x-price-cents: 3
+  /v1/properties/{gnaf_id}/risks/hv-power-line:
+    get:
+      tags:
+      - Property - Risks
+      summary: High-voltage power-line overlay
+      description: 'High-voltage power-line easement near the parcel.
+
+
+        **Price: 2¢ per call.**'
+      operationId: get_property_risk_hv_power_line_v1_properties__gnaf_id__risks_hv_power_line_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  name: HV Power Line
+                  value: Not on property; nearest 341 m away
+                  on_property: false
+                  nearest_distance_m: 341.0
+                  search_radius_m: 1000
+                  features_within_radius: 1
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-sample-response:
+      - area_level: Layer
+        area_name: Risk Layer
+        name: HV Power Line
+        value: Not on property; nearest 341 m away
+        on_property: false
+        nearest_distance_m: 341.0
+        search_radius_m: 1000
+        features_within_radius: 1
+      x-price-cents: 2
+  /v1/properties/{gnaf_id}/risks/mobile-black-spot:
+    get:
+      tags:
+      - Property - Risks
+      summary: Mobile black-spot overlay
+      description: 'Mobile-coverage black-spot overlay near the parcel.
+
+
+        **Price: 2¢ per call.**'
+      operationId: get_property_risk_mobile_black_spot_v1_properties__gnaf_id__risks_mobile_black_spot_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_list_RiskRecord__'
+              example:
+                data:
+                - area_level: Layer
+                  area_name: Risk Layer
+                  features_within_radius: 25
+                  name: Fire
+                  nearest_distance_m: 0.0
+                  on_property: true
+                  search_radius_m: 1000
+                  value: On property
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 2
+  /v1/properties/{gnaf_id}/risks/all:
+    get:
+      tags:
+      - Property - Risks
+      summary: All property risk overlays — bundle
+      description: 'Every property-level risk overlay in one call. Flat 30¢ — may grow
+
+        without increasing the bundle price as new overlays are added.
+
+
+        With ``?geojson=true`` each risk that has a polygon overlay also carries
+
+        its 1km-radius-clipped `geojson` FeatureCollection + `geojson_meta`.
+
+
+        **Price: 48¢ per call.**'
+      operationId: get_property_risks_all_v1_properties__gnaf_id__risks_all_get
+      parameters:
+      - name: gnaf_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Gnaf Id
+          example: GANSW704074813
+        example: GANSW704074813
+      - name: geojson
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+          default: false
+          title: Geojson
+        description: When true, add a `geojson` FeatureCollection of the hazard polygons clipped to a 1km-radius circle around the property, plus `geojson_meta` (default false — response unchanged).
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_AllRisks_'
+              example:
+                data:
+                  bushfire:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 25
+                    name: Fire
+                    nearest_distance_m: 0.0
+                    on_property: true
+                    search_radius_m: 1000
+                    value: On property
+                  flood:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 9
+                    name: Flood
+                    nearest_distance_m: 257.0
+                    on_property: false
+                    search_radius_m: 1000
+                    value: Not on property; nearest 257 m away
+                  historical_flood:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 2
+                    name: Historically Flooded
+                    nearest_distance_m: 413.0
+                    on_property: false
+                    search_radius_m: 1000
+                    value: Not on property; nearest 413 m away
+                  heritage:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 8
+                    name: Heritage
+                    nearest_distance_m: 174.0
+                    on_property: false
+                    search_radius_m: 1000
+                    value: Not on property; nearest 174 m away
+                  public_housing:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    name: Public Housing
+                    nearest_distance_m: 0.0
+                    on_property: true
+                    search_radius_m: 1000
+                    value: 14.5%
+                    value_unit: Properties Proportion
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    name: Public Housing
+                    nearest_distance_m: 486.0
+                    on_property: false
+                    search_radius_m: 1000
+                    value: 3.4%
+                    value_unit: Properties Proportion
+                  landslide:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 2
+                    name: Landslide
+                    nearest_distance_m: 0.0
+                    on_property: true
+                    search_radius_m: 1000
+                    value: On property
+                  erosion:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 4
+                    name: Erosion
+                    nearest_distance_m: 245.0
+                    on_property: false
+                    search_radius_m: 1000
+                    value: Not on property; nearest 245 m away
+                  environment:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 3
+                    name: Environment
+                    nearest_distance_m: 640.0
+                    on_property: false
+                    search_radius_m: 1000
+                    value: Not on property; nearest 640 m away
+                  hv_power_line:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 1
+                    name: HV Power Line
+                    nearest_distance_m: 341.0
+                    on_property: false
+                    search_radius_m: 1000
+                    value: Not on property; nearest 341 m away
+                  mobile_black_spot:
+                  - area_level: Layer
+                    area_name: Risk Layer
+                    features_within_radius: 1
+                    name: Mobile Black Spot
+                    nearest_distance_m: 812.0
+                    on_property: false
+                    search_radius_m: 1000
+                    value: Not on property; nearest 812 m away
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 48
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    RiskRecord:
+      properties:
+        area_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Level
+          description: Constant `'Layer'` on property risks — a placeholder marking these as map-layer hits rather than statistics for a suburb or region. It is not a geographic level and carries no information; the suburb risk endpoints use this slot for a real one.
+        area_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Name
+          description: Constant `'Risk Layer'` on property risks. Like `area_level`, a placeholder that keeps the row shape consistent with area-based responses — not the name of any actual area, and not the name of the hazard (that is `name`).
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Which hazard this record is about — a fixed label per overlay, e.g. 'Fire', 'Flood', 'Historically Flooded', 'Landslide', 'Erosion', 'Heritage', 'Environment', 'HV Power Line', 'Mobile Black Spot', 'Public Housing'. Suitable for display as-is.
+        value:
+          anyOf:
+          - type: string
+          - type: number
+          - type: 'null'
+          title: Value
+          description: 'A display string summarising this record. On hazard overlays (fire, flood, landslide, erosion, heritage, environment, power lines, black spots) it states the containment result in words — `''On property''`, or `''Not on property; nearest 174 m away''`. It is prose for humans: parse `on_property` and `nearest_distance_m` instead. On public-housing records it is instead a preformatted percentage such as `''3.4%''` (see `value_unit`). Do not parse it as a number without checking `value_unit` first.'
+        on_property:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: On Property
+          description: '**Whether the hazard actually covers this property**, as opposed to merely existing nearby. True when a feature of this overlay contains the property''s address point. This is the field to gate any ''this property is in a flood/bushfire/heritage zone'' statement on — record presence alone only means ''found within `search_radius_m`''.
+
+
+            Two overlays are line/point data rather than zones — HV power lines (`''HV Power Line''`) and mobile black spots (`''Mobile Black Spot''`) — and for those `on_property` is false for every property by construction; `nearest_distance_m` is the signal there. On public-housing records it marks the one Census area the property actually sits in.'
+        nearest_distance_m:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nearest Distance M
+          description: Metres from the property's address point to the nearest feature of this overlay, measured geodesically and reported to the whole metre. `0.0` exactly when `on_property` is true. When `on_property` is false this is how far away the hazard really is — a heritage record at 174 m and one at 950 m are both 'found', and only this field separates them. On public-housing records it is the distance to that record's Census area. Accurate to about 2% and biased very slightly long (it never under-reports the gap); at close range the error is sub-metre.
+        search_radius_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Search Radius M
+          description: The radius searched around the property, in metres (1000). Any record you receive was found inside this circle; anything beyond it was not looked for. Present so the presence rule is explicit rather than folklore.
+        features_within_radius:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Features Within Radius
+          description: How many features of this overlay fall inside `search_radius_m`. Separates 'one stray polygon clips the corner of the neighbourhood' from 'the whole area is mapped'. Absent on public-housing records, where each record already is one Census area.
+        value_unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Value Unit
+          description: What `value` is measured in, and the flag for whether it is a number at all. Null on hazard overlays, whose `value` is the containment sentence. `'Properties Proportion'` on public-housing records, meaning `value` is the share of dwellings in a nearby small Census area that are public housing, written as a percentage string. Public housing can return several records — one per nearby Census area that clears a minimum share — so expect a list, not a single figure.
+        geojson:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Geojson
+          description: GeoJSON FeatureCollection of the hazard polygons for this overlay, ST_Intersection-clipped to a 1km-radius circle around the property and simplified for browser use. Present only when the request passes `?geojson=true`; absent (and the response byte-identical to before) otherwise.
+        geojson_meta:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Geojson Meta
+          description: Clip / simplify / truncation metadata for `geojson` (clip_method='1km_radius', radius_m, simplify tolerance, coordinate precision, feature/byte caps, and whether the size cap truncated the output). Present only with `?geojson=true`.
+      additionalProperties: true
+      type: object
+      title: RiskRecord
+      description: 'One hazard overlay found near the property.
+
+
+        **A record means the hazard exists within 1 km — read `on_property` to
+
+        learn whether it covers the property itself.** Every overlay is searched
+
+        inside a 1 km circle around the address point, so the presence of a
+
+        record on its own says only *there is mapped hazard land in this
+
+        neighbourhood*. Most records are proximity hits: the property is not in
+
+        the zone. Never render "a bushfire record came back" as "this property
+
+        is bushfire-prone" — check `on_property` first, and quote
+
+        `nearest_distance_m` when it is false.
+
+
+        `on_property` is tested against the address point (the geocoded location
+
+        of the dwelling), not a surveyed parcel boundary, so a zone whose edge
+
+        runs through the block can read false while still clipping the land. It
+
+        is a strong indication, not a statutory answer: nothing here substitutes
+
+        for a planning certificate.'
+      example:
+        area_level: Layer
+        area_name: Risk Layer
+        features_within_radius: 25
+        name: Fire
+        nearest_distance_m: 0.0
+        on_property: true
+        search_radius_m: 1000
+        value: On property
+    AllRisks:
+      properties:
+        bushfire:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Bushfire
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 25
+            name: Fire
+            nearest_distance_m: 0.0
+            on_property: true
+            search_radius_m: 1000
+            value: On property
+        flood:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Flood
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 9
+            name: Flood
+            nearest_distance_m: 257.0
+            on_property: false
+            search_radius_m: 1000
+            value: Not on property; nearest 257 m away
+        historical_flood:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Historical Flood
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 2
+            name: Historically Flooded
+            nearest_distance_m: 413.0
+            on_property: false
+            search_radius_m: 1000
+            value: Not on property; nearest 413 m away
+        heritage:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Heritage
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 8
+            name: Heritage
+            nearest_distance_m: 174.0
+            on_property: false
+            search_radius_m: 1000
+            value: Not on property; nearest 174 m away
+        public_housing:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Public Housing
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            name: Public Housing
+            nearest_distance_m: 0.0
+            on_property: true
+            search_radius_m: 1000
+            value: 14.5%
+            value_unit: Properties Proportion
+          - area_level: Layer
+            area_name: Risk Layer
+            name: Public Housing
+            nearest_distance_m: 486.0
+            on_property: false
+            search_radius_m: 1000
+            value: 3.4%
+            value_unit: Properties Proportion
+        landslide:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Landslide
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 2
+            name: Landslide
+            nearest_distance_m: 0.0
+            on_property: true
+            search_radius_m: 1000
+            value: On property
+        erosion:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Erosion
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 4
+            name: Erosion
+            nearest_distance_m: 245.0
+            on_property: false
+            search_radius_m: 1000
+            value: Not on property; nearest 245 m away
+        environment:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Environment
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 3
+            name: Environment
+            nearest_distance_m: 640.0
+            on_property: false
+            search_radius_m: 1000
+            value: Not on property; nearest 640 m away
+        hv_power_line:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Hv Power Line
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 1
+            name: HV Power Line
+            nearest_distance_m: 341.0
+            on_property: false
+            search_radius_m: 1000
+            value: Not on property; nearest 341 m away
+        mobile_black_spot:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Mobile Black Spot
+          example:
+          - area_level: Layer
+            area_name: Risk Layer
+            features_within_radius: 1
+            name: Mobile Black Spot
+            nearest_distance_m: 812.0
+            on_property: false
+            search_radius_m: 1000
+            value: Not on property; nearest 812 m away
+      type: object
+      title: AllRisks
+      description: 'Every property-level risk overlay in one call.
+
+
+        One failing helper doesn''t kill the bundle — nulls pass through.
+
+        Customer is still billed the full bundle price; check each field
+
+        for null + use X-Request-Id for any support follow-up.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_list_RiskRecord__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[RiskRecord]]
+    ApiResponse_AllRisks_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AllRisks'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AllRisks]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

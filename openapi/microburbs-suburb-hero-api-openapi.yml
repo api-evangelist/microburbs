@@ -1,0 +1,723 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Hero API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Hero
+  description: Headline summary — geography, population, growth, neighbours.
+paths:
+  /v1/suburbs/{suburb_name}/hero/summary:
+    get:
+      tags:
+      - Suburb - Hero
+      summary: Suburb at a glance
+      description: 'State, SA3/SA4, postcode, population, dwellings and centroid for the suburb.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_hero_summary_v1_suburbs__suburb_name__hero_summary_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_HeroSummary_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  dwellings: 2453
+                  lat: -33.01705
+                  lng: 151.672252
+                  population: 6280
+                  postcode: '2280'
+                  sa3: Lake Macquarie - East
+                  sa4: Newcastle and Lake Macquarie
+                  state: New South Wales
+                  state_abbr: NSW
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/hero/neighbours:
+    get:
+      tags:
+      - Suburb - Hero
+      summary: Neighbouring suburbs
+      description: 'Nearest neighbouring suburbs with distance in km, closest first.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_hero_neighbours_v1_suburbs__suburb_name__hero_neighbours_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_HeroNeighbours_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  neighbours:
+                  - dist_km: 1.0
+                    sa3: Lake Macquarie - East
+                    sal: Floraville
+                  - dist_km: 1.4
+                    sa3: Lake Macquarie - East
+                    sal: Belmont (NSW)
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 5
+  /v1/suburbs/{suburb_name}/hero/price-growth-12mo:
+    get:
+      tags:
+      - Suburb - Hero
+      summary: 12-month price growth
+      description: '12-month sale-price growth by property type (house / unit).
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 5¢ per call.**'
+      operationId: get_suburb_hero_price_growth_12mo_v1_suburbs__suburb_name__hero_price_growth_12mo_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_HeroPriceGrowth12mo_'
+              example:
+                data:
+                  area_level: suburb
+                  area_name: Belmont North
+                  growth:
+                  - field: prop_list_price_0_5_growth_1_year_buy_house
+                    pct: 12.3
+                    property_type: house
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 5
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_HeroSummary_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HeroSummary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HeroSummary]
+    ApiResponse_HeroNeighbours_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HeroNeighbours'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HeroNeighbours]
+    ApiResponse_HeroPriceGrowth12mo_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HeroPriceGrowth12mo'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HeroPriceGrowth12mo]
+    HeroNeighbours:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        neighbours:
+          items:
+            $ref: '#/components/schemas/HeroNeighbourRow'
+          type: array
+          title: Neighbours
+          description: Neighbouring suburbs ordered by distance (closest first).
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - neighbours
+      title: HeroNeighbours
+      description: Nearest neighbouring suburbs, closest first.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        neighbours:
+        - dist_km: 1.0
+          sa3: Lake Macquarie - East
+          sal: Floraville
+        - dist_km: 1.4
+          sa3: Lake Macquarie - East
+          sal: Belmont (NSW)
+    HeroPriceGrowthRow:
+      properties:
+        property_type:
+          anyOf:
+          - type: string
+            enum:
+            - house
+            - unit
+          - type: 'null'
+          title: Property Type
+          description: '''house'' or ''unit'' (derived from `field`).'
+        field:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field
+          description: Underlying smart-median field code.
+        current_val:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Current Val
+          description: DEPRECATED — no longer returned. `pct` now comes from the canonical published growth field rather than being re-derived from a median pair, and that field ships a rate with no current/previous values behind it. For medians use `/market/median-sale-price` and `/market/median-sale-price-series`.
+          deprecated: true
+        prev_val:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Prev Val
+          description: DEPRECATED — no longer returned. See `current_val`.
+          deprecated: true
+        pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct
+          description: 12-month growth as a percentage (17.83 = +17.83%).
+      additionalProperties: true
+      type: object
+      title: HeroPriceGrowthRow
+      description: 12-month growth for one property type.
+      example:
+        field: prop_list_price_0_5_growth_1_year_buy_house
+        pct: 12.3
+        property_type: house
+    HeroNeighbourRow:
+      properties:
+        sal:
+          type: string
+          title: Sal
+          description: Neighbouring suburb (SAL) name.
+        sa3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa3
+          description: ABS SA3 region of the neighbour.
+        dist_km:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Dist Km
+          description: Straight-line distance between the two suburbs' boundary centroids (km) — not the gap between boundaries, so touching suburbs still show a positive distance.
+      additionalProperties: true
+      type: object
+      required:
+      - sal
+      title: HeroNeighbourRow
+      description: One neighbouring suburb.
+      example:
+        dist_km: 1.0
+        sa3: Lake Macquarie - East
+        sal: Floraville
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HeroSummary:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State
+          description: State / territory full name, e.g. 'New South Wales'.
+        state_abbr:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State Abbr
+          description: State / territory abbreviation, e.g. 'NSW'.
+        sa3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa3
+          description: ABS SA3 region the suburb sits in.
+        sa4:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa4
+          description: ABS SA4 region the suburb sits in.
+        postcode:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Postcode
+          description: Postcode (POA) covering the suburb.
+        population:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Population
+          description: Total population (sum over the suburb's mesh blocks, ABS Census).
+        dwellings:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dwellings
+          description: Total dwellings (sum over the suburb's mesh blocks, ABS Census).
+        lat:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lat
+          description: Latitude of the suburb boundary's centroid.
+        lng:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lng
+          description: Longitude of the suburb boundary's centroid.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: HeroSummary
+      description: Suburb at a glance — geography chain, population, dwellings, centroid.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        dwellings: 2453
+        lat: -33.01705
+        lng: 151.672252
+        population: 6280
+        postcode: '2280'
+        sa3: Lake Macquarie - East
+        sa4: Newcastle and Lake Macquarie
+        state: New South Wales
+        state_abbr: NSW
+    HeroPriceGrowth12mo:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        growth:
+          items:
+            $ref: '#/components/schemas/HeroPriceGrowthRow'
+          type: array
+          title: Growth
+          description: One entry per property type with data.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - growth
+      title: HeroPriceGrowth12mo
+      description: 12-month sale-price growth by property type.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        growth:
+        - field: prop_list_price_0_5_growth_1_year_buy_house
+          pct: 12.3
+          property_type: house
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account

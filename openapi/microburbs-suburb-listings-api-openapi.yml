@@ -1,0 +1,1149 @@
+openapi: 3.2.0
+info:
+  title: Microburbs Property Data Suburb - Listings API
+  summary: Suburb and property data for every Australian locality.
+  description: '**One REST API for demographics, market indicators, risk scores, AVM and
+
+    ranking — backed by 25+ years of Australian transactions and census data.**
+
+
+    ```bash
+
+    curl ''https://api.microburbs.com.au/v1/properties/GANSW704074813/profile'' \
+
+    -H ''Authorization: Bearer test''
+
+    ```
+
+
+    ## Why Microburbs
+
+
+    - **Data depth** — Demographics, lifestyle, risk, market, AVM and growth forecasts — all keyed to the same national suburb and property graph.'
+  version: 1.0.0
+servers:
+- url: https://api.microburbs.com.au
+  description: Production
+security:
+- BearerAuth: []
+tags:
+- name: Suburb - Listings
+  description: Current for-sale listings snapshot.
+paths:
+  /v1/suburbs/{suburb_name}/listings/for-sale:
+    get:
+      tags:
+      - Suburb - Listings
+      summary: Current for-sale listings
+      description: 'Current for-sale listings in the suburb, with address, price, beds/baths
+
+        and coordinates per listing.
+
+
+        `total` is the full number on the market (computed before `limit`), so a
+
+        count is accurate even when the rows are capped. Raise `limit` for more
+
+        listings; set `verbose=true` for the agent''s full description text.
+
+
+        **Exact suburb identifier required.** Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+
+
+        **Price: 20¢ per call.**'
+      operationId: get_suburb_listings_for_sale_v1_suburbs__suburb_name__listings_for_sale_get
+      parameters:
+      - name: suburb_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Suburb Name
+          example: Belmont North
+        description: Exact ABS Suburb and Locality (SAL) name, e.g. `Burwood (NSW)` — many suburbs carry a state suffix. If starting from free text or an unverified bare name, first call `GET /v1/geocode/suburb?q=<text>`, then use the exact `data[].area_name` it returns. Suburb data endpoints do not guess a state or typo-correct names.
+        example: Belmont North
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Max listings to return (default 30, max 200). `total` always reports the full match count.
+          default: 30
+          title: Limit
+        description: Max listings to return (default 30, max 200). `total` always reports the full match count.
+      - name: verbose
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include the agent's full ad-copy in `attributes.description`. Off by default — it averages ~1.5 KB per listing.
+          default: false
+          title: Verbose
+        description: Include the agent's full ad-copy in `attributes.description`. Off by default — it averages ~1.5 KB per listing.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse_ForSale_'
+              example:
+                data:
+                  results:
+                  - address:
+                      sa1: '11101120605'
+                      sal: Belmont North
+                      state: NSW
+                      street: 49A John Street
+                    area_level: address
+                    area_name: 49A John Street, Belmont North, NSW
+                    attributes:
+                      bathrooms: 2.0
+                      bedrooms: 4.0
+                      building_size: None
+                      description: Positioned on a low-maintenance block in a quiet and family-friendly street, this substantial single-level…
+                      garage_spaces: 4.0
+                      land_size: 739 m²
+                    coordinates:
+                      latitude: -33.01855853
+                      longitude: 151.67466394
+                    gnaf_pid: GANSW716860195
+                    listing_date: '2026-04-30'
+                    price: 1100000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120624'
+                      sal: Belmont North
+                      state: NSW
+                      street: 12 Tarcoola Close
+                    area_level: address
+                    area_name: 12 Tarcoola Close, Belmont North, NSW
+                    attributes:
+                      bathrooms: 2.0
+                      bedrooms: 4.0
+                      building_size: 345 m²
+                      description: 'Auction Location: On-Site'
+                      garage_spaces: 2.0
+                      land_size: 1057 m²
+                    coordinates:
+                      latitude: -33.0104302
+                      longitude: 151.67086315
+                    gnaf_pid: GANSW704083987
+                    listing_date: '2026-04-21'
+                    price: 1950000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120613'
+                      sal: Belmont North
+                      state: NSW
+                      street: 51 Buttaba Avenue
+                    area_level: address
+                    area_name: 51 Buttaba Avenue, Belmont North, NSW
+                    attributes:
+                      bathrooms: 1.0
+                      bedrooms: 3.0
+                      building_size: None
+                      description: Positioned in a quiet, well-established street, 51 Buttaba Avenue, Belmont North presents an outstanding op…
+                      garage_spaces: 2.0
+                      land_size: 696 m²
+                    coordinates:
+                      latitude: -33.02038398
+                      longitude: 151.67426969
+                    gnaf_pid: GANSW704077837
+                    listing_date: '2026-04-20'
+                    price: 900000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120610'
+                      sal: Belmont North
+                      state: NSW
+                      street: 45A John Fisher Road
+                    area_level: address
+                    area_name: 45A John Fisher Road, Belmont North, NSW
+                    attributes:
+                      bathrooms: 3.0
+                      bedrooms: 4.0
+                      building_size: None
+                      description: 'Phone Enquiry ID: 234682'
+                      garage_spaces: 4.0
+                      land_size: None
+                    coordinates:
+                      latitude: -33.02450245
+                      longitude: 151.66937802
+                    gnaf_pid: GANSW717658525
+                    listing_date: '2026-04-13'
+                    price: 1450000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120636'
+                      sal: Belmont North
+                      state: NSW
+                      street: 18 Kananook Crescent
+                    area_level: address
+                    area_name: 18 Kananook Crescent, Belmont North, NSW
+                    attributes:
+                      bathrooms: 1.0
+                      bedrooms: 3.0
+                      building_size: '97.0'
+                      description: Set within a low-traffic circuit, where listings are more word-of-mouth than for sale, this light, airy thr…
+                      garage_spaces: 2.0
+                      land_size: '806.0'
+                    coordinates:
+                      latitude: -33.02502381
+                      longitude: 151.65944956
+                    gnaf_pid: GANSW704073875
+                    listing_date: '2026-04-13'
+                    price: 875000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120632'
+                      sal: Belmont North
+                      state: NSW
+                      street: 1 Kanundra Street
+                    area_level: address
+                    area_name: 1 Kanundra Street, Belmont North, NSW
+                    attributes:
+                      bathrooms: 1.0
+                      bedrooms: 3.0
+                      building_size: '92.0'
+                      description: Your heart will skip a beat as soon as you enter this cherished home.
+                      garage_spaces: 4.0
+                      land_size: '599.0'
+                    coordinates:
+                      latitude: -33.02082738
+                      longitude: 151.66877566
+                    gnaf_pid: GANSW704072450
+                    listing_date: '2026-04-30'
+                    price: 975000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120611'
+                      sal: Belmont North
+                      state: NSW
+                      street: 8 Railway Crescent
+                    area_level: address
+                    area_name: 8 Railway Crescent, Belmont North, NSW
+                    attributes:
+                      bathrooms: 3.0
+                      bedrooms: 4.0
+                      building_size: nan
+                      description: From the moment you step inside, this home opens into light and space, where warm timber floors and soft ne…
+                      garage_spaces: 2.0
+                      land_size: '471.0'
+                    coordinates:
+                      latitude: -33.01968091
+                      longitude: 151.68498806
+                    gnaf_pid: GANSW704077180
+                    listing_date: '2026-04-26'
+                    price: 1500000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120603'
+                      sal: Belmont North
+                      state: NSW
+                      street: 32 Brentor Street
+                    area_level: address
+                    area_name: 32 Brentor Street, Belmont North, NSW
+                    attributes:
+                      bathrooms: 3.0
+                      bedrooms: 6.0
+                      building_size: nan
+                      description: Positioned for comfort and versatility, this well-appointed dual occupancy residence offers an ideal lifest…
+                      garage_spaces: 1.0
+                      land_size: '946.0'
+                    coordinates:
+                      latitude: -33.02049118
+                      longitude: 151.68143162
+                    gnaf_pid: GANSW704077265
+                    listing_date: '2026-04-07'
+                    price: 1250000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120634'
+                      sal: Belmont North
+                      state: NSW
+                      street: 14 Park Street
+                    area_level: address
+                    area_name: 14 Park Street, Belmont North, NSW
+                    attributes:
+                      bathrooms: 1.0
+                      bedrooms: 3.0
+                      building_size: '0.0'
+                      description: Step into a beautifully updated single level home that captures the essence of relaxed Lake Macquarie living.
+                      garage_spaces: 1.0
+                      land_size: '607.0'
+                    coordinates:
+                      latitude: -33.01930277
+                      longitude: 151.66543854
+                    gnaf_pid: GANSW704081740
+                    listing_date: '2026-03-04'
+                    price: 1150000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120624'
+                      sal: Belmont North
+                      state: NSW
+                      street: 11 Rengor Close
+                    area_level: address
+                    area_name: 11 Rengor Close, Belmont North, NSW
+                    attributes:
+                      bathrooms: 2.0
+                      bedrooms: 3.0
+                      building_size: nan
+                      description: Tucked away in a private battle-axe position at the end of a quiet cul-de-sac, this beautifully kept single…
+                      garage_spaces: 3.0
+                      land_size: '600.0'
+                    coordinates:
+                      latitude: -33.01062815
+                      longitude: 151.67029197
+                    gnaf_pid: GANSW717662274
+                    listing_date: '2026-05-01'
+                    price: 1200000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120624'
+                      sal: Belmont North
+                      state: NSW
+                      street: 226 Pacific Highway
+                    area_level: address
+                    area_name: 226 Pacific Highway, Belmont North, NSW
+                    attributes:
+                      building_size: nan
+                      description: 'The Phone Code for this property is: 42613.'
+                      land_size: '2593.0'
+                    coordinates:
+                      latitude: -33.0121138
+                      longitude: 151.66959492
+                    gnaf_pid: GANSW704076507
+                    listing_date: '2026-03-13'
+                    price: 2375000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120610'
+                      sal: Belmont North
+                      state: NSW
+                      street: 45 John Fisher Road
+                    area_level: address
+                    area_name: 45 John Fisher Road, Belmont North, NSW
+                    attributes:
+                      bathrooms: 3.0
+                      bedrooms: 5.0
+                      building_size: '190.0'
+                      description: Something Refreshingly DifferentAn infusion of superb quality, taste and style, where sophisticated, eclect…
+                      garage_spaces: 4.0
+                      land_size: '1253.0'
+                    coordinates:
+                      latitude: -33.02450245
+                      longitude: 151.66937802
+                    gnaf_pid: GANSW704076433
+                    listing_date: '2026-04-24'
+                    price: 1400000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120636'
+                      sal: Belmont North
+                      state: NSW
+                      street: 16 Lentara Road
+                    area_level: address
+                    area_name: 16 Lentara Road, Belmont North, NSW
+                    attributes:
+                      bathrooms: 2.0
+                      bedrooms: 3.0
+                      building_size: nan
+                      description: Welcome to 16 Lentara Road, Belmont North a beautifully fully renovated residence that delivers modern comf…
+                      garage_spaces: 2.0
+                      land_size: '556.4'
+                    coordinates:
+                      latitude: -33.02394858
+                      longitude: 151.66016708
+                    gnaf_pid: GANSW704083123
+                    listing_date: '2026-04-10'
+                    price: 975000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120610'
+                      sal: Belmont North
+                      state: NSW
+                      street: 52 John Fisher Road
+                    area_level: address
+                    area_name: 52 John Fisher Road, Belmont North, NSW
+                    attributes:
+                      bathrooms: 1.0
+                      bedrooms: 3.0
+                      building_size: nan
+                      description: This home has been lovingly renovated in recent years to ensure that the new owner simply moves in and enjo…
+                      garage_spaces: 1.0
+                      land_size: '554.0'
+                    coordinates:
+                      latitude: -33.02442273
+                      longitude: 151.67011253
+                    gnaf_pid: GANSW704076441
+                    listing_date: '2026-03-30'
+                    price: 950000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120602'
+                      sal: Belmont North
+                      state: NSW
+                      street: 18 Sunrise Close
+                    area_level: address
+                    area_name: 18 Sunrise Close, Belmont North, NSW
+                    attributes:
+                      bathrooms: 3.0
+                      bedrooms: 4.0
+                      building_size: nan
+                      description: Discover a rare, private acreage lifestyle so close to town.
+                      garage_spaces: 4.0
+                      land_size: '2.5'
+                    coordinates:
+                      latitude: -33.00933909
+                      longitude: 151.67645564
+                    gnaf_pid: GANSW704080709
+                    listing_date: '2026-02-26'
+                    price: 1950000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120609'
+                      sal: Belmont North
+                      state: NSW
+                      street: 2 Vincent Street
+                    area_level: address
+                    area_name: 2 Vincent Street, Belmont North, NSW
+                    attributes:
+                      bathrooms: 2.0
+                      bedrooms: 5.0
+                      building_size: nan
+                      description: Discover 2 Vincent Street, Belmont North a generously sized and highly adaptable home that exceeds expectat…
+                      garage_spaces: 2.0
+                      land_size: '499.0'
+                    coordinates:
+                      latitude: -33.02323389
+                      longitude: 151.66661326
+                    gnaf_pid: GANSW704077217
+                    listing_date: '2026-04-17'
+                    price: 1300000.0
+                    property_type: House
+                  - address:
+                      sa1: '11101120636'
+                      sal: Belmont North
+                      state: NSW
+                      street: 24 Kananook Crescent
+                    area_level: address
+                    area_name: 24 Kananook Crescent, Belmont North, NSW
+                    attributes:
+                      bathrooms: 3.0
+                      bedrooms: 6.0
+                      building_size: nan
+                      description: A rare and versatile offering, this beautifully renovated residence delivers exceptional space, flexibility…
+                      garage_spaces: 3.0
+                      land_size: '632.3'
+                    coordinates:
+                      latitude: -33.02508121
+                      longitude: 151.65878714
+                    gnaf_pid: GANSW704073881
+                    listing_date: '2026-04-07'
+                    price: 1450000.0
+                    property_type: House
+          headers:
+            X-Cost-Cents:
+              description: Exact cents billed for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Spent-Cents:
+              description: Cumulative cents Autumn reports used for this prepaid wallet.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Remaining-Cents:
+              description: Spendable prepaid credit left after this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Period-End:
+              description: Start of the next UTC calendar month. Prepaid credit does not expire at this timestamp.
+              required: true
+              schema:
+                type: string
+                format: date-time
+            X-Balance-Cents:
+              description: Compatibility alias of X-Remaining-Cents.
+              required: true
+              schema:
+                type: integer
+                minimum: 0
+            X-Rate-Card-Version:
+              description: Version of the endpoint rate card used for this call.
+              required: true
+              schema:
+                type: integer
+                minimum: 1
+            X-Request-Id:
+              description: Request identifier to quote in support requests.
+              required: true
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+              example:
+                detail:
+                - type: missing
+                  loc:
+                  - query
+                  - address
+                  msg: Field required
+                  input: null
+      x-price-cents: 20
+components:
+  schemas:
+    ForSaleListing:
+      properties:
+        gnaf_pid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gnaf Pid
+          description: GNAF persistent identifier of the matched property; null if the listing couldn't be matched to a GNAF address.
+        area_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Level
+          description: Geographic level of this result — always 'address' for a listing row (echoed so the response is self-describing).
+        area_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Name
+          description: Full display address (street, suburb, state).
+        address:
+          anyOf:
+          - $ref: '#/components/schemas/ForSaleAddress'
+          - type: 'null'
+          description: Parsed address components.
+        attributes:
+          anyOf:
+          - $ref: '#/components/schemas/ForSaleAttributes'
+          - type: 'null'
+          description: Listed property attributes (as advertised).
+        coordinates:
+          anyOf:
+          - $ref: '#/components/schemas/ForSaleCoordinates'
+          - type: 'null'
+          description: Geocoded WGS84 lat/long of the property.
+        listing_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Listing Date
+          description: Date the listing was first observed on market (YYYY-MM-DD).
+        price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price
+          description: Advertised list price in AUD; null when the ad withholds it (e.g. 'Contact Agent', POA, or price-on-auction).
+      additionalProperties: true
+      type: object
+      title: ForSaleListing
+      description: One for-sale listing currently on market in the suburb.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ForSaleAddress:
+      properties:
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Street number and name (e.g. '49A John Street').
+        sal:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sal
+          description: ABS Suburb and Locality (SAL) name the property falls in.
+        sa1:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa1
+          description: ABS SA1 code — the Statistical Area Level 1 (2021 ASGS, ~200–800 people) the property sits in. Useful for joining ABS census geography.
+        state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State
+          description: State/territory abbreviation (NSW, VIC, QLD, SA, WA, TAS, NT, ACT).
+      additionalProperties: true
+      type: object
+      title: ForSaleAddress
+      description: Parsed address fields for a for-sale listing.
+    ForSale:
+      properties:
+        results:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ForSaleListing'
+            type: array
+          - type: 'null'
+          title: Results
+          description: One entry per active for-sale listing in the suburb (empty list if none). Capped by `limit`.
+        total:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total
+          description: Total listings on the market in this suburb — the full match count, counted before `limit` is applied, so it stays accurate when the rows are capped.
+      additionalProperties: true
+      type: object
+      title: ForSale
+      description: Current for-sale listings snapshot for the suburb.
+      example:
+        results:
+        - address:
+            sa1: '11101120605'
+            sal: Belmont North
+            state: NSW
+            street: 49A John Street
+          area_level: address
+          area_name: 49A John Street, Belmont North, NSW
+          attributes:
+            bathrooms: 2.0
+            bedrooms: 4.0
+            building_size: None
+            description: Positioned on a low-maintenance block in a quiet and family-friendly street, this substantial single-level…
+            garage_spaces: 4.0
+            land_size: 739 m²
+          coordinates:
+            latitude: -33.01855853
+            longitude: 151.67466394
+          gnaf_pid: GANSW716860195
+          listing_date: '2026-04-30'
+          price: 1100000.0
+          property_type: House
+        - address:
+            sa1: '11101120624'
+            sal: Belmont North
+            state: NSW
+            street: 12 Tarcoola Close
+          area_level: address
+          area_name: 12 Tarcoola Close, Belmont North, NSW
+          attributes:
+            bathrooms: 2.0
+            bedrooms: 4.0
+            building_size: 345 m²
+            description: 'Auction Location: On-Site'
+            garage_spaces: 2.0
+            land_size: 1057 m²
+          coordinates:
+            latitude: -33.0104302
+            longitude: 151.67086315
+          gnaf_pid: GANSW704083987
+          listing_date: '2026-04-21'
+          price: 1950000.0
+          property_type: House
+        - address:
+            sa1: '11101120613'
+            sal: Belmont North
+            state: NSW
+            street: 51 Buttaba Avenue
+          area_level: address
+          area_name: 51 Buttaba Avenue, Belmont North, NSW
+          attributes:
+            bathrooms: 1.0
+            bedrooms: 3.0
+            building_size: None
+            description: Positioned in a quiet, well-established street, 51 Buttaba Avenue, Belmont North presents an outstanding op…
+            garage_spaces: 2.0
+            land_size: 696 m²
+          coordinates:
+            latitude: -33.02038398
+            longitude: 151.67426969
+          gnaf_pid: GANSW704077837
+          listing_date: '2026-04-20'
+          price: 900000.0
+          property_type: House
+        - address:
+            sa1: '11101120610'
+            sal: Belmont North
+            state: NSW
+            street: 45A John Fisher Road
+          area_level: address
+          area_name: 45A John Fisher Road, Belmont North, NSW
+          attributes:
+            bathrooms: 3.0
+            bedrooms: 4.0
+            building_size: None
+            description: 'Phone Enquiry ID: 234682'
+            garage_spaces: 4.0
+            land_size: None
+          coordinates:
+            latitude: -33.02450245
+            longitude: 151.66937802
+          gnaf_pid: GANSW717658525
+          listing_date: '2026-04-13'
+          price: 1450000.0
+          property_type: House
+        - address:
+            sa1: '11101120636'
+            sal: Belmont North
+            state: NSW
+            street: 18 Kananook Crescent
+          area_level: address
+          area_name: 18 Kananook Crescent, Belmont North, NSW
+          attributes:
+            bathrooms: 1.0
+            bedrooms: 3.0
+            building_size: '97.0'
+            description: Set within a low-traffic circuit, where listings are more word-of-mouth than for sale, this light, airy thr…
+            garage_spaces: 2.0
+            land_size: '806.0'
+          coordinates:
+            latitude: -33.02502381
+            longitude: 151.65944956
+          gnaf_pid: GANSW704073875
+          listing_date: '2026-04-13'
+          price: 875000.0
+          property_type: House
+        - address:
+            sa1: '11101120632'
+            sal: Belmont North
+            state: NSW
+            street: 1 Kanundra Street
+          area_level: address
+          area_name: 1 Kanundra Street, Belmont North, NSW
+          attributes:
+            bathrooms: 1.0
+            bedrooms: 3.0
+            building_size: '92.0'
+            description: Your heart will skip a beat as soon as you enter this cherished home.
+            garage_spaces: 4.0
+            land_size: '599.0'
+          coordinates:
+            latitude: -33.02082738
+            longitude: 151.66877566
+          gnaf_pid: GANSW704072450
+          listing_date: '2026-04-30'
+          price: 975000.0
+          property_type: House
+        - address:
+            sa1: '11101120611'
+            sal: Belmont North
+            state: NSW
+            street: 8 Railway Crescent
+          area_level: address
+          area_name: 8 Railway Crescent, Belmont North, NSW
+          attributes:
+            bathrooms: 3.0
+            bedrooms: 4.0
+            building_size: nan
+            description: From the moment you step inside, this home opens into light and space, where warm timber floors and soft ne…
+            garage_spaces: 2.0
+            land_size: '471.0'
+          coordinates:
+            latitude: -33.01968091
+            longitude: 151.68498806
+          gnaf_pid: GANSW704077180
+          listing_date: '2026-04-26'
+          price: 1500000.0
+          property_type: House
+        - address:
+            sa1: '11101120603'
+            sal: Belmont North
+            state: NSW
+            street: 32 Brentor Street
+          area_level: address
+          area_name: 32 Brentor Street, Belmont North, NSW
+          attributes:
+            bathrooms: 3.0
+            bedrooms: 6.0
+            building_size: nan
+            description: Positioned for comfort and versatility, this well-appointed dual occupancy residence offers an ideal lifest…
+            garage_spaces: 1.0
+            land_size: '946.0'
+          coordinates:
+            latitude: -33.02049118
+            longitude: 151.68143162
+          gnaf_pid: GANSW704077265
+          listing_date: '2026-04-07'
+          price: 1250000.0
+          property_type: House
+        - address:
+            sa1: '11101120634'
+            sal: Belmont North
+            state: NSW
+            street: 14 Park Street
+          area_level: address
+          area_name: 14 Park Street, Belmont North, NSW
+          attributes:
+            bathrooms: 1.0
+            bedrooms: 3.0
+            building_size: '0.0'
+            description: Step into a beautifully updated single level home that captures the essence of relaxed Lake Macquarie living.
+            garage_spaces: 1.0
+            land_size: '607.0'
+          coordinates:
+            latitude: -33.01930277
+            longitude: 151.66543854
+          gnaf_pid: GANSW704081740
+          listing_date: '2026-03-04'
+          price: 1150000.0
+          property_type: House
+        - address:
+            sa1: '11101120624'
+            sal: Belmont North
+            state: NSW
+            street: 11 Rengor Close
+          area_level: address
+          area_name: 11 Rengor Close, Belmont North, NSW
+          attributes:
+            bathrooms: 2.0
+            bedrooms: 3.0
+            building_size: nan
+            description: Tucked away in a private battle-axe position at the end of a quiet cul-de-sac, this beautifully kept single…
+            garage_spaces: 3.0
+            land_size: '600.0'
+          coordinates:
+            latitude: -33.01062815
+            longitude: 151.67029197
+          gnaf_pid: GANSW717662274
+          listing_date: '2026-05-01'
+          price: 1200000.0
+          property_type: House
+        - address:
+            sa1: '11101120624'
+            sal: Belmont North
+            state: NSW
+            street: 226 Pacific Highway
+          area_level: address
+          area_name: 226 Pacific Highway, Belmont North, NSW
+          attributes:
+            building_size: nan
+            description: 'The Phone Code for this property is: 42613.'
+            land_size: '2593.0'
+          coordinates:
+            latitude: -33.0121138
+            longitude: 151.66959492
+          gnaf_pid: GANSW704076507
+          listing_date: '2026-03-13'
+          price: 2375000.0
+          property_type: House
+        - address:
+            sa1: '11101120610'
+            sal: Belmont North
+            state: NSW
+            street: 45 John Fisher Road
+          area_level: address
+          area_name: 45 John Fisher Road, Belmont North, NSW
+          attributes:
+            bathrooms: 3.0
+            bedrooms: 5.0
+            building_size: '190.0'
+            description: Something Refreshingly DifferentAn infusion of superb quality, taste and style, where sophisticated, eclect…
+            garage_spaces: 4.0
+            land_size: '1253.0'
+          coordinates:
+            latitude: -33.02450245
+            longitude: 151.66937802
+          gnaf_pid: GANSW704076433
+          listing_date: '2026-04-24'
+          price: 1400000.0
+          property_type: House
+        - address:
+            sa1: '11101120636'
+            sal: Belmont North
+            state: NSW
+            street: 16 Lentara Road
+          area_level: address
+          area_name: 16 Lentara Road, Belmont North, NSW
+          attributes:
+            bathrooms: 2.0
+            bedrooms: 3.0
+            building_size: nan
+            description: Welcome to 16 Lentara Road, Belmont North a beautifully fully renovated residence that delivers modern comf…
+            garage_spaces: 2.0
+            land_size: '556.4'
+          coordinates:
+            latitude: -33.02394858
+            longitude: 151.66016708
+          gnaf_pid: GANSW704083123
+          listing_date: '2026-04-10'
+          price: 975000.0
+          property_type: House
+        - address:
+            sa1: '11101120610'
+            sal: Belmont North
+            state: NSW
+            street: 52 John Fisher Road
+          area_level: address
+          area_name: 52 John Fisher Road, Belmont North, NSW
+          attributes:
+            bathrooms: 1.0
+            bedrooms: 3.0
+            building_size: nan
+            description: This home has been lovingly renovated in recent years to ensure that the new owner simply moves in and enjo…
+            garage_spaces: 1.0
+            land_size: '554.0'
+          coordinates:
+            latitude: -33.02442273
+            longitude: 151.67011253
+          gnaf_pid: GANSW704076441
+          listing_date: '2026-03-30'
+          price: 950000.0
+          property_type: House
+        - address:
+            sa1: '11101120602'
+            sal: Belmont North
+            state: NSW
+            street: 18 Sunrise Close
+          area_level: address
+          area_name: 18 Sunrise Close, Belmont North, NSW
+          attributes:
+            bathrooms: 3.0
+            bedrooms: 4.0
+            building_size: nan
+            description: Discover a rare, private acreage lifestyle so close to town.
+            garage_spaces: 4.0
+            land_size: '2.5'
+          coordinates:
+            latitude: -33.00933909
+            longitude: 151.67645564
+          gnaf_pid: GANSW704080709
+          listing_date: '2026-02-26'
+          price: 1950000.0
+          property_type: House
+        - address:
+            sa1: '11101120609'
+            sal: Belmont North
+            state: NSW
+            street: 2 Vincent Street
+          area_level: address
+          area_name: 2 Vincent Street, Belmont North, NSW
+          attributes:
+            bathrooms: 2.0
+            bedrooms: 5.0
+            building_size: nan
+            description: Discover 2 Vincent Street, Belmont North a generously sized and highly adaptable home that exceeds expectat…
+            garage_spaces: 2.0
+            land_size: '499.0'
+          coordinates:
+            latitude: -33.02323389
+            longitude: 151.66661326
+          gnaf_pid: GANSW704077217
+          listing_date: '2026-04-17'
+          price: 1300000.0
+          property_type: House
+        - address:
+            sa1: '11101120636'
+            sal: Belmont North
+            state: NSW
+            street: 24 Kananook Crescent
+          area_level: address
+          area_name: 24 Kananook Crescent, Belmont North, NSW
+          attributes:
+            bathrooms: 3.0
+            bedrooms: 6.0
+            building_size: nan
+            description: A rare and versatile offering, this beautifully renovated residence delivers exceptional space, flexibility…
+            garage_spaces: 3.0
+            land_size: '632.3'
+          coordinates:
+            latitude: -33.02508121
+            longitude: 151.65878714
+          gnaf_pid: GANSW704073881
+          listing_date: '2026-04-07'
+          price: 1450000.0
+          property_type: House
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ForSaleAttributes:
+      properties:
+        bedrooms:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Bedrooms
+          description: Advertised bedroom count; null if not stated.
+        bathrooms:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Bathrooms
+          description: Advertised bathroom count; null if not stated.
+        garage_spaces:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Garage Spaces
+          description: Advertised car/garage space count; null if not stated.
+        building_size:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Building Size
+          description: Floor/building area exactly as listed — free-text, units vary (e.g. '345 m²', '190.0'). Frequently unavailable, in which case it comes through as the literal string 'None' or 'nan' rather than a real measurement — treat those as 'not provided'.
+        land_size:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Land Size
+          description: Lot size exactly as listed — free-text, units are NOT normalised (e.g. '739 m²', '806.0' sqm, '2.5' acres). Parse per listing; null/'None'/'nan' means not provided.
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Raw marketing copy from the advertisement, verbatim. May include the agent's feature list, rates, and legal disclaimer text. Only returned when the request sets `verbose=true` — it averages ~1.5 KB per listing.
+      additionalProperties: true
+      type: object
+      title: ForSaleAttributes
+      description: 'Listed property attributes, as scraped from the advertisement.
+
+
+        These come straight from the listing, so they''re only as complete and
+
+        tidy as the agent''s ad — counts can be null and the size fields are
+
+        free-text, not normalised numbers.'
+    ForSaleCoordinates:
+      properties:
+        latitude:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Latitude
+          description: Latitude in decimal degrees (WGS84).
+        longitude:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Longitude
+          description: Longitude in decimal degrees (WGS84).
+      type: object
+      title: ForSaleCoordinates
+      description: Listing point in WGS84 (EPSG:4326), geocoded from the GNAF address.
+    ApiResponse_ForSale_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ForSale'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[ForSale]
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key as Bearer token. Use `test` for the public sandbox (works only for GNAFs GANSW704074813, GAACT714845944, GAVIC419929404, GAQLD162849753, GAWA_146662014, GASA_422266490, GATAS702292990, GANT_703835649 and SALs 'Belmont North', 'Bondi', 'St Kilda (Vic.)', 'Fortitude Valley', 'Subiaco', 'Unley', 'Sandy Bay', 'Kambah', 'Nightcliff', always 0¢). Mint your own at /developers/keys for full access.
+x-tagGroups:
+- name: Suburb
+  tags:
+  - Suburb - Hero
+  - Suburb - Profile
+  - Suburb - Market
+  - Suburb - Forecast
+  - Suburb - Listings
+  - Suburb - Sales
+  - Suburb - Street Forecasts
+  - Suburb - Demographics
+  - Suburb - Ethnicity
+  - Suburb - Development
+  - Suburb - Schools
+  - Suburb - Risks
+  - Suburb - Crime
+  - Suburb - Lifestyle
+  - Suburb - Similar
+  - Suburb - Shapes
+- name: Finders
+  tags:
+  - Suburb - Finder
+- name: Property
+  tags:
+  - Property - Profile
+  - Property - Basics
+  - Property - Valuation
+  - Property - History
+  - Property - Title
+  - Property - Comparables
+  - Property - Development
+  - Property - Schools
+  - Property - Amenities
+  - Property - Risks
+  - Property - Surroundings
+  - Property - Context
+- name: Area Statistics
+  tags:
+  - Area Statistics
+- name: Mesh Block
+  tags:
+  - Mesh Block - Profile
+- name: LGA
+  tags:
+  - LGA - Profile
+- name: SA4
+  tags:
+  - SA4 - Profile
+- name: Geocode
+  tags:
+  - Geocode
+- name: Account
+  tags:
+  - Account
