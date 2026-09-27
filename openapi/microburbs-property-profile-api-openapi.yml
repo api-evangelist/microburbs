@@ -159,6 +159,15 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     PropertyProfile:
       properties:
         mesh_block:
@@ -233,15 +242,6 @@ components:
         sa4: Australian Capital Territory
         state: ACT
         suburb: Kambah (ACT)
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ApiResponse_PropertyProfile_:
       properties:
         data:

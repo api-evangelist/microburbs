@@ -536,15 +536,12 @@ paths:
       x-price-cents: 74
 components:
   schemas:
-    ApiResponse_list_RecentSale__:
+    ApiResponse_ComparablesAll_:
       properties:
         data:
           anyOf:
-          - items:
-              $ref: '#/components/schemas/RecentSale'
-            type: array
+          - $ref: '#/components/schemas/ComparablesAll'
           - type: 'null'
-          title: Data
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
           anyOf:
@@ -565,73 +562,109 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[list[RecentSale]]
-    HTTPValidationError:
+      title: ApiResponse[ComparablesAll]
+    RecentSale:
       properties:
-        detail:
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Street address.
+        sale_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sale Date
+          description: ISO date (YYYY-MM-DD).
+        sale_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sale Price
+          description: Sale price, AUD.
+        distance_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Distance M
+          description: Distance from the subject property in metres.
+        bed_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bed Count
+          description: Bedrooms.
+        bath_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bath Count
+          description: Bathrooms.
+        dwelling_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dwelling Type
+          description: house / unit / townhouse / ...
+      additionalProperties: true
+      type: object
+      title: RecentSale
+      description: One recent sale within the subject property's CMA search radius.
+      example:
+        address: 30 Arlington Street, Belmont North
+        bath_count: 2
+        bed_count: 3
+        distance_m: 65
+        dwelling_type: house
+        sale_date: '2024-08-12'
+        sale_price: 815000
+    CmaComp:
+      properties: {}
+      additionalProperties: true
+      type: object
+      title: CmaComp
+      description: One comparable sale row.
+      example:
+        bathrooms: 2
+        bedrooms: 4
+        date_sold: '2024-07-13'
+        dist_score: 6.319769313849382
+        garage_spaces: 2
+        gnaf_pid: GAACT714923950
+        latitude: -35.38013684
+        longitude: 149.06828089
+        price: 815000.0
+        property_type: house
+        sal: Kambah
+        state: ACT
+        street: 8 SHIPARD PL
+    ValidationError:
+      properties:
+        loc:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            anyOf:
+            - type: string
+            - type: integer
           type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ApiResponse_CmaComp_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/CmaComp'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
+          title: Location
+        msg:
+          type: string
           title: Message
-          description: Human-readable explanation. Omitted on success.
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
-      title: ApiResponse[CmaComp]
-    ApiResponse_list_CmaComp__:
-      properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/CmaComp'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[list[CmaComp]]
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ComparablesAll:
       properties:
         cma_comp_set:
@@ -724,11 +757,80 @@ components:
           sal: Kambah
           state: ACT
           street: 8 SHIPARD PL
-    ApiResponse_ComparablesAll_:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_list_RecentSale__:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/ComparablesAll'
+          - items:
+              $ref: '#/components/schemas/RecentSale'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[RecentSale]]
+    ApiResponse_list_CmaComp__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CmaComp'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[CmaComp]]
+    ApiResponse_CmaComp_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CmaComp'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -750,109 +852,7 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[ComparablesAll]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    CmaComp:
-      properties: {}
-      additionalProperties: true
-      type: object
-      title: CmaComp
-      description: One comparable sale row.
-      example:
-        bathrooms: 2
-        bedrooms: 4
-        date_sold: '2024-07-13'
-        dist_score: 6.319769313849382
-        garage_spaces: 2
-        gnaf_pid: GAACT714923950
-        latitude: -35.38013684
-        longitude: 149.06828089
-        price: 815000.0
-        property_type: house
-        sal: Kambah
-        state: ACT
-        street: 8 SHIPARD PL
-    RecentSale:
-      properties:
-        address:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Address
-          description: Street address.
-        sale_date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sale Date
-          description: ISO date (YYYY-MM-DD).
-        sale_price:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Sale Price
-          description: Sale price, AUD.
-        distance_m:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Distance M
-          description: Distance from the subject property in metres.
-        bed_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Bed Count
-          description: Bedrooms.
-        bath_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Bath Count
-          description: Bathrooms.
-        dwelling_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Dwelling Type
-          description: house / unit / townhouse / ...
-      additionalProperties: true
-      type: object
-      title: RecentSale
-      description: One recent sale within the subject property's CMA search radius.
-      example:
-        address: 30 Arlington Street, Belmont North
-        bath_count: 2
-        bed_count: 3
-        distance_m: 65
-        dwelling_type: house
-        sale_date: '2024-08-12'
-        sale_price: 815000
+      title: ApiResponse[CmaComp]
   securitySchemes:
     BearerAuth:
       type: http

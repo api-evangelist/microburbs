@@ -156,15 +156,6 @@ paths:
       x-price-cents: 60
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -191,6 +182,15 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ApiResponse_list_SimilarSuburb__:
       properties:
         data:
@@ -221,6 +221,23 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[SimilarSuburb]]
+    PriceByType:
+      properties:
+        house:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: House
+          description: Value for houses.
+        unit:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Unit
+          description: Value for units / apartments.
+      type: object
+      title: PriceByType
+      description: A scalar value broken down by property type.
     SimilarSuburb:
       properties:
         area_name:
@@ -261,23 +278,6 @@ components:
         keywords: Quieter, Family-friendly
         price: {}
         summary: Like Bondi, Coogee also has a buzzing beach culture and vibrant cafe scene. However, Coogee is generally considered quieter and more family-friendly.
-    PriceByType:
-      properties:
-        house:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: House
-          description: Value for houses.
-        unit:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Unit
-          description: Value for units / apartments.
-      type: object
-      title: PriceByType
-      description: A scalar value broken down by property type.
   securitySchemes:
     BearerAuth:
       type: http

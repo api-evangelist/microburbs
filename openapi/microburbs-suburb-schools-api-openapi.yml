@@ -1655,33 +1655,6 @@ paths:
       x-price-cents: 205
 components:
   schemas:
-    SuburbSchoolsAll:
-      properties:
-        catchment:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/CatchmentRow'
-            type: array
-          - type: 'null'
-          title: Catchment
-        nearby:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/SchoolNearbyRow'
-            type: array
-          - type: 'null'
-          title: Nearby
-      type: object
-      title: SuburbSchoolsAll
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ApiResponse_list_CatchmentRow__:
       properties:
         data:
@@ -1739,46 +1712,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[SuburbSchoolsAll]
-    GeoJsonPolygon:
-      properties:
-        type:
-          type: string
-          const: Polygon
-          title: Type
-          description: Always 'Polygon'.
-        coordinates:
-          items:
-            items:
-              items:
-                type: number
-              type: array
-            type: array
-          type: array
-          title: Coordinates
-          description: '`[ring][point][lon|lat]`. First ring is outer boundary; subsequent rings are holes (none today). Each ring is a list of `[lon, lat]` pairs; rings are explicitly closed (first pair == last pair).'
-      type: object
-      required:
-      - type
-      - coordinates
-      title: GeoJsonPolygon
-      description: 'RFC 7946 GeoJSON Polygon — list of linear rings, each ring a list
-
-        of `[lon, lat]` pairs. First ring is the outer boundary; any
-
-        additional rings are inner holes.'
-      example:
-        coordinates:
-        - - - 151.67
-            - -32.98
-          - - 151.68
-            - -32.98
-          - - 151.68
-            - -32.99
-          - - 151.67
-            - -32.99
-          - - 151.67
-            - -32.98
-        type: Polygon
     ValidationError:
       properties:
         loc:
@@ -2152,6 +2085,33 @@ components:
         school_name: Floraville Public School
         school_sector_type: Public
         socioeconomic_rank: 0.6239973262032086
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SuburbSchoolsAll:
+      properties:
+        catchment:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CatchmentRow'
+            type: array
+          - type: 'null'
+          title: Catchment
+        nearby:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SchoolNearbyRow'
+            type: array
+          - type: 'null'
+          title: Nearby
+      type: object
+      title: SuburbSchoolsAll
     SchoolNearbyRow:
       properties:
         area_name:
@@ -2242,6 +2202,46 @@ components:
         school_level_type: Primary
         school_sector_type: Public
         socioeconomic_rank: 0.17342543077837194
+    GeoJsonPolygon:
+      properties:
+        type:
+          type: string
+          const: Polygon
+          title: Type
+          description: Always 'Polygon'.
+        coordinates:
+          items:
+            items:
+              items:
+                type: number
+              type: array
+            type: array
+          type: array
+          title: Coordinates
+          description: '`[ring][point][lon|lat]`. First ring is outer boundary; subsequent rings are holes (none today). Each ring is a list of `[lon, lat]` pairs; rings are explicitly closed (first pair == last pair).'
+      type: object
+      required:
+      - type
+      - coordinates
+      title: GeoJsonPolygon
+      description: 'RFC 7946 GeoJSON Polygon — list of linear rings, each ring a list
+
+        of `[lon, lat]` pairs. First ring is the outer boundary; any
+
+        additional rings are inner holes.'
+      example:
+        coordinates:
+        - - - 151.67
+            - -32.98
+          - - 151.68
+            - -32.98
+          - - 151.68
+            - -32.99
+          - - 151.67
+            - -32.99
+          - - 151.67
+            - -32.98
+        type: Polygon
   securitySchemes:
     BearerAuth:
       type: http

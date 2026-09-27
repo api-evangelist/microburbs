@@ -1297,15 +1297,6 @@ paths:
       x-price-cents: 48
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     RiskRecord:
       properties:
         area_level:
@@ -1421,6 +1412,32 @@ components:
         on_property: true
         search_radius_m: 1000
         value: On property
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     AllRisks:
       properties:
         bushfire:
@@ -1601,32 +1618,42 @@ components:
         Customer is still billed the full bundle price; check each field
 
         for null + use X-Request-Id for any support follow-up.'
-    ValidationError:
+    ApiResponse_AllRisks_:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AllRisks'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          description: Human-readable explanation. Omitted on success.
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: ApiResponse[AllRisks]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ApiResponse_list_RiskRecord__:
       properties:
         data:
@@ -1657,33 +1684,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[RiskRecord]]
-    ApiResponse_AllRisks_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/AllRisks'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[AllRisks]
   securitySchemes:
     BearerAuth:
       type: http

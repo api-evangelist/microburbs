@@ -178,197 +178,6 @@ paths:
       x-price-cents: 60
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    StreetForecasts:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb these streets belong to, as the canonical ABS SAL name — the resolved form of whatever suburb was requested, so echo this back rather than the caller's input.
-        area_level:
-          type: string
-          title: Area Level
-          description: Geographic level of `area_name`. Always 'suburb' here; present so responses across the area endpoints share one shape.
-        metric:
-          type: string
-          title: Metric
-          description: Identifies which dataset this payload is, for callers routing several area responses through common code. Always 'street_price_forecasts'.
-        total:
-          type: integer
-          title: Total
-          description: How many forecastable streets the suburb has in all — counted before `limit`/`offset` are applied, so it is the figure to page against and will exceed `len(streets)` on a paged request. Streets with no sold median are already excluded, so this is usually fewer than the suburb's true street count.
-        streets:
-          items:
-            $ref: '#/components/schemas/StreetForecastRow'
-          type: array
-          title: Streets
-          description: One entry per forecastable street. Order is the stored order — stable between calls (so `offset` paging is safe) but not sorted by price, growth or name; sort client-side if you need a ranking.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - metric
-      - total
-      - streets
-      title: StreetForecasts
-      description: 'Projected house-price paths for the streets of one suburb, 2, 4 and
-
-        8 years out.
-
-
-        Two suburbs can share a median and still be made of streets that behave
-
-        very differently; this endpoint is the street-by-street breakdown behind
-
-        the suburb-level number. Each row gives a street''s current median, where
-
-        the model expects it in 2/4/8 years (in dollars and as a per-year growth
-
-        rate), the year-by-year path it took to get here, and a little context
-
-        about the street itself — size, rent, how often it turns over.
-
-
-        Coverage is deliberately partial: a street only appears if there is a
-
-        real sold median to anchor it to, so `streets` is a subset of the
-
-        suburb''s streets, and `total` counts only those.'
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        metric: street_price_forecasts
-        streets:
-        - annual_2y: 8.0
-          annual_4y: 6.3
-          annual_8y: 5.0
-          current_price: 1159000.0
-          history:
-          - price: 1038603.34
-            suburb_med: 866399
-            year: 2024
-          - price: 1083975.34
-            suburb_med: 948908
-            year: 2025
-          - price: 1159000.0
-            suburb_med: 1040068
-            year: 2026
-          houses_on_street: 146
-          median_house_rent_week: 791.2
-          n_sales: 289
-          rental_turnover: Every 5.9 years (quite tightly held)
-          renters_pct: 18%
-          sale_turnover: Every 12.0 years (average turnover)
-          street: Wommara Ave
-          target_2y: 1352652.97
-          target_4y: 1480849.45
-          target_8y: 1718217.61
-          units_on_street: 4
-    ApiResponse_StreetForecasts_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/StreetForecasts'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[StreetForecasts]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    app__schemas__suburb_street_forecasts__StreetHistoryPoint:
-      properties:
-        year:
-          type: integer
-          title: Year
-          description: Calendar year the two prices below refer to.
-        price:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Price
-          description: Modelled median house price for this street in `year`, in AUD. Not an observed median — the street model's yearly level, rescaled by the same `current_price / model_estimate` factor applied to the targets, so the final year of `history` equals `current_price` and the chart line lands on the headline figure. Null when the model has no level for that year.
-        suburb_med:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Suburb Med
-          description: 'Median house price for the whole suburb in `year`, in AUD. A context baseline only: it is the suburb''s own observed median and is NOT rescaled, so it is on a different footing from `price`. Use it to judge relative direction (street outpacing the suburb or not), not to compute a precise street-vs-suburb premium.'
-      additionalProperties: true
-      type: object
-      required:
-      - year
-      title: StreetHistoryPoint
-      description: 'One year of the street''s modelled price history, with the suburb
-
-        median alongside it as a baseline.
-
-
-        Two series, two different things. `price` is *this street* — a
-
-        modelled house-price level, because most streets do not sell enough
-
-        houses in a year to have a real median of their own. `suburb_med` is
-
-        the whole suburb''s median for the same year, included so you can see
-
-        whether the street ran ahead of or behind its suburb. Compare the two
-
-        as a *shape* over time, not as a like-for-like pair of medians.'
-      example:
-        price: 970000.0
-        suburb_med: 1040068
-        year: 2026
     StreetForecastRow:
       properties:
         street:
@@ -540,6 +349,197 @@ components:
         target_4y: 1480849.45
         target_8y: 1718217.61
         units_on_street: 4
+    StreetForecasts:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb these streets belong to, as the canonical ABS SAL name — the resolved form of whatever suburb was requested, so echo this back rather than the caller's input.
+        area_level:
+          type: string
+          title: Area Level
+          description: Geographic level of `area_name`. Always 'suburb' here; present so responses across the area endpoints share one shape.
+        metric:
+          type: string
+          title: Metric
+          description: Identifies which dataset this payload is, for callers routing several area responses through common code. Always 'street_price_forecasts'.
+        total:
+          type: integer
+          title: Total
+          description: How many forecastable streets the suburb has in all — counted before `limit`/`offset` are applied, so it is the figure to page against and will exceed `len(streets)` on a paged request. Streets with no sold median are already excluded, so this is usually fewer than the suburb's true street count.
+        streets:
+          items:
+            $ref: '#/components/schemas/StreetForecastRow'
+          type: array
+          title: Streets
+          description: One entry per forecastable street. Order is the stored order — stable between calls (so `offset` paging is safe) but not sorted by price, growth or name; sort client-side if you need a ranking.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - metric
+      - total
+      - streets
+      title: StreetForecasts
+      description: 'Projected house-price paths for the streets of one suburb, 2, 4 and
+
+        8 years out.
+
+
+        Two suburbs can share a median and still be made of streets that behave
+
+        very differently; this endpoint is the street-by-street breakdown behind
+
+        the suburb-level number. Each row gives a street''s current median, where
+
+        the model expects it in 2/4/8 years (in dollars and as a per-year growth
+
+        rate), the year-by-year path it took to get here, and a little context
+
+        about the street itself — size, rent, how often it turns over.
+
+
+        Coverage is deliberately partial: a street only appears if there is a
+
+        real sold median to anchor it to, so `streets` is a subset of the
+
+        suburb''s streets, and `total` counts only those.'
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        metric: street_price_forecasts
+        streets:
+        - annual_2y: 8.0
+          annual_4y: 6.3
+          annual_8y: 5.0
+          current_price: 1159000.0
+          history:
+          - price: 1038603.34
+            suburb_med: 866399
+            year: 2024
+          - price: 1083975.34
+            suburb_med: 948908
+            year: 2025
+          - price: 1159000.0
+            suburb_med: 1040068
+            year: 2026
+          houses_on_street: 146
+          median_house_rent_week: 791.2
+          n_sales: 289
+          rental_turnover: Every 5.9 years (quite tightly held)
+          renters_pct: 18%
+          sale_turnover: Every 12.0 years (average turnover)
+          street: Wommara Ave
+          target_2y: 1352652.97
+          target_4y: 1480849.45
+          target_8y: 1718217.61
+          units_on_street: 4
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    app__schemas__suburb_street_forecasts__StreetHistoryPoint:
+      properties:
+        year:
+          type: integer
+          title: Year
+          description: Calendar year the two prices below refer to.
+        price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price
+          description: Modelled median house price for this street in `year`, in AUD. Not an observed median — the street model's yearly level, rescaled by the same `current_price / model_estimate` factor applied to the targets, so the final year of `history` equals `current_price` and the chart line lands on the headline figure. Null when the model has no level for that year.
+        suburb_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Suburb Med
+          description: 'Median house price for the whole suburb in `year`, in AUD. A context baseline only: it is the suburb''s own observed median and is NOT rescaled, so it is on a different footing from `price`. Use it to judge relative direction (street outpacing the suburb or not), not to compute a precise street-vs-suburb premium.'
+      additionalProperties: true
+      type: object
+      required:
+      - year
+      title: StreetHistoryPoint
+      description: 'One year of the street''s modelled price history, with the suburb
+
+        median alongside it as a baseline.
+
+
+        Two series, two different things. `price` is *this street* — a
+
+        modelled house-price level, because most streets do not sell enough
+
+        houses in a year to have a real median of their own. `suburb_med` is
+
+        the whole suburb''s median for the same year, included so you can see
+
+        whether the street ran ahead of or behind its suburb. Compare the two
+
+        as a *shape* over time, not as a like-for-like pair of medians.'
+      example:
+        price: 970000.0
+        suburb_med: 1040068
+        year: 2026
+    ApiResponse_StreetForecasts_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/StreetForecasts'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[StreetForecasts]
   securitySchemes:
     BearerAuth:
       type: http

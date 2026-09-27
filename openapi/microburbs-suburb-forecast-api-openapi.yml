@@ -134,62 +134,33 @@ paths:
       x-price-cents: 100
 components:
   schemas:
-    ForecastSale:
+    ApiResponse_ForecastSale_:
       properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        metric:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ForecastSale'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
           anyOf:
           - type: string
           - type: 'null'
-          title: Metric
-          description: Metric label, e.g. 'sale_price_growth_forecast'.
-        house:
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
           anyOf:
-          - $ref: '#/components/schemas/ForecastBand'
+          - type: string
           - type: 'null'
-          description: House forecast band.
-        unit:
-          anyOf:
-          - $ref: '#/components/schemas/ForecastBand'
-          - type: 'null'
-          description: Unit forecast band.
-      additionalProperties: true
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      required:
-      - area_name
-      - area_level
-      title: ForecastSale
-      description: 12-month sale-price growth forecast by property type.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        house:
-          confidence: 2.0
-          high: 0.0927
-          low: 0.0379
-          most_likely: 0.0686
-        metric: sale_price_growth_forecast
-        unit:
-          confidence: 2.0
-          high: 0.0993
-          low: 0.0353
-          most_likely: 0.0762
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      title: ApiResponse[ForecastSale]
     ValidationError:
       properties:
         loc:
@@ -258,33 +229,62 @@ components:
         percentage. Present the band, not just `most_likely` — the width between
 
         `low` and `high` is the honest part of the forecast.'
-    ApiResponse_ForecastSale_:
+    ForecastSale:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/ForecastSale'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        metric:
           anyOf:
           - type: string
           - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
+          title: Metric
+          description: Metric label, e.g. 'sale_price_growth_forecast'.
+        house:
           anyOf:
-          - type: string
+          - $ref: '#/components/schemas/ForecastBand'
           - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+          description: House forecast band.
+        unit:
+          anyOf:
+          - $ref: '#/components/schemas/ForecastBand'
+          - type: 'null'
+          description: Unit forecast band.
+      additionalProperties: true
       type: object
-      title: ApiResponse[ForecastSale]
+      required:
+      - area_name
+      - area_level
+      title: ForecastSale
+      description: 12-month sale-price growth forecast by property type.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        house:
+          confidence: 2.0
+          high: 0.0927
+          low: 0.0379
+          most_likely: 0.0686
+        metric: sale_price_growth_forecast
+        unit:
+          confidence: 2.0
+          high: 0.0993
+          low: 0.0353
+          most_likely: 0.0762
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
   securitySchemes:
     BearerAuth:
       type: http

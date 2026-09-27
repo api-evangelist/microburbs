@@ -213,15 +213,33 @@ paths:
       x-price-cents: 3
 components:
   schemas:
-    HTTPValidationError:
+    Sa4Profile:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        sa4:
+          type: string
+          title: Sa4
+          description: SA4 name.
+        gccsa:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gccsa
+          description: Greater Capital City Statistical Area.
+        state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State
+          description: State / Territory abbreviation.
       type: object
-      title: HTTPValidationError
+      required:
+      - sa4
+      title: Sa4Profile
+      description: SA4's parent chain — GCCSA + state.
+      example:
+        gccsa: Rest of NSW
+        sa4: Newcastle and Lake Macquarie
+        state: NSW
     ValidationError:
       properties:
         loc:
@@ -248,6 +266,34 @@ components:
       - msg
       - type
       title: ValidationError
+    Sa4ListItem:
+      properties:
+        sa4:
+          type: string
+          title: Sa4
+          description: SA4 name.
+        state:
+          type: string
+          title: State
+          description: State / Territory abbreviation (NSW, VIC, ...).
+      type: object
+      required:
+      - sa4
+      - state
+      title: Sa4ListItem
+      description: One row in the SA4 directory.
+      example:
+        sa4: Newcastle and Lake Macquarie
+        state: NSW
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ApiResponse_list_Sa4ListItem__:
       properties:
         data:
@@ -278,33 +324,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[Sa4ListItem]]
-    Sa4Profile:
-      properties:
-        sa4:
-          type: string
-          title: Sa4
-          description: SA4 name.
-        gccsa:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Gccsa
-          description: Greater Capital City Statistical Area.
-        state:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: State
-          description: State / Territory abbreviation.
-      type: object
-      required:
-      - sa4
-      title: Sa4Profile
-      description: SA4's parent chain — GCCSA + state.
-      example:
-        gccsa: Rest of NSW
-        sa4: Newcastle and Lake Macquarie
-        state: NSW
     ApiResponse_Sa4Profile_:
       properties:
         data:
@@ -332,25 +351,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[Sa4Profile]
-    Sa4ListItem:
-      properties:
-        sa4:
-          type: string
-          title: Sa4
-          description: SA4 name.
-        state:
-          type: string
-          title: State
-          description: State / Territory abbreviation (NSW, VIC, ...).
-      type: object
-      required:
-      - sa4
-      - state
-      title: Sa4ListItem
-      description: One row in the SA4 directory.
-      example:
-        sa4: Newcastle and Lake Macquarie
-        state: NSW
   securitySchemes:
     BearerAuth:
       type: http

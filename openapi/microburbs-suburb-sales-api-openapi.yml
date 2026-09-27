@@ -316,81 +316,6 @@ components:
           property_type: House
           sold_date: '2026-03-27'
           sold_price: 910000.0
-    RecentSaleRow:
-      properties:
-        gnaf_pid:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Gnaf Pid
-          description: GNAF property ID.
-        address:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Address
-          description: Street address (title-cased).
-        property_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Property Type
-          description: 'Bucketed type: House / Townhouse / Unit / Land / Other.'
-        bedrooms:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Bedrooms
-          description: Bedroom count.
-        bathrooms:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Bathrooms
-          description: Bathroom count.
-        land_size:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Land Size
-          description: Land size in m², where known.
-        sold_price:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Sold Price
-          description: Sale price (AUD).
-        sold_date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sold Date
-          description: Sale date (YYYY-MM-DD).
-        lat:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lat
-          description: Latitude (WGS84).
-        lng:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lng
-          description: Longitude (WGS84).
-      additionalProperties: true
-      type: object
-      title: RecentSaleRow
-      description: One sold property.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ApiResponse_SalesSummary_:
       properties:
         data:
@@ -471,6 +396,15 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[RecentSales]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     SalesSummary:
       properties:
         area_name:
@@ -504,6 +438,72 @@ components:
         area_name: Belmont North
         median_sold_price_3y: 965000.0
         sales_count_3y: 155
+    RecentSaleRow:
+      properties:
+        gnaf_pid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gnaf Pid
+          description: GNAF property ID.
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Street address (title-cased).
+        property_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Property Type
+          description: 'Bucketed type: House / Townhouse / Unit / Land / Other.'
+        bedrooms:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Bedrooms
+          description: Bedroom count.
+        bathrooms:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Bathrooms
+          description: Bathroom count.
+        land_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Land Size
+          description: Land size in m², where known.
+        sold_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sold Price
+          description: Sale price (AUD).
+        sold_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sold Date
+          description: Sale date (YYYY-MM-DD).
+        lat:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lat
+          description: Latitude (WGS84).
+        lng:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lng
+          description: Longitude (WGS84).
+      additionalProperties: true
+      type: object
+      title: RecentSaleRow
+      description: One sold property.
   securitySchemes:
     BearerAuth:
       type: http

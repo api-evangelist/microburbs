@@ -1500,42 +1500,11 @@ paths:
       x-price-cents: 20
 components:
   schemas:
-    CouncilIntelligenceSummary:
-      properties:
-        total_signals:
-          type: integer
-          title: Total Signals
-          description: Distinct signals (deduped by title).
-        active_signals:
-          type: integer
-          title: Active Signals
-          description: Signals whose stage buckets as 'active'.
-        pipeline_dollars:
-          type: number
-          title: Pipeline Dollars
-          description: Sum of every signal's dollar_value (AUD).
-        pipeline_display:
-          type: string
-          title: Pipeline Display
-          description: Compact rendering of pipeline_dollars, e.g. '$335.6M'.
-        n_types:
-          type: integer
-          title: N Types
-          description: Distinct signal types present.
-      type: object
-      required:
-      - total_signals
-      - active_signals
-      - pipeline_dollars
-      - pipeline_display
-      - n_types
-      title: CouncilIntelligenceSummary
-      description: Headline rollup over the signal list.
-    ApiResponse_SuburbBuildingControls_:
+    ApiResponse_DaCount_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/SuburbBuildingControls'
+          - $ref: '#/components/schemas/DaCount'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -1557,289 +1526,7 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[SuburbBuildingControls]
-    SupplySummary:
-      properties:
-        new_houses:
-          type: integer
-          title: New Houses
-          description: Total new houses across mesh blocks.
-        new_units:
-          type: integer
-          title: New Units
-          description: Total new units across mesh blocks.
-        total_new:
-          type: integer
-          title: Total New
-          description: Total new dwellings.
-        pct_houses:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Pct Houses
-          description: House share of new supply (%); null when zero supply.
-        pct_units:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Pct Units
-          description: Unit share of new supply (%); null when zero supply.
-      type: object
-      required:
-      - new_houses
-      - new_units
-      - total_new
-      title: SupplySummary
-      description: Suburb rollup of new supply (sum of per-mesh-block counts).
-    GeoJsonFeature:
-      properties:
-        type:
-          type: string
-          const: Feature
-          title: Type
-          description: Always 'Feature'.
-        geometry:
-          additionalProperties: true
-          type: object
-          title: Geometry
-          description: GeoJSON geometry (Polygon or MultiPolygon).
-        properties:
-          additionalProperties: true
-          type: object
-          title: Properties
-          description: Per-feature attributes — see the endpoint's example.
-      type: object
-      required:
-      - type
-      - geometry
-      - properties
-      title: GeoJsonFeature
-      description: RFC 7946 Feature — geometry + endpoint-specific properties.
-    SupplyMb:
-      properties:
-        mb_code:
-          type: string
-          title: Mb Code
-          description: ABS mesh-block code.
-        new_houses:
-          type: integer
-          title: New Houses
-          description: New houses appearing in GNAF.
-        new_units:
-          type: integer
-          title: New Units
-          description: New units appearing in GNAF.
-        total_new:
-          type: integer
-          title: Total New
-          description: Total new dwellings (houses + units).
-        pct_units:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Pct Units
-          description: Unit share of new supply (%); null when no new supply.
-      additionalProperties: true
-      type: object
-      required:
-      - mb_code
-      - new_houses
-      - new_units
-      - total_new
-      title: SupplyMb
-      description: New supply near one mesh block (0.5 km radius, last 24 months).
-    ApiResponse_SuburbPlanningAll_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbPlanningAll'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbPlanningAll]
-    ApiResponse_SuburbDensity_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbDensity'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbDensity]
-    ApiResponse_SuburbDevelopmentSupply_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbDevelopmentSupply'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbDevelopmentSupply]
-    ApiResponse_SuburbCouncilIntelligence_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbCouncilIntelligence'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbCouncilIntelligence]
-    ApiResponse_SuburbDevelopmentProfile_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbDevelopmentProfile'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbDevelopmentProfile]
-    ApiResponse_SuburbConstructionActivity_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbConstructionActivity'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbConstructionActivity]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ZoningGroup:
-      properties:
-        label:
-          type: string
-          title: Label
-          description: Parent group name.
-        pct:
-          type: number
-          title: Pct
-          description: Share of zoned area (%).
-        color:
-          type: string
-          title: Color
-          description: Hex colour for map styling.
-      type: object
-      required:
-      - label
-      - pct
-      - color
-      title: ZoningGroup
-      description: Parent-group share of the suburb's zoned area.
+      title: ApiResponse[DaCount]
     SuburbDevelopmentSupply:
       properties:
         area_name:
@@ -1883,249 +1570,6 @@ components:
           pct_houses: 61.3
           pct_units: 38.7
           total_new: 1060
-    ZoningLegendRow:
-      properties:
-        lay_class:
-          type: string
-          title: Lay Class
-          description: Zoning layer class (e.g. 'Low Density Residential').
-        sym_code:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sym Code
-          description: Zoning symbol code (e.g. 'R2').
-        parent:
-          type: string
-          title: Parent
-          description: Parent group — Environmental / Residential / Commercial / Other.
-        color:
-          type: string
-          title: Color
-          description: Hex colour for map styling.
-        pct:
-          type: number
-          title: Pct
-          description: Share of zoned area (%).
-      additionalProperties: true
-      type: object
-      required:
-      - lay_class
-      - parent
-      - color
-      - pct
-      title: ZoningLegendRow
-      description: One zoning class with its share of the suburb's zoned area.
-    ApiResponse_SuburbDevelopmentApplications_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbDevelopmentApplications'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbDevelopmentApplications]
-    HobControls:
-      properties:
-        zones_mapped:
-          type: integer
-          title: Zones Mapped
-          description: Number of height-control zones counted (RL reference levels >30m excluded).
-        most_common_height_m:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Most Common Height M
-          description: Modal height limit across mapped zones (metres).
-        pct_most_common:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Pct Most Common
-          description: Share of zones at the modal height (%).
-        legend:
-          items:
-            $ref: '#/components/schemas/BandShare'
-          type: array
-          title: Legend
-          description: Area share per height band.
-        geojson:
-          $ref: '#/components/schemas/GeoJsonFeatureCollection'
-          description: 'HOB polygons. Feature properties: height_m, units, band, color.'
-      additionalProperties: true
-      type: object
-      required:
-      - zones_mapped
-      - legend
-      - geojson
-      title: HobControls
-      description: Height-of-building controls summary + polygons.
-    SuburbDensity:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb'.
-        dwellings_per_km2:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Dwellings Per Km2
-          description: Dwelling density from the Microburbs suburb profile — the figure the suburb report headlines. Measured around the suburb's properties, so it differs from `boundary_dwellings_per_km2`. Null for suburbs with no profile row (mostly rural / non-residential SALs).
-        people_per_km2:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: People Per Km2
-          description: Population density from the same suburb profile, on the same denominator as `dwellings_per_km2`.
-        density_level:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Density Level
-          description: 'Band the report labels `dwellings_per_km2` with: Low (<1,000), Mid (1,000–2,999), High (3,000+).'
-        area_km2:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Area Km2
-          description: Land area of the ABS SAL boundary in km², summed from the equal-area mesh-block areas ABS publishes.
-        dwellings:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Dwellings
-          description: Census dwelling count across the suburb's mesh blocks.
-        population:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Population
-          description: Census usual-resident population across the suburb's mesh blocks.
-        boundary_dwellings_per_km2:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Boundary Dwellings Per Km2
-          description: '`dwellings / area_km2` — the whole-of-boundary ratio.'
-        boundary_people_per_km2:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Boundary People Per Km2
-          description: '`population / area_km2` — the whole-of-boundary ratio.'
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      title: SuburbDensity
-      description: "Dwelling and population density for a suburb, plus the land area and\ncounts behind it.\n\nTwo density measures ship together on purpose — they are computed on\ndifferent denominators and do not agree:\n\n* ``dwellings_per_km2`` / ``people_per_km2`` are the Microburbs\n  suburb-profile figures, and are what the Microburbs suburb report\n  headlines.\n* ``boundary_dwellings_per_km2`` / ``boundary_people_per_km2`` are the\n  plain whole-of-boundary ratios — exactly ``dwellings / area_km2`` and\n  ``population / area_km2``.\n\nThe profile figures are measured around the suburb's properties, not\nacross its whole polygon, so they differ from the boundary ratios in\neither direction (Belmont North: 1,002 vs 676; Bondi: 4,970 vs 6,193).\nPick the one that matches your question: profile density for \"how\nbuilt-up is the area people actually live in\", boundary density for\n\"how many dwellings per km² of suburb\"."
-      example:
-        area_km2: 3.6314
-        area_level: suburb
-        area_name: Belmont North
-        boundary_dwellings_per_km2: 675.5
-        boundary_people_per_km2: 1729.4
-        density_level: Mid
-        dwellings: 2453
-        dwellings_per_km2: 1002
-        people_per_km2: 2575
-        population: 6280
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    GeoJsonFeatureCollection:
-      properties:
-        type:
-          type: string
-          const: FeatureCollection
-          title: Type
-          description: Always 'FeatureCollection'.
-        features:
-          items:
-            $ref: '#/components/schemas/GeoJsonFeature'
-          type: array
-          title: Features
-          description: Feature list.
-      type: object
-      required:
-      - type
-      - features
-      title: GeoJsonFeatureCollection
-      description: RFC 7946 FeatureCollection.
-    ApiResponse_SuburbZoningMap_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbZoningMap'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbZoningMap]
     ConstructionSummary:
       properties:
         mb_count:
@@ -2154,283 +1598,70 @@ components:
       - active_mb_count
       title: ConstructionSummary
       description: Suburb rollup of per-mesh-block construction signals.
-    SuburbZoningMap:
+    CouncilIntelligenceSummary:
       properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb'.
-        legend:
-          items:
-            $ref: '#/components/schemas/ZoningLegendRow'
-          type: array
-          title: Legend
-          description: Per-class area shares, largest first.
-        groups:
-          items:
-            $ref: '#/components/schemas/ZoningGroup'
-          type: array
-          title: Groups
-          description: Parent-group area shares (Environmental / Residential / Commercial / Other).
-        geojson:
-          $ref: '#/components/schemas/GeoJsonFeatureCollection'
-          description: 'Zoning polygons. Feature properties: lay_class, sym_code, parent, color.'
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - legend
-      - groups
-      - geojson
-      title: SuburbZoningMap
-      description: Zoning polygons clipped to the suburb boundary, plus legend shares.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        geojson:
-          features:
-          - geometry:
-              coordinates:
-              - - - 151.6695
-                  - -33.0018
-                - - 151.6702
-                  - -33.0021
-                - - 151.6698
-                  - -33.0027
-                - - 151.6695
-                  - -33.0018
-              type: Polygon
-            properties:
-              lay_class: Environmental Conservation
-              sym_code: C2
-              parent: Environmental
-              color: '#27ae60'
-            type: Feature
-          type: FeatureCollection
-        groups:
-        - color: '#27ae60'
-          label: Environmental
-          pct: 24.3
-        - color: '#e85d75'
-          label: Residential
-          pct: 64.1
-        - color: '#f6c445'
-          label: Commercial
-          pct: 1.6
-        - color: '#b8b8b8'
-          label: Other
-          pct: 10.0
-        legend:
-        - color: '#e85d75'
-          lay_class: Low Density Residential
-          parent: Residential
-          pct: 62.4
-          sym_code: R2
-        - color: '#27ae60'
-          lay_class: Environmental Conservation
-          parent: Environmental
-          pct: 21.9
-          sym_code: C2
-    SuburbDevelopmentProfile:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb'.
-        apartment_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Apartment Pct
-          description: Apartments as a share of the dwelling stock (%).
-        avg_lot_m2:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Avg Lot M2
-          description: Average residential lot size (m²).
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      title: SuburbDevelopmentProfile
-      description: Dwelling-mix scalars from the suburb-profile build.
-      example:
-        apartment_pct: 1.2
-        area_level: suburb
-        area_name: Belmont North
-        avg_lot_m2: 758
-    DevelopmentDa:
-      properties:
-        id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Id
-          description: Source DA record id.
-        title:
-          type: string
-          title: Title
-          description: Proposed works description.
-        address:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Address
-          description: Cleaned site address.
-        lat:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lat
-          description: Latitude (null for some sources, e.g. VIC).
-        lng:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lng
-          description: Longitude.
-        stage:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Stage
-          description: Raw stage code (e.g. 'under_assessment').
-        stage_display:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Stage Display
-          description: Human-readable stage.
-        date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Date
-          description: Lodged date (YYYY-MM-DD).
-        category:
-          type: string
-          title: Category
-          description: Coarse category from the title classifier.
-        dollar_value:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Dollar Value
-          description: Estimated works value (AUD).
-      additionalProperties: true
-      type: object
-      required:
-      - title
-      - category
-      title: DevelopmentDa
-      description: One development application.
-    ApiResponse_SuburbCouncilRates_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbCouncilRates'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbCouncilRates]
-    ApiResponse_list_DaRow__:
-      properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/DaRow'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[list[DaRow]]
-    SuburbCouncilRates:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb'.
-        lga:
-          type: string
-          title: Lga
-          description: Local government area the suburb belongs to.
-        avg_rate_aud_yr:
+        total_signals:
           type: integer
-          title: Avg Rate Aud Yr
-          description: Average annual residential rate (AUD per year).
-        data_source:
+          title: Total Signals
+          description: Distinct signals (deduped by title).
+        active_signals:
+          type: integer
+          title: Active Signals
+          description: Signals whose stage buckets as 'active'.
+        pipeline_dollars:
+          type: number
+          title: Pipeline Dollars
+          description: Sum of every signal's dollar_value (AUD).
+        pipeline_display:
+          type: string
+          title: Pipeline Display
+          description: Compact rendering of pipeline_dollars, e.g. '$335.6M'.
+        n_types:
+          type: integer
+          title: N Types
+          description: Distinct signal types present.
+      type: object
+      required:
+      - total_signals
+      - active_signals
+      - pipeline_dollars
+      - pipeline_display
+      - n_types
+      title: CouncilIntelligenceSummary
+      description: Headline rollup over the signal list.
+    SupplyMb:
+      properties:
+        mb_code:
+          type: string
+          title: Mb Code
+          description: ABS mesh-block code.
+        new_houses:
+          type: integer
+          title: New Houses
+          description: New houses appearing in GNAF.
+        new_units:
+          type: integer
+          title: New Units
+          description: New units appearing in GNAF.
+        total_new:
+          type: integer
+          title: Total New
+          description: Total new dwellings (houses + units).
+        pct_units:
           anyOf:
-          - type: string
+          - type: number
           - type: 'null'
-          title: Data Source
-          description: Provenance of the rate figure (e.g. 'NSW_OLG_AVG').
+          title: Pct Units
+          description: Unit share of new supply (%); null when no new supply.
       additionalProperties: true
       type: object
       required:
-      - area_name
-      - area_level
-      - lga
-      - avg_rate_aud_yr
-      title: SuburbCouncilRates
-      description: Average annual residential council rate for the suburb's LGA.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        avg_rate_aud_yr: 1584
-        data_source: NSW_OLG_AVG
-        lga: Lake Macquarie
+      - mb_code
+      - new_houses
+      - new_units
+      - total_new
+      title: SupplyMb
+      description: New supply near one mesh block (0.5 km radius, last 24 months).
     SuburbDevelopmentApplications:
       properties:
         area_name:
@@ -2505,151 +1736,76 @@ components:
         max_date: '2026-06-18'
         min_date: '2019-12-02'
         total: 100
-    DaRow:
+    HTTPValidationError:
       properties:
-        area_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Area Name
-          description: Suburb (SAL) name — may be empty for per-address rows.
-        area_level:
-          type: string
-          title: Area Level
-          description: '''suburb'' or ''address''.'
-        suburb:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Suburb
-          description: Suburb the DA is in (when area_level=='address').
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          description: Free-text description of the proposed works.
-        date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Date
-          description: DA lodged date (YYYY-MM-DD).
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-          description: Coarse category — 'Renovation', 'New Dwelling', etc.
-      additionalProperties: true
-      type: object
-      required:
-      - area_level
-      title: DaRow
-      description: One development-application record near the suburb.
-    SuburbConstructionActivity:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb'.
-        summary:
-          $ref: '#/components/schemas/ConstructionSummary'
-          description: Suburb rollup.
-        mesh_blocks:
+        detail:
           items:
-            $ref: '#/components/schemas/ConstructionMb'
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Mesh Blocks
-          description: Per-mesh-block rows, highest score first.
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HobControls:
+      properties:
+        zones_mapped:
+          type: integer
+          title: Zones Mapped
+          description: Number of height-control zones counted (RL reference levels >30m excluded).
+        most_common_height_m:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Most Common Height M
+          description: Modal height limit across mapped zones (metres).
+        pct_most_common:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct Most Common
+          description: Share of zones at the modal height (%).
+        legend:
+          items:
+            $ref: '#/components/schemas/BandShare'
+          type: array
+          title: Legend
+          description: Area share per height band.
+        geojson:
+          $ref: '#/components/schemas/GeoJsonFeatureCollection'
+          description: 'HOB polygons. Feature properties: height_m, units, band, color.'
       additionalProperties: true
       type: object
       required:
-      - area_name
-      - area_level
-      - summary
-      - mesh_blocks
-      title: SuburbConstructionActivity
-      description: Satellite-detected construction activity per mesh block + rollup.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        mesh_blocks:
-        - construction_score: 0.0849
-          mb_code: '10436570000'
-          ndbi_2019: -0.148
-          ndbi_2023: -0.1056
-          ndbi_change: 0.0423
-          ndvi_change: -0.0426
-        summary:
-          active_mb_count: 3
-          avg_construction_score: -0.0456
-          avg_ndbi_change: -0.02
-          mb_count: 66
-    DaCount:
+      - zones_mapped
+      - legend
+      - geojson
+      title: HobControls
+      description: Height-of-building controls summary + polygons.
+    ZoningGroup:
       properties:
-        da_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Da Count
-          description: Number of recent DAs in the suburb.
-      type: object
-      required:
-      - da_count
-      title: DaCount
-      example:
-        da_count: 0
-    DaCategoryCount:
-      properties:
-        category:
+        label:
           type: string
-          title: Category
-          description: Education / New Dwelling / Renovation / Demolition / Commercial / Other.
-        count:
-          type: integer
-          title: Count
-          description: Applications in this category.
+          title: Label
+          description: Parent group name.
+        pct:
+          type: number
+          title: Pct
+          description: Share of zoned area (%).
+        color:
+          type: string
+          title: Color
+          description: Hex colour for map styling.
       type: object
       required:
-      - category
-      - count
-      title: DaCategoryCount
-      description: DA count for one category.
-    SuburbPlanningAll:
-      properties:
-        da_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Da Count
-        da_list:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/DaRow'
-            type: array
-          - type: 'null'
-          title: Da List
-      type: object
-      title: SuburbPlanningAll
-      example:
-        da_count: 0
-        da_list:
-        - area_level: address
-          area_name: ''
-          category: Renovation
-          date: '2026-04-15'
-          description: Alterations and additions to existing dwelling.
-          suburb: Belmont North
-    ApiResponse_DaCount_:
+      - label
+      - pct
+      - color
+      title: ZoningGroup
+      description: Parent-group share of the suburb's zoned area.
+    ApiResponse_SuburbDevelopmentApplications_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/DaCount'
+          - $ref: '#/components/schemas/SuburbDevelopmentApplications'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -2671,97 +1827,7 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[DaCount]
-    SuburbBuildingControls:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb'.
-        hob:
-          anyOf:
-          - $ref: '#/components/schemas/HobControls'
-          - type: 'null'
-          description: Height-of-building controls.
-        fsr:
-          anyOf:
-          - $ref: '#/components/schemas/FsrControls'
-          - type: 'null'
-          description: Floor-space-ratio controls.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      title: SuburbBuildingControls
-      description: 'Height-of-building + floor-space-ratio planning controls.
-
-
-        Either block can be null — many LGAs map HOB but not FSR (or vice
-
-        versa). A 404 means neither layer exists for the suburb.'
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        hob:
-          geojson:
-            features:
-            - geometry:
-                coordinates:
-                - - - 151.668
-                    - -33.017
-                  - - 151.672
-                    - -33.017
-                  - - 151.672
-                    - -33.02
-                  - - 151.668
-                    - -33.017
-                type: Polygon
-              properties:
-                height_m: 8.5
-                units: m
-                band: ≤ 8.5m
-                color: '#fef9c3'
-              type: Feature
-            type: FeatureCollection
-          legend:
-          - color: '#fef9c3'
-            label: ≤ 8.5m
-            pct: 84.2
-          - color: '#fbbf24'
-            label: 8.5–12m
-            pct: 15.8
-          most_common_height_m: 8.5
-          pct_most_common: 71.0
-          zones_mapped: 17
-    FsrControls:
-      properties:
-        median_fsr:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Median Fsr
-          description: Area-weighted median FSR (e.g. 1.5 = 1.5:1).
-        breakdown:
-          items:
-            $ref: '#/components/schemas/BandShare'
-          type: array
-          title: Breakdown
-          description: Area share per FSR band.
-        geojson:
-          $ref: '#/components/schemas/GeoJsonFeatureCollection'
-          description: 'FSR polygons. Feature properties: fsr, band, color.'
-      additionalProperties: true
-      type: object
-      required:
-      - breakdown
-      - geojson
-      title: FsrControls
-      description: Floor-space-ratio controls summary + polygons.
+      title: ApiResponse[SuburbDevelopmentApplications]
     SuburbCouncilIntelligence:
       properties:
         area_name:
@@ -2887,6 +1953,94 @@ components:
       - dollar_value
       title: CouncilSignal
       description: One council-minute signal — a project, capex commitment or decision.
+    ApiResponse_SuburbBuildingControls_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbBuildingControls'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbBuildingControls]
+    SuburbDevelopmentProfile:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        apartment_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Apartment Pct
+          description: Apartments as a share of the dwelling stock (%).
+        avg_lot_m2:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Avg Lot M2
+          description: Average residential lot size (m²).
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: SuburbDevelopmentProfile
+      description: Dwelling-mix scalars from the suburb-profile build.
+      example:
+        apartment_pct: 1.2
+        area_level: suburb
+        area_name: Belmont North
+        avg_lot_m2: 758
+    ApiResponse_SuburbCouncilRates_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbCouncilRates'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbCouncilRates]
     ConstructionMb:
       properties:
         mb_code:
@@ -2976,6 +2130,852 @@ components:
       - pct
       title: BandShare
       description: One legend band with its share of the mapped area.
+    SuburbBuildingControls:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        hob:
+          anyOf:
+          - $ref: '#/components/schemas/HobControls'
+          - type: 'null'
+          description: Height-of-building controls.
+        fsr:
+          anyOf:
+          - $ref: '#/components/schemas/FsrControls'
+          - type: 'null'
+          description: Floor-space-ratio controls.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: SuburbBuildingControls
+      description: 'Height-of-building + floor-space-ratio planning controls.
+
+
+        Either block can be null — many LGAs map HOB but not FSR (or vice
+
+        versa). A 404 means neither layer exists for the suburb.'
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        hob:
+          geojson:
+            features:
+            - geometry:
+                coordinates:
+                - - - 151.668
+                    - -33.017
+                  - - 151.672
+                    - -33.017
+                  - - 151.672
+                    - -33.02
+                  - - 151.668
+                    - -33.017
+                type: Polygon
+              properties:
+                height_m: 8.5
+                units: m
+                band: ≤ 8.5m
+                color: '#fef9c3'
+              type: Feature
+            type: FeatureCollection
+          legend:
+          - color: '#fef9c3'
+            label: ≤ 8.5m
+            pct: 84.2
+          - color: '#fbbf24'
+            label: 8.5–12m
+            pct: 15.8
+          most_common_height_m: 8.5
+          pct_most_common: 71.0
+          zones_mapped: 17
+    SuburbCouncilRates:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        lga:
+          type: string
+          title: Lga
+          description: Local government area the suburb belongs to.
+        avg_rate_aud_yr:
+          type: integer
+          title: Avg Rate Aud Yr
+          description: Average annual residential rate (AUD per year).
+        data_source:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Data Source
+          description: Provenance of the rate figure (e.g. 'NSW_OLG_AVG').
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - lga
+      - avg_rate_aud_yr
+      title: SuburbCouncilRates
+      description: Average annual residential council rate for the suburb's LGA.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        avg_rate_aud_yr: 1584
+        data_source: NSW_OLG_AVG
+        lga: Lake Macquarie
+    ApiResponse_SuburbDevelopmentSupply_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbDevelopmentSupply'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbDevelopmentSupply]
+    DaCount:
+      properties:
+        da_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Da Count
+          description: Number of recent DAs in the suburb.
+      type: object
+      required:
+      - da_count
+      title: DaCount
+      example:
+        da_count: 0
+    ApiResponse_SuburbPlanningAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbPlanningAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbPlanningAll]
+    DevelopmentDa:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+          description: Source DA record id.
+        title:
+          type: string
+          title: Title
+          description: Proposed works description.
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Cleaned site address.
+        lat:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lat
+          description: Latitude (null for some sources, e.g. VIC).
+        lng:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lng
+          description: Longitude.
+        stage:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stage
+          description: Raw stage code (e.g. 'under_assessment').
+        stage_display:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Stage Display
+          description: Human-readable stage.
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date
+          description: Lodged date (YYYY-MM-DD).
+        category:
+          type: string
+          title: Category
+          description: Coarse category from the title classifier.
+        dollar_value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Dollar Value
+          description: Estimated works value (AUD).
+      additionalProperties: true
+      type: object
+      required:
+      - title
+      - category
+      title: DevelopmentDa
+      description: One development application.
+    SuburbPlanningAll:
+      properties:
+        da_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Da Count
+        da_list:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/DaRow'
+            type: array
+          - type: 'null'
+          title: Da List
+      type: object
+      title: SuburbPlanningAll
+      example:
+        da_count: 0
+        da_list:
+        - area_level: address
+          area_name: ''
+          category: Renovation
+          date: '2026-04-15'
+          description: Alterations and additions to existing dwelling.
+          suburb: Belmont North
+    GeoJsonFeatureCollection:
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+          title: Type
+          description: Always 'FeatureCollection'.
+        features:
+          items:
+            $ref: '#/components/schemas/GeoJsonFeature'
+          type: array
+          title: Features
+          description: Feature list.
+      type: object
+      required:
+      - type
+      - features
+      title: GeoJsonFeatureCollection
+      description: RFC 7946 FeatureCollection.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_list_DaRow__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/DaRow'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[DaRow]]
+    SuburbDensity:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        dwellings_per_km2:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dwellings Per Km2
+          description: Dwelling density from the Microburbs suburb profile — the figure the suburb report headlines. Measured around the suburb's properties, so it differs from `boundary_dwellings_per_km2`. Null for suburbs with no profile row (mostly rural / non-residential SALs).
+        people_per_km2:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: People Per Km2
+          description: Population density from the same suburb profile, on the same denominator as `dwellings_per_km2`.
+        density_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Density Level
+          description: 'Band the report labels `dwellings_per_km2` with: Low (<1,000), Mid (1,000–2,999), High (3,000+).'
+        area_km2:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Area Km2
+          description: Land area of the ABS SAL boundary in km², summed from the equal-area mesh-block areas ABS publishes.
+        dwellings:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Dwellings
+          description: Census dwelling count across the suburb's mesh blocks.
+        population:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Population
+          description: Census usual-resident population across the suburb's mesh blocks.
+        boundary_dwellings_per_km2:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Boundary Dwellings Per Km2
+          description: '`dwellings / area_km2` — the whole-of-boundary ratio.'
+        boundary_people_per_km2:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Boundary People Per Km2
+          description: '`population / area_km2` — the whole-of-boundary ratio.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: SuburbDensity
+      description: "Dwelling and population density for a suburb, plus the land area and\ncounts behind it.\n\nTwo density measures ship together on purpose — they are computed on\ndifferent denominators and do not agree:\n\n* ``dwellings_per_km2`` / ``people_per_km2`` are the Microburbs\n  suburb-profile figures, and are what the Microburbs suburb report\n  headlines.\n* ``boundary_dwellings_per_km2`` / ``boundary_people_per_km2`` are the\n  plain whole-of-boundary ratios — exactly ``dwellings / area_km2`` and\n  ``population / area_km2``.\n\nThe profile figures are measured around the suburb's properties, not\nacross its whole polygon, so they differ from the boundary ratios in\neither direction (Belmont North: 1,002 vs 676; Bondi: 4,970 vs 6,193).\nPick the one that matches your question: profile density for \"how\nbuilt-up is the area people actually live in\", boundary density for\n\"how many dwellings per km² of suburb\"."
+      example:
+        area_km2: 3.6314
+        area_level: suburb
+        area_name: Belmont North
+        boundary_dwellings_per_km2: 675.5
+        boundary_people_per_km2: 1729.4
+        density_level: Mid
+        dwellings: 2453
+        dwellings_per_km2: 1002
+        people_per_km2: 2575
+        population: 6280
+    SupplySummary:
+      properties:
+        new_houses:
+          type: integer
+          title: New Houses
+          description: Total new houses across mesh blocks.
+        new_units:
+          type: integer
+          title: New Units
+          description: Total new units across mesh blocks.
+        total_new:
+          type: integer
+          title: Total New
+          description: Total new dwellings.
+        pct_houses:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct Houses
+          description: House share of new supply (%); null when zero supply.
+        pct_units:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct Units
+          description: Unit share of new supply (%); null when zero supply.
+      type: object
+      required:
+      - new_houses
+      - new_units
+      - total_new
+      title: SupplySummary
+      description: Suburb rollup of new supply (sum of per-mesh-block counts).
+    ApiResponse_SuburbDensity_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbDensity'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbDensity]
+    SuburbConstructionActivity:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        summary:
+          $ref: '#/components/schemas/ConstructionSummary'
+          description: Suburb rollup.
+        mesh_blocks:
+          items:
+            $ref: '#/components/schemas/ConstructionMb'
+          type: array
+          title: Mesh Blocks
+          description: Per-mesh-block rows, highest score first.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - summary
+      - mesh_blocks
+      title: SuburbConstructionActivity
+      description: Satellite-detected construction activity per mesh block + rollup.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        mesh_blocks:
+        - construction_score: 0.0849
+          mb_code: '10436570000'
+          ndbi_2019: -0.148
+          ndbi_2023: -0.1056
+          ndbi_change: 0.0423
+          ndvi_change: -0.0426
+        summary:
+          active_mb_count: 3
+          avg_construction_score: -0.0456
+          avg_ndbi_change: -0.02
+          mb_count: 66
+    FsrControls:
+      properties:
+        median_fsr:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Fsr
+          description: Area-weighted median FSR (e.g. 1.5 = 1.5:1).
+        breakdown:
+          items:
+            $ref: '#/components/schemas/BandShare'
+          type: array
+          title: Breakdown
+          description: Area share per FSR band.
+        geojson:
+          $ref: '#/components/schemas/GeoJsonFeatureCollection'
+          description: 'FSR polygons. Feature properties: fsr, band, color.'
+      additionalProperties: true
+      type: object
+      required:
+      - breakdown
+      - geojson
+      title: FsrControls
+      description: Floor-space-ratio controls summary + polygons.
+    ApiResponse_SuburbConstructionActivity_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbConstructionActivity'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbConstructionActivity]
+    DaRow:
+      properties:
+        area_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Name
+          description: Suburb (SAL) name — may be empty for per-address rows.
+        area_level:
+          type: string
+          title: Area Level
+          description: '''suburb'' or ''address''.'
+        suburb:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Suburb
+          description: Suburb the DA is in (when area_level=='address').
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: Free-text description of the proposed works.
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date
+          description: DA lodged date (YYYY-MM-DD).
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Coarse category — 'Renovation', 'New Dwelling', etc.
+      additionalProperties: true
+      type: object
+      required:
+      - area_level
+      title: DaRow
+      description: One development-application record near the suburb.
+    ApiResponse_SuburbDevelopmentProfile_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbDevelopmentProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbDevelopmentProfile]
+    DaCategoryCount:
+      properties:
+        category:
+          type: string
+          title: Category
+          description: Education / New Dwelling / Renovation / Demolition / Commercial / Other.
+        count:
+          type: integer
+          title: Count
+          description: Applications in this category.
+      type: object
+      required:
+      - category
+      - count
+      title: DaCategoryCount
+      description: DA count for one category.
+    GeoJsonFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          description: Always 'Feature'.
+        geometry:
+          additionalProperties: true
+          type: object
+          title: Geometry
+          description: GeoJSON geometry (Polygon or MultiPolygon).
+        properties:
+          additionalProperties: true
+          type: object
+          title: Properties
+          description: Per-feature attributes — see the endpoint's example.
+      type: object
+      required:
+      - type
+      - geometry
+      - properties
+      title: GeoJsonFeature
+      description: RFC 7946 Feature — geometry + endpoint-specific properties.
+    ZoningLegendRow:
+      properties:
+        lay_class:
+          type: string
+          title: Lay Class
+          description: Zoning layer class (e.g. 'Low Density Residential').
+        sym_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sym Code
+          description: Zoning symbol code (e.g. 'R2').
+        parent:
+          type: string
+          title: Parent
+          description: Parent group — Environmental / Residential / Commercial / Other.
+        color:
+          type: string
+          title: Color
+          description: Hex colour for map styling.
+        pct:
+          type: number
+          title: Pct
+          description: Share of zoned area (%).
+      additionalProperties: true
+      type: object
+      required:
+      - lay_class
+      - parent
+      - color
+      - pct
+      title: ZoningLegendRow
+      description: One zoning class with its share of the suburb's zoned area.
+    ApiResponse_SuburbZoningMap_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbZoningMap'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbZoningMap]
+    SuburbZoningMap:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        legend:
+          items:
+            $ref: '#/components/schemas/ZoningLegendRow'
+          type: array
+          title: Legend
+          description: Per-class area shares, largest first.
+        groups:
+          items:
+            $ref: '#/components/schemas/ZoningGroup'
+          type: array
+          title: Groups
+          description: Parent-group area shares (Environmental / Residential / Commercial / Other).
+        geojson:
+          $ref: '#/components/schemas/GeoJsonFeatureCollection'
+          description: 'Zoning polygons. Feature properties: lay_class, sym_code, parent, color.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - legend
+      - groups
+      - geojson
+      title: SuburbZoningMap
+      description: Zoning polygons clipped to the suburb boundary, plus legend shares.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.6695
+                  - -33.0018
+                - - 151.6702
+                  - -33.0021
+                - - 151.6698
+                  - -33.0027
+                - - 151.6695
+                  - -33.0018
+              type: Polygon
+            properties:
+              lay_class: Environmental Conservation
+              sym_code: C2
+              parent: Environmental
+              color: '#27ae60'
+            type: Feature
+          type: FeatureCollection
+        groups:
+        - color: '#27ae60'
+          label: Environmental
+          pct: 24.3
+        - color: '#e85d75'
+          label: Residential
+          pct: 64.1
+        - color: '#f6c445'
+          label: Commercial
+          pct: 1.6
+        - color: '#b8b8b8'
+          label: Other
+          pct: 10.0
+        legend:
+        - color: '#e85d75'
+          lay_class: Low Density Residential
+          parent: Residential
+          pct: 62.4
+          sym_code: R2
+        - color: '#27ae60'
+          lay_class: Environmental Conservation
+          parent: Environmental
+          pct: 21.9
+          sym_code: C2
+    ApiResponse_SuburbCouncilIntelligence_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbCouncilIntelligence'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbCouncilIntelligence]
   securitySchemes:
     BearerAuth:
       type: http

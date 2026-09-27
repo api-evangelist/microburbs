@@ -999,6 +999,88 @@ paths:
       x-price-cents: 10
 components:
   schemas:
+    ApiResponse_SuburbBoundary_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbBoundary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbBoundary]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Centroid:
+      properties:
+        lat:
+          type: number
+          title: Lat
+          description: Latitude (WGS84).
+        lng:
+          type: number
+          title: Lng
+          description: Longitude (WGS84).
+      type: object
+      required:
+      - lat
+      - lng
+      title: Centroid
+      description: Suburb centroid — WGS84 lat/lng.
+      example:
+        lat: -32.9931
+        lng: 151.6688
+    ApiResponse_SuburbEasements_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbEasements'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbEasements]
     SuburbNeighbours:
       properties:
         area_name:
@@ -1051,11 +1133,11 @@ components:
               dist_km: 1.2
             type: Feature
           type: FeatureCollection
-    ApiResponse_SuburbEasements_:
+    ApiResponse_SuburbMeshBlocks_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/SuburbEasements'
+          - $ref: '#/components/schemas/SuburbMeshBlocks'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -1077,146 +1159,7 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[SuburbEasements]
-    ApiResponse_SuburbBusyRoads_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbBusyRoads'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbBusyRoads]
-    SuburbHazards:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Canonical ABS SAL name.
-        area_level:
-          type: string
-          const: suburb
-          title: Area Level
-          description: Always 'suburb'.
-        layer:
-          type: string
-          enum:
-          - bushfire
-          - flood
-          - heritage
-          - erosion
-          - landslide
-          - acid-sulfate
-          title: Layer
-          description: The hazard layer requested.
-        count:
-          type: integer
-          title: Count
-          description: Number of hazard polygons returned (0 = none of this hazard here).
-        geojson:
-          additionalProperties: true
-          type: object
-          title: Geojson
-          description: 'GeoJSON FeatureCollection — hazard polygons clipped to the suburb boundary. Feature properties: `category` + `name` (per hazard layer), `tier` (acid-sulfate), none (landslide). Geometry is null on every Feature when the request passes `?geojson=false`.'
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - layer
-      - count
-      - geojson
-      title: SuburbHazards
-      description: Hazard-overlay polygons for one layer, clipped to the suburb.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        count: 36
-        geojson:
-          features:
-          - geometry:
-              coordinates:
-              - - - 151.66
-                  - -32.99
-                - - 151.67
-                  - -32.99
-                - - 151.67
-                  - -33.0
-                - - 151.66
-                  - -32.99
-              type: Polygon
-            properties:
-              category: High Potential Bushfire Intensity
-            type: Feature
-          type: FeatureCollection
-        layer: bushfire
-    SuburbBoundary:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Canonical ABS SAL name.
-        area_level:
-          type: string
-          const: suburb
-          title: Area Level
-          description: Always 'suburb'.
-        centroid:
-          $ref: '#/components/schemas/Centroid'
-          description: Boundary centroid (map-centre hint).
-        geojson:
-          additionalProperties: true
-          type: object
-          title: Geojson
-          description: GeoJSON Feature — the SAL boundary polygon, simplified (topology-preserving, ~10 m tolerance, 6 dp coordinates). Geometry is null on every Feature when the request passes `?geojson=false`.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - centroid
-      - geojson
-      title: SuburbBoundary
-      description: Simplified suburb boundary polygon plus centroid.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        centroid:
-          lat: -32.9931
-          lng: 151.6688
-        geojson:
-          geometry:
-            coordinates:
-            - - - 151.66
-                - -32.99
-              - - 151.67
-                - -32.99
-              - - 151.67
-                - -33.0
-              - - 151.66
-                - -32.99
-            type: Polygon
-          properties:
-            suburb: Belmont North
-          type: Feature
+      title: ApiResponse[SuburbMeshBlocks]
     SuburbBusyRoads:
       properties:
         area_name:
@@ -1263,6 +1206,33 @@ components:
               road_class: primary
             type: Feature
           type: FeatureCollection
+    ApiResponse_SuburbNeighbours_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbNeighbours'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbNeighbours]
     SuburbMeshBlocks:
       properties:
         area_name:
@@ -1364,61 +1334,6 @@ components:
               public_housing_pct: 36.9
             type: Feature
           type: FeatureCollection
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ApiResponse_SuburbHazards_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbHazards'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbHazards]
-    Centroid:
-      properties:
-        lat:
-          type: number
-          title: Lat
-          description: Latitude (WGS84).
-        lng:
-          type: number
-          title: Lng
-          description: Longitude (WGS84).
-      type: object
-      required:
-      - lat
-      - lng
-      title: Centroid
-      description: Suburb centroid — WGS84 lat/lng.
-      example:
-        lat: -32.9931
-        lng: 151.6688
     SuburbEasements:
       properties:
         area_name:
@@ -1469,59 +1384,6 @@ components:
               category: drainage
             type: Feature
           type: FeatureCollection
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ApiResponse_SuburbMeshBlocks_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbMeshBlocks'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbMeshBlocks]
     SuburbNoiseHeatmap:
       properties:
         area_name:
@@ -1592,60 +1454,81 @@ components:
           - 151.6688
           - 0.8
         intensity_definition: Relative noise intensity, 0-1 (scaled composite of road-traffic and noisy-POI proximity; 1 = noisiest cell in the source grid). Not a decibel measurement.
-    ApiResponse_SuburbNoiseHeatmap_:
+    ValidationError:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbNoiseHeatmap'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
           title: Message
-          description: Human-readable explanation. Omitted on success.
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
-      title: ApiResponse[SuburbNoiseHeatmap]
-    ApiResponse_SuburbNeighbours_:
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    SuburbBoundary:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbNeighbours'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        centroid:
+          $ref: '#/components/schemas/Centroid'
+          description: Boundary centroid (map-centre hint).
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: GeoJSON Feature — the SAL boundary polygon, simplified (topology-preserving, ~10 m tolerance, 6 dp coordinates). Geometry is null on every Feature when the request passes `?geojson=false`.
+      additionalProperties: true
       type: object
-      title: ApiResponse[SuburbNeighbours]
+      required:
+      - area_name
+      - area_level
+      - centroid
+      - geojson
+      title: SuburbBoundary
+      description: Simplified suburb boundary polygon plus centroid.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        centroid:
+          lat: -32.9931
+          lng: 151.6688
+        geojson:
+          geometry:
+            coordinates:
+            - - - 151.66
+                - -32.99
+              - - 151.67
+                - -32.99
+              - - 151.67
+                - -33.0
+              - - 151.66
+                - -32.99
+            type: Polygon
+          properties:
+            suburb: Belmont North
+          type: Feature
     ApiResponse_SuburbPublicHousingSa1_:
       properties:
         data:
@@ -1673,11 +1556,11 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[SuburbPublicHousingSa1]
-    ApiResponse_SuburbBoundary_:
+    ApiResponse_SuburbHazards_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/SuburbBoundary'
+          - $ref: '#/components/schemas/SuburbHazards'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -1699,7 +1582,124 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[SuburbBoundary]
+      title: ApiResponse[SuburbHazards]
+    ApiResponse_SuburbBusyRoads_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbBusyRoads'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbBusyRoads]
+    SuburbHazards:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        layer:
+          type: string
+          enum:
+          - bushfire
+          - flood
+          - heritage
+          - erosion
+          - landslide
+          - acid-sulfate
+          title: Layer
+          description: The hazard layer requested.
+        count:
+          type: integer
+          title: Count
+          description: Number of hazard polygons returned (0 = none of this hazard here).
+        geojson:
+          additionalProperties: true
+          type: object
+          title: Geojson
+          description: 'GeoJSON FeatureCollection — hazard polygons clipped to the suburb boundary. Feature properties: `category` + `name` (per hazard layer), `tier` (acid-sulfate), none (landslide). Geometry is null on every Feature when the request passes `?geojson=false`.'
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - layer
+      - count
+      - geojson
+      title: SuburbHazards
+      description: Hazard-overlay polygons for one layer, clipped to the suburb.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        count: 36
+        geojson:
+          features:
+          - geometry:
+              coordinates:
+              - - - 151.66
+                  - -32.99
+                - - 151.67
+                  - -32.99
+                - - 151.67
+                  - -33.0
+                - - 151.66
+                  - -32.99
+              type: Polygon
+            properties:
+              category: High Potential Bushfire Intensity
+            type: Feature
+          type: FeatureCollection
+        layer: bushfire
+    ApiResponse_SuburbNoiseHeatmap_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbNoiseHeatmap'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbNoiseHeatmap]
   securitySchemes:
     BearerAuth:
       type: http

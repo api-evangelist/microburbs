@@ -340,98 +340,60 @@ paths:
       x-price-cents: 15
 components:
   schemas:
-    CrimeBreakdown:
+    ApiResponse_CrimeSummary_:
       properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        unit:
-          type: string
-          title: Unit
-          description: Unit of every rate / national_median value — always 'predicted incidents per 100,000 residents per year'.
-        breakdown:
-          items:
-            $ref: '#/components/schemas/CrimeBreakdownRow'
-          type: array
-          title: Breakdown
-          description: One row per crime type, sorted by rate descending.
-      additionalProperties: true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CrimeSummary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      required:
-      - area_name
-      - area_level
-      - unit
-      - breakdown
-      title: CrimeBreakdown
-      description: Per-crime-type breakdown table, highest rate first.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        breakdown:
-        - diff_pct: 12
-          label: Property
-          national_median: 898
-          rate: 1008
-          type: property
-          verdict: Above average
-        - diff_pct: -12
-          label: Drugs
-          national_median: 409
-          rate: 358
-          type: drugs
-          verdict: Below average
-        unit: predicted incidents per 100,000 residents per year
-    HTTPValidationError:
+      title: ApiResponse[CrimeSummary]
+    ApiResponse_CrimeByMeshBlock_:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CrimeByMeshBlock'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      title: HTTPValidationError
-    CrimeBreakdownRow:
-      properties:
-        type:
-          type: string
-          title: Type
-          description: Machine key (e.g. 'property', 'public_order').
-        label:
-          type: string
-          title: Label
-          description: Display label (e.g. 'Property', 'Public Order').
-        rate:
-          type: integer
-          title: Rate
-          description: Average rate across this suburb's mesh blocks — predicted incidents per 100,000 residents per year — rounded.
-        national_median:
-          type: number
-          title: National Median
-          description: National per-mesh-block median rate for this crime type.
-        diff_pct:
-          type: integer
-          title: Diff Pct
-          description: Suburb rate vs national median, rounded percentage delta.
-        verdict:
-          type: string
-          title: Verdict
-          description: 'Band for the delta: ''Very low'', ''Below average'', ''Average'', ''Above average'' or ''High''.'
-      additionalProperties: true
-      type: object
-      required:
-      - type
-      - label
-      - rate
-      - national_median
-      - diff_pct
-      - verdict
-      title: CrimeBreakdownRow
-      description: One crime type's suburb rate vs the national median.
+      title: ApiResponse[CrimeByMeshBlock]
     CrimeByMeshBlock:
       properties:
         area_name:
@@ -487,6 +449,151 @@ components:
         metric: total_predicted_crime_rate
         period: annual
         unit: predicted incidents per 100,000 residents per year
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    CrimeBreakdownRow:
+      properties:
+        type:
+          type: string
+          title: Type
+          description: Machine key (e.g. 'property', 'public_order').
+        label:
+          type: string
+          title: Label
+          description: Display label (e.g. 'Property', 'Public Order').
+        rate:
+          type: integer
+          title: Rate
+          description: Average rate across this suburb's mesh blocks — predicted incidents per 100,000 residents per year — rounded.
+        national_median:
+          type: number
+          title: National Median
+          description: National per-mesh-block median rate for this crime type.
+        diff_pct:
+          type: integer
+          title: Diff Pct
+          description: Suburb rate vs national median, rounded percentage delta.
+        verdict:
+          type: string
+          title: Verdict
+          description: 'Band for the delta: ''Very low'', ''Below average'', ''Average'', ''Above average'' or ''High''.'
+      additionalProperties: true
+      type: object
+      required:
+      - type
+      - label
+      - rate
+      - national_median
+      - diff_pct
+      - verdict
+      title: CrimeBreakdownRow
+      description: One crime type's suburb rate vs the national median.
+    ApiResponse_CrimeBreakdown_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/CrimeBreakdown'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[CrimeBreakdown]
+    CrimeBreakdown:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        unit:
+          type: string
+          title: Unit
+          description: Unit of every rate / national_median value — always 'predicted incidents per 100,000 residents per year'.
+        breakdown:
+          items:
+            $ref: '#/components/schemas/CrimeBreakdownRow'
+          type: array
+          title: Breakdown
+          description: One row per crime type, sorted by rate descending.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - unit
+      - breakdown
+      title: CrimeBreakdown
+      description: Per-crime-type breakdown table, highest rate first.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        breakdown:
+        - diff_pct: 12
+          label: Property
+          national_median: 898
+          rate: 1008
+          type: property
+          verdict: Above average
+        - diff_pct: -12
+          label: Drugs
+          national_median: 409
+          rate: 358
+          type: drugs
+          verdict: Below average
+        unit: predicted incidents per 100,000 residents per year
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     CrimeSummary:
       properties:
         area_name:
@@ -537,113 +644,6 @@ components:
         unit: predicted incidents per 100,000 residents per year
         verdict: Below average
         vs_national_pct: -19
-    ApiResponse_CrimeSummary_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/CrimeSummary'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[CrimeSummary]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ApiResponse_CrimeByMeshBlock_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/CrimeByMeshBlock'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[CrimeByMeshBlock]
-    ApiResponse_CrimeBreakdown_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/CrimeBreakdown'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[CrimeBreakdown]
   securitySchemes:
     BearerAuth:
       type: http

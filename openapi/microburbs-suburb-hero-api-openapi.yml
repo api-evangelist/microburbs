@@ -325,130 +325,6 @@ paths:
       x-price-cents: 5
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ApiResponse_HeroSummary_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/HeroSummary'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[HeroSummary]
-    ApiResponse_HeroNeighbours_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/HeroNeighbours'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[HeroNeighbours]
-    ApiResponse_HeroPriceGrowth12mo_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/HeroPriceGrowth12mo'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[HeroPriceGrowth12mo]
-    HeroNeighbours:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        neighbours:
-          items:
-            $ref: '#/components/schemas/HeroNeighbourRow'
-          type: array
-          title: Neighbours
-          description: Neighbouring suburbs ordered by distance (closest first).
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - neighbours
-      title: HeroNeighbours
-      description: Nearest neighbouring suburbs, closest first.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        neighbours:
-        - dist_km: 1.0
-          sa3: Lake Macquarie - East
-          sal: Floraville
-        - dist_km: 1.4
-          sa3: Lake Macquarie - East
-          sal: Belmont (NSW)
     HeroPriceGrowthRow:
       properties:
         property_type:
@@ -494,34 +370,6 @@ components:
         field: prop_list_price_0_5_growth_1_year_buy_house
         pct: 12.3
         property_type: house
-    HeroNeighbourRow:
-      properties:
-        sal:
-          type: string
-          title: Sal
-          description: Neighbouring suburb (SAL) name.
-        sa3:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sa3
-          description: ABS SA3 region of the neighbour.
-        dist_km:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Dist Km
-          description: Straight-line distance between the two suburbs' boundary centroids (km) — not the gap between boundaries, so touching suburbs still show a positive distance.
-      additionalProperties: true
-      type: object
-      required:
-      - sal
-      title: HeroNeighbourRow
-      description: One neighbouring suburb.
-      example:
-        dist_km: 1.0
-        sa3: Lake Macquarie - East
-        sal: Floraville
     ValidationError:
       properties:
         loc:
@@ -548,6 +396,100 @@ components:
       - msg
       - type
       title: ValidationError
+    HeroPriceGrowth12mo:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        growth:
+          items:
+            $ref: '#/components/schemas/HeroPriceGrowthRow'
+          type: array
+          title: Growth
+          description: One entry per property type with data.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - growth
+      title: HeroPriceGrowth12mo
+      description: 12-month sale-price growth by property type.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        growth:
+        - field: prop_list_price_0_5_growth_1_year_buy_house
+          pct: 12.3
+          property_type: house
+    ApiResponse_HeroPriceGrowth12mo_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HeroPriceGrowth12mo'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HeroPriceGrowth12mo]
+    ApiResponse_HeroNeighbours_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HeroNeighbours'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HeroNeighbours]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     HeroSummary:
       properties:
         area_name:
@@ -631,7 +573,7 @@ components:
         sa4: Newcastle and Lake Macquarie
         state: New South Wales
         state_abbr: NSW
-    HeroPriceGrowth12mo:
+    HeroNeighbours:
       properties:
         area_name:
           type: string
@@ -641,27 +583,85 @@ components:
           type: string
           title: Area Level
           description: Always 'suburb' for these endpoints.
-        growth:
+        neighbours:
           items:
-            $ref: '#/components/schemas/HeroPriceGrowthRow'
+            $ref: '#/components/schemas/HeroNeighbourRow'
           type: array
-          title: Growth
-          description: One entry per property type with data.
+          title: Neighbours
+          description: Neighbouring suburbs ordered by distance (closest first).
       additionalProperties: true
       type: object
       required:
       - area_name
       - area_level
-      - growth
-      title: HeroPriceGrowth12mo
-      description: 12-month sale-price growth by property type.
+      - neighbours
+      title: HeroNeighbours
+      description: Nearest neighbouring suburbs, closest first.
       example:
         area_level: suburb
         area_name: Belmont North
-        growth:
-        - field: prop_list_price_0_5_growth_1_year_buy_house
-          pct: 12.3
-          property_type: house
+        neighbours:
+        - dist_km: 1.0
+          sa3: Lake Macquarie - East
+          sal: Floraville
+        - dist_km: 1.4
+          sa3: Lake Macquarie - East
+          sal: Belmont (NSW)
+    HeroNeighbourRow:
+      properties:
+        sal:
+          type: string
+          title: Sal
+          description: Neighbouring suburb (SAL) name.
+        sa3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa3
+          description: ABS SA3 region of the neighbour.
+        dist_km:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Dist Km
+          description: Straight-line distance between the two suburbs' boundary centroids (km) — not the gap between boundaries, so touching suburbs still show a positive distance.
+      additionalProperties: true
+      type: object
+      required:
+      - sal
+      title: HeroNeighbourRow
+      description: One neighbouring suburb.
+      example:
+        dist_km: 1.0
+        sa3: Lake Macquarie - East
+        sal: Floraville
+    ApiResponse_HeroSummary_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HeroSummary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HeroSummary]
   securitySchemes:
     BearerAuth:
       type: http

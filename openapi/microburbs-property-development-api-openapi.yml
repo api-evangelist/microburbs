@@ -315,15 +315,6 @@ paths:
       x-price-cents: 8
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ApiResponse_ZoningCode_:
       properties:
         data:
@@ -351,6 +342,32 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[ZoningCode]
+    ZoningCode:
+      properties:
+        code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Code
+          description: Parenthesised code (e.g. 'R2', 'B4', 'IN1') when the council's feed includes one. Many regional NSW + Adelaide + QLD councils don't — in which case this is null and the human-readable label is on `name`.
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Human-readable zone class, e.g. 'Low Density Residential'.
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Broader category bucket, e.g. 'Residential Zones', 'Business Zones'.
+      type: object
+      title: ZoningCode
+      example:
+        category: Residential Zones
+        code: R2
+        name: Low Density Residential
     ApiResponse_PlanningAll_:
       properties:
         data:
@@ -378,116 +395,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[PlanningAll]
-    ZoningCode:
-      properties:
-        code:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Code
-          description: Parenthesised code (e.g. 'R2', 'B4', 'IN1') when the council's feed includes one. Many regional NSW + Adelaide + QLD councils don't — in which case this is null and the human-readable label is on `name`.
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: Human-readable zone class, e.g. 'Low Density Residential'.
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-          description: Broader category bucket, e.g. 'Residential Zones', 'Business Zones'.
-      type: object
-      title: ZoningCode
-      example:
-        category: Residential Zones
-        code: R2
-        name: Low Density Residential
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ZoningOverlay:
-      properties:
-        layer:
-          type: string
-          title: Layer
-          description: Overlay layer code, e.g. 'fsr', 'hob'.
-        value:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Value
-          description: Value at this point (e.g. '1.5' for FSR, '9.5' for HoB metres).
-      additionalProperties: true
-      type: object
-      required:
-      - layer
-      title: ZoningOverlay
-      description: 'One planning overlay intersecting the property''s buffer.
-
-
-        ``layer`` is the overlay family (e.g. ``"fsr"`` Floor Space Ratio,
-
-        ``"hob"`` Height of Building). ``value`` is the numeric/string
-
-        value that overlay carries at this point (e.g. ``"1.5"`` for FSR
-
-        or ``"9.5"`` for HoB metres).'
-      example:
-        layer: fsr
-        value: '1.5'
-    PlanningAll:
-      properties:
-        zoning_code:
-          anyOf:
-          - $ref: '#/components/schemas/ZoningCode'
-          - type: 'null'
-        zoning_overlays:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/ZoningOverlay'
-            type: array
-          - type: 'null'
-          title: Zoning Overlays
-      type: object
-      title: PlanningAll
-      description: All planning — zoning + overlays.
-      example:
-        zoning_code:
-          category: Residential Zones
-          code: R2
-          name: Low Density Residential
-        zoning_overlays:
-        - layer: hob
-          value: 10 m
-        - layer: hob
-          value: 5.5 m
-        - layer: hob
-          value: 8.5 m
     ApiResponse_list_ZoningOverlay__:
       properties:
         data:
@@ -518,6 +425,99 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[ZoningOverlay]]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    PlanningAll:
+      properties:
+        zoning_code:
+          anyOf:
+          - $ref: '#/components/schemas/ZoningCode'
+          - type: 'null'
+        zoning_overlays:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ZoningOverlay'
+            type: array
+          - type: 'null'
+          title: Zoning Overlays
+      type: object
+      title: PlanningAll
+      description: All planning — zoning + overlays.
+      example:
+        zoning_code:
+          category: Residential Zones
+          code: R2
+          name: Low Density Residential
+        zoning_overlays:
+        - layer: hob
+          value: 10 m
+        - layer: hob
+          value: 5.5 m
+        - layer: hob
+          value: 8.5 m
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ZoningOverlay:
+      properties:
+        layer:
+          type: string
+          title: Layer
+          description: Overlay layer code, e.g. 'fsr', 'hob'.
+        value:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Value
+          description: Value at this point (e.g. '1.5' for FSR, '9.5' for HoB metres).
+      additionalProperties: true
+      type: object
+      required:
+      - layer
+      title: ZoningOverlay
+      description: 'One planning overlay intersecting the property''s buffer.
+
+
+        ``layer`` is the overlay family (e.g. ``"fsr"`` Floor Space Ratio,
+
+        ``"hob"`` Height of Building). ``value`` is the numeric/string
+
+        value that overlay carries at this point (e.g. ``"1.5"`` for FSR
+
+        or ``"9.5"`` for HoB metres).'
+      example:
+        layer: fsr
+        value: '1.5'
   securitySchemes:
     BearerAuth:
       type: http

@@ -9,7 +9,7 @@ modified: '2026-09-14'
 specificationVersion: '0.21'
 tags:
 - Property Data
-- Real-Estate
+- Real Estate
 - Australia
 - Demographics
 - Location Intelligence
@@ -19,6 +19,7 @@ tags_raw:
 - Australia
 - Demographics
 - Location Intelligence
+- Real-Estate
 apis:
 - aid: microburbs:microburbs-account-api
   name: Microburbs Account API

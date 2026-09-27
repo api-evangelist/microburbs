@@ -528,11 +528,11 @@ paths:
       x-price-cents: 80
 components:
   schemas:
-    ApiResponse_HistoryAll_:
+    ApiResponse_HistoryRecord_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/HistoryAll'
+          - $ref: '#/components/schemas/HistoryRecord'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -554,16 +554,7 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[HistoryAll]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      title: ApiResponse[HistoryRecord]
     HistoryRecord:
       properties:
         date:
@@ -603,33 +594,6 @@ components:
         history rather than a title/transfer register: a sale that never went to
 
         market may be absent. Records are returned newest first.'
-    ApiResponse_HistoryRecord_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/HistoryRecord'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[HistoryRecord]
     ValidationError:
       properties:
         loc:
@@ -656,6 +620,63 @@ components:
       - msg
       - type
       title: ValidationError
+    ApiResponse_HistoryAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HistoryAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HistoryAll]
+    ApiResponse_list_HistoryRecord__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/HistoryRecord'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[HistoryRecord]]
     HistoryAll:
       properties:
         sale_history:
@@ -710,36 +731,15 @@ components:
           date: '2025-06-05'
           price: 990000
           type: Sold
-    ApiResponse_list_HistoryRecord__:
+    HTTPValidationError:
       properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/HistoryRecord'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      title: ApiResponse[list[HistoryRecord]]
+      title: HTTPValidationError
   securitySchemes:
     BearerAuth:
       type: http
