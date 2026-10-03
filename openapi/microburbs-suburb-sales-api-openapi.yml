@@ -316,6 +316,48 @@ components:
           property_type: House
           sold_date: '2026-03-27'
           sold_price: 910000.0
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SalesSummary:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        sales_count_3y:
+          type: integer
+          title: Sales Count 3Y
+          description: Number of recorded sales in the last 3 years.
+        median_sold_price_3y:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Sold Price 3Y
+          description: Median sold price (AUD) across those sales.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - sales_count_3y
+      title: SalesSummary
+      description: 3-year sales count and median sold price for the suburb.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        median_sold_price_3y: 965000.0
+        sales_count_3y: 155
     ApiResponse_SalesSummary_:
       properties:
         data:
@@ -369,75 +411,6 @@ components:
       - msg
       - type
       title: ValidationError
-    ApiResponse_RecentSales_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/RecentSales'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[RecentSales]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    SalesSummary:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        sales_count_3y:
-          type: integer
-          title: Sales Count 3Y
-          description: Number of recorded sales in the last 3 years.
-        median_sold_price_3y:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Median Sold Price 3Y
-          description: Median sold price (AUD) across those sales.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - sales_count_3y
-      title: SalesSummary
-      description: 3-year sales count and median sold price for the suburb.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        median_sold_price_3y: 965000.0
-        sales_count_3y: 155
     RecentSaleRow:
       properties:
         gnaf_pid:
@@ -504,6 +477,33 @@ components:
       type: object
       title: RecentSaleRow
       description: One sold property.
+    ApiResponse_RecentSales_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/RecentSales'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[RecentSales]
   securitySchemes:
     BearerAuth:
       type: http

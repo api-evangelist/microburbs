@@ -215,33 +215,60 @@ paths:
       x-price-cents: 3
 components:
   schemas:
-    ApiResponse_LgaProfile_:
+    HTTPValidationError:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/LgaProfile'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      title: ApiResponse[LgaProfile]
+      title: HTTPValidationError
+    LgaListItem:
+      properties:
+        lga:
+          type: string
+          title: Lga
+          description: LGA name.
+        state:
+          type: string
+          title: State
+          description: State / Territory abbreviation (NSW, VIC, ...).
+      type: object
+      required:
+      - lga
+      - state
+      title: LgaListItem
+      description: One row in the LGA directory.
+      example:
+        lga: Lake Macquarie
+        state: NSW
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     LgaProfile:
       properties:
         lga:
@@ -271,41 +298,6 @@ components:
         gccsa: Rest of NSW
         lga: Lake Macquarie
         state: NSW
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ApiResponse_list_LgaListItem__:
       properties:
         data:
@@ -336,25 +328,33 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[LgaListItem]]
-    LgaListItem:
+    ApiResponse_LgaProfile_:
       properties:
-        lga:
-          type: string
-          title: Lga
-          description: LGA name.
-        state:
-          type: string
-          title: State
-          description: State / Territory abbreviation (NSW, VIC, ...).
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LgaProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      required:
-      - lga
-      - state
-      title: LgaListItem
-      description: One row in the LGA directory.
-      example:
-        lga: Lake Macquarie
-        state: NSW
+      title: ApiResponse[LgaProfile]
   securitySchemes:
     BearerAuth:
       type: http

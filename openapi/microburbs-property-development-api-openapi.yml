@@ -315,59 +315,6 @@ paths:
       x-price-cents: 8
 components:
   schemas:
-    ApiResponse_ZoningCode_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/ZoningCode'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[ZoningCode]
-    ZoningCode:
-      properties:
-        code:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Code
-          description: Parenthesised code (e.g. 'R2', 'B4', 'IN1') when the council's feed includes one. Many regional NSW + Adelaide + QLD councils don't — in which case this is null and the human-readable label is on `name`.
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: Human-readable zone class, e.g. 'Low Density Residential'.
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-          description: Broader category bucket, e.g. 'Residential Zones', 'Business Zones'.
-      type: object
-      title: ZoningCode
-      example:
-        category: Residential Zones
-        code: R2
-        name: Low Density Residential
     ApiResponse_PlanningAll_:
       properties:
         data:
@@ -395,62 +342,41 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[PlanningAll]
-    ApiResponse_list_ZoningOverlay__:
+    HTTPValidationError:
       properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/ZoningOverlay'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[list[ZoningOverlay]]
-    ValidationError:
-      properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Detail
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
+    ZoningCode:
+      properties:
+        code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Code
+          description: Parenthesised code (e.g. 'R2', 'B4', 'IN1') when the council's feed includes one. Many regional NSW + Adelaide + QLD councils don't — in which case this is null and the human-readable label is on `name`.
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Human-readable zone class, e.g. 'Low Density Residential'.
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Broader category bucket, e.g. 'Residential Zones', 'Business Zones'.
+      type: object
+      title: ZoningCode
+      example:
+        category: Residential Zones
+        code: R2
+        name: Low Density Residential
     PlanningAll:
       properties:
         zoning_code:
@@ -479,15 +405,59 @@ components:
           value: 5.5 m
         - layer: hob
           value: 8.5 m
-    HTTPValidationError:
+    ApiResponse_ZoningCode_:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ZoningCode'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      title: HTTPValidationError
+      title: ApiResponse[ZoningCode]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ZoningOverlay:
       properties:
         layer:
@@ -518,6 +488,36 @@ components:
       example:
         layer: fsr
         value: '1.5'
+    ApiResponse_list_ZoningOverlay__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ZoningOverlay'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[ZoningOverlay]]
   securitySchemes:
     BearerAuth:
       type: http

@@ -314,75 +314,50 @@ paths:
       x-price-cents: 105
 components:
   schemas:
-    SchoolNearby:
+    SchoolsAll:
       properties:
-        id:
+        nearby:
           anyOf:
-          - type: integer
+          - items:
+              $ref: '#/components/schemas/SchoolNearby'
+            type: array
           - type: 'null'
-          title: Id
-          description: School identifier (MySchool ID).
-        name:
+          title: Nearby
+        ranking:
           anyOf:
-          - type: string
+          - items:
+              $ref: '#/components/schemas/SchoolRanking'
+            type: array
           - type: 'null'
-          title: Name
-          description: School name.
-        sector:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sector
-          description: public / private.
-        school_level_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: School Level Type
-          description: Primary / Secondary / Combined.
-        distance_m:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Distance M
-          description: Distance from the property in metres.
-      additionalProperties: true
+          title: Ranking
       type: object
-      title: SchoolNearby
-      description: One school within ~5km of the property.
+      title: SchoolsAll
+      description: All nearby schools — list + ranking.
       example:
-        distance_m: 612
-        id: 42002
-        name: Belmont North Public School
-        school_level_type: Primary
-        sector: public
-    ApiResponse_SchoolsAll_:
+        nearby:
+        - distance_m: 612
+          name: Belmont North Public School
+          school_level_type: Primary
+          sector: public
+        ranking:
+        - attendance_rate: 0.89
+          distance_m: 612
+          name: Belmont North Public School
+          naplan_label: Top 40%
+          naplan_rank: 0.63
+          school_level_type: Primary
+          sector: public
+          socioeconomic_label: Bottom 20%
+          socioeconomic_rank: 0.17
+    HTTPValidationError:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SchoolsAll'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
       type: object
-      title: ApiResponse[SchoolsAll]
+      title: HTTPValidationError
     ApiResponse_list_SchoolRanking__:
       properties:
         data:
@@ -413,32 +388,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[SchoolRanking]]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     SchoolRanking:
       properties:
         id:
@@ -516,6 +465,101 @@ components:
         sector: public
         socioeconomic_label: Bottom 20%
         socioeconomic_rank: 0.17
+    ApiResponse_SchoolsAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SchoolsAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SchoolsAll]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    SchoolNearby:
+      properties:
+        id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Id
+          description: School identifier (MySchool ID).
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: School name.
+        sector:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sector
+          description: public / private.
+        school_level_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: School Level Type
+          description: Primary / Secondary / Combined.
+        distance_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Distance M
+          description: Distance from the property in metres.
+      additionalProperties: true
+      type: object
+      title: SchoolNearby
+      description: One school within ~5km of the property.
+      example:
+        distance_m: 612
+        id: 42002
+        name: Belmont North Public School
+        school_level_type: Primary
+        sector: public
     ApiResponse_list_SchoolNearby__:
       properties:
         data:
@@ -546,50 +590,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[SchoolNearby]]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    SchoolsAll:
-      properties:
-        nearby:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/SchoolNearby'
-            type: array
-          - type: 'null'
-          title: Nearby
-        ranking:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/SchoolRanking'
-            type: array
-          - type: 'null'
-          title: Ranking
-      type: object
-      title: SchoolsAll
-      description: All nearby schools — list + ranking.
-      example:
-        nearby:
-        - distance_m: 612
-          name: Belmont North Public School
-          school_level_type: Primary
-          sector: public
-        ranking:
-        - attendance_rate: 0.89
-          distance_m: 612
-          name: Belmont North Public School
-          naplan_label: Top 40%
-          naplan_rank: 0.63
-          school_level_type: Primary
-          sector: public
-          socioeconomic_label: Bottom 20%
-          socioeconomic_rank: 0.17
   securitySchemes:
     BearerAuth:
       type: http

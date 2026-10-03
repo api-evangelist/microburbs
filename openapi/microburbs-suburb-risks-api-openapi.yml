@@ -1197,71 +1197,66 @@ paths:
       x-price-cents: 12
 components:
   schemas:
-    SuburbRisk:
+    HeritageShare:
       properties:
         area_name:
           type: string
           title: Area Name
-          description: Suburb (SAL) name.
+          description: Canonical ABS SAL suburb name.
         area_level:
           type: string
+          const: suburb
           title: Area Level
           description: Always 'suburb'.
-        name:
-          type: string
-          title: Name
-          description: Risk overlay name — 'Bushfire' or 'Flood'.
-        coverage_pct:
+        heritage_pct:
           type: number
-          title: Coverage Pct
-          description: Share of suburb area inside the overlay (%).
+          title: Heritage Pct
+          description: '% of properties inside a heritage polygon.'
         value_unit:
           type: string
           title: Value Unit
-          description: Unit for coverage_pct — '% of suburb area'.
-        risk_band:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Risk Band
-          description: Coarse band — 'low' / 'moderate' / 'high'. Currently flood only.
-        geojson:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Geojson
-          description: GeoJSON FeatureCollection of the hazard polygons for this layer, ST_Intersection-clipped to the suburb boundary and simplified for browser use. Present only when the request passes `?geojson=true`; absent (and the response byte-identical to before) otherwise.
-        geojson_meta:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Geojson Meta
-          description: Clip / simplify / truncation metadata for `geojson` (clip method, simplify tolerance, coordinate precision, feature cap, and whether the size cap truncated the output). Present only with `?geojson=true`.
+          description: Unit label ('% of properties').
       additionalProperties: true
       type: object
       required:
       - area_name
       - area_level
-      - name
-      - coverage_pct
+      - heritage_pct
       - value_unit
-      title: SuburbRisk
-      description: 'One suburb-level risk record (bushfire or flood).
-
-
-        `coverage_pct` is the share of the SAL covered by the modelled
-
-        risk overlay. `risk_band` is a coarse low/moderate/high band — only
-
-        populated for flood today; bushfire reports the raw percentage.'
+      title: HeritageShare
+      description: Share of the suburb's properties inside a heritage polygon.
       example:
         area_level: suburb
         area_name: Belmont North
-        coverage_pct: 45.72
-        name: Bushfire
-        value_unit: '% of suburb area'
+        heritage_pct: 10.39
+        value_unit: '% of properties'
+    ApiResponse_RiskCounts_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/RiskCounts'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[RiskCounts]
     RiskInsurance:
       properties:
         n:
@@ -1291,6 +1286,133 @@ components:
       type: object
       title: RiskInsurance
       description: Landlord-insurance premium estimate medians for the suburb.
+    ContaminationCounts:
+      properties:
+        within_250m_count:
+          type: integer
+          title: Within 250M Count
+          description: Properties within 250 m of a contamination site.
+        within_250m_pct:
+          type: number
+          title: Within 250M Pct
+          description: Share of properties within 250 m (%).
+        within_500m_count:
+          type: integer
+          title: Within 500M Count
+          description: Properties within 500 m of a contamination site.
+        within_500m_pct:
+          type: number
+          title: Within 500M Pct
+          description: Share of properties within 500 m (%).
+        nearest_m:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nearest M
+          description: Distance (m) from the closest property to the nearest contamination site.
+      type: object
+      required:
+      - within_250m_count
+      - within_250m_pct
+      - within_500m_count
+      - within_500m_pct
+      title: ContaminationCounts
+      description: 'Contamination-register proximity — counts of properties within
+
+        fixed distances of a registered contamination site.'
+    SuburbRiskCgImpact:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        total_properties:
+          type: integer
+          title: Total Properties
+          description: Principal GNAF addresses in the suburb.
+        study:
+          type: string
+          title: Study
+          description: Provenance of the coefficients.
+        hazards:
+          items:
+            $ref: '#/components/schemas/HazardCgImpact'
+          type: array
+          title: Hazards
+          description: One entry per studied hazard.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - total_properties
+      - study
+      - hazards
+      title: SuburbRiskCgImpact
+      description: Per-hazard capital-growth impact (%/yr) across the suburb's risks.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        hazards:
+        - affected_pct: 23.62
+          coefficient_pct_per_year: 0.9
+          color_class: neutral
+          impact: +0.21%/yr
+          impact_pct_per_year: 0.2126
+          key: bushfire
+          label: Bushfire
+          present: true
+        - affected_pct: 100.0
+          coefficient_pct_per_year: 0.2
+          color_class: neutral
+          impact: +0.2%/yr
+          impact_pct_per_year: 0.2
+          key: mine_subsidence
+          label: Mine subsidence
+          present: true
+        study: Microburbs matched capital-growth study (DBYD) — treated minus control CAGR
+        total_properties: 2727
+    ApiResponse_SlopeProfile_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SlopeProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SlopeProfile]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     RiskCounts:
       properties:
         area_name:
@@ -1330,461 +1452,6 @@ components:
         contamination_points_n: 3
         erosion_n: 0
         heritage_items_n: 0
-    SuburbRisksAll:
-      properties:
-        bushfire:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbRisk'
-          - type: 'null'
-          example:
-            area_level: suburb
-            area_name: Belmont North
-            coverage_pct: 45.72
-            name: Bushfire
-            value_unit: '% of suburb area'
-        flood:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbRisk'
-          - type: 'null'
-          example:
-            area_level: suburb
-            area_name: Belmont North
-            coverage_pct: 7.2
-            name: Flood
-            risk_band: moderate
-            value_unit: '% of suburb area'
-      type: object
-      title: SuburbRisksAll
-    ApiResponse_SuburbRisksAll_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbRisksAll'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbRisksAll]
-    ApiResponse_PropertyHazardCounts_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/PropertyHazardCounts'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[PropertyHazardCounts]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ApiResponse_SuburbHvPowerLines_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbHvPowerLines'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbHvPowerLines]
-    ApiResponse_RiskExtras_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/RiskExtras'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[RiskExtras]
-    HazardCgImpact:
-      properties:
-        key:
-          type: string
-          title: Key
-          description: Hazard key (bushfire, flood, contamination, mine_subsidence, aircraft_noise, acid_sulfate_surface).
-        label:
-          type: string
-          title: Label
-          description: Human-readable hazard name.
-        present:
-          type: boolean
-          title: Present
-          description: Whether the hazard is material in this suburb (report's own threshold).
-        affected_pct:
-          type: number
-          title: Affected Pct
-          description: Share of the suburb's properties affected (%).
-        coefficient_pct_per_year:
-          type: number
-          title: Coefficient Pct Per Year
-          description: 'Matched-study coefficient: treated-minus-control CAGR difference (%/yr) for a fully-affected suburb.'
-        impact_pct_per_year:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Impact Pct Per Year
-          description: Coefficient scaled by the affected share (%/yr). Null when the report shows no impact for this hazard here.
-        impact:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Impact
-          description: Impact as the report renders it, e.g. '+0.2%/yr'. Null when not shown.
-        color_class:
-          anyOf:
-          - type: string
-            enum:
-            - positive
-            - negative
-            - neutral
-          - type: 'null'
-          title: Color Class
-          description: 'Report''s colour band: |impact| >= 0.3 %/yr is positive/negative, else neutral.'
-      additionalProperties: true
-      type: object
-      required:
-      - key
-      - label
-      - present
-      - affected_pct
-      - coefficient_pct_per_year
-      title: HazardCgImpact
-      description: One hazard's matched-study capital-growth impact for this suburb.
-    SuburbHvPowerLines:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Canonical ABS SAL suburb name.
-        area_level:
-          type: string
-          const: suburb
-          title: Area Level
-          description: Always 'suburb'.
-        present:
-          type: boolean
-          title: Present
-          description: True when at least one HV line crosses the suburb.
-        line_count:
-          type: integer
-          title: Line Count
-          description: Transmission-line features intersecting the suburb boundary.
-        max_kv:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Max Kv
-          description: Highest voltage class among the intersecting lines, in kV (null when none intersect or the source carries no voltage class).
-        overhead_only:
-          type: boolean
-          const: true
-          title: Overhead Only
-          description: Underground segments are excluded from the count — only overhead (and unclassified) transmission is counted.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - present
-      - line_count
-      - overhead_only
-      title: SuburbHvPowerLines
-      description: High-voltage electricity transmission lines crossing the suburb.
-      example:
-        area_level: suburb
-        area_name: Blacktown
-        line_count: 6
-        max_kv: 132
-        overhead_only: true
-        present: true
-    ApiResponse_HeritageShare_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/HeritageShare'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[HeritageShare]
-    RiskPerMb:
-      properties:
-        mb:
-          type: string
-          title: Mb
-          description: ABS 2021 mesh-block code.
-        contam_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Contam Pct
-          description: '% of properties within 500 m of contamination.'
-        mine_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Mine Pct
-          description: '% of properties in a mine-subsidence district.'
-        anef_med:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Anef Med
-          description: Median aircraft-noise ANEF (null = no exposure).
-        acid_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Acid Pct
-          description: '% of properties at high acid-sulfate risk.'
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      title: RiskPerMb
-      description: One microburb's per-property risk shares.
-    HazardCount:
-      properties:
-        count:
-          type: integer
-          title: Count
-          description: Properties flagged for this hazard.
-        pct:
-          type: number
-          title: Pct
-          description: Share of the suburb's properties (%).
-      type: object
-      required:
-      - count
-      - pct
-      title: HazardCount
-      description: Count + share of the suburb's properties flagged for one hazard.
-    CrimeBench:
-      properties:
-        nat_med:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Nat Med
-          description: National median total crime rate (predicted incidents per 100,000 residents per year).
-        sub_med:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Sub Med
-          description: This suburb's median total crime rate (predicted incidents per 100,000 residents per year).
-      type: object
-      title: CrimeBench
-      description: 'Crime benchmark — median of summed per-100k predicted crime rates
-
-        across microburbs, suburb vs national.'
-    SlopeProfile:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Canonical ABS SAL suburb name.
-        area_level:
-          type: string
-          const: suburb
-          title: Area Level
-          description: Always 'suburb'.
-        n_properties:
-          type: integer
-          title: N Properties
-          description: Properties with a terrain sample.
-        median_slope_deg:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Median Slope Deg
-          description: Median property gradient (degrees).
-        p90_slope_deg:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: P90 Slope Deg
-          description: 90th-percentile property gradient (degrees).
-        steep_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Steep Pct
-          description: Share of properties steeper than the threshold (%).
-        steep_threshold_deg:
-          type: number
-          title: Steep Threshold Deg
-          description: Gradient threshold used for steep_pct (degrees).
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - n_properties
-      - steep_threshold_deg
-      title: SlopeProfile
-      description: Terrain gradient across the suburb's properties (degrees).
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        median_slope_deg: 4.43
-        n_properties: 2727
-        p90_slope_deg: 8.29
-        steep_pct: 4.44
-        steep_threshold_deg: 10.0
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ContaminationCounts:
-      properties:
-        within_250m_count:
-          type: integer
-          title: Within 250M Count
-          description: Properties within 250 m of a contamination site.
-        within_250m_pct:
-          type: number
-          title: Within 250M Pct
-          description: Share of properties within 250 m (%).
-        within_500m_count:
-          type: integer
-          title: Within 500M Count
-          description: Properties within 500 m of a contamination site.
-        within_500m_pct:
-          type: number
-          title: Within 500M Pct
-          description: Share of properties within 500 m (%).
-        nearest_m:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Nearest M
-          description: Distance (m) from the closest property to the nearest contamination site.
-      type: object
-      required:
-      - within_250m_count
-      - within_250m_pct
-      - within_500m_count
-      - within_500m_pct
-      title: ContaminationCounts
-      description: 'Contamination-register proximity — counts of properties within
-
-        fixed distances of a registered contamination site.'
     RiskExtras:
       properties:
         area_name:
@@ -1860,33 +1527,43 @@ components:
             mb: '10431160000'
             mine_pct: 100.0
         storm_tide_high_pct: 0.0
-    ApiResponse_SlopeProfile_:
+    InsurancePerMb:
       properties:
-        data:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        score:
           anyOf:
-          - $ref: '#/components/schemas/SlopeProfile'
+          - type: number
           - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+          title: Score
+          description: Comprehensive landlord premium estimate ($/yr).
+      additionalProperties: true
       type: object
-      title: ApiResponse[SlopeProfile]
+      required:
+      - mb
+      title: InsurancePerMb
+      description: One microburb's landlord-insurance premium score.
+    CrimeBench:
+      properties:
+        nat_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Nat Med
+          description: National median total crime rate (predicted incidents per 100,000 residents per year).
+        sub_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Sub Med
+          description: This suburb's median total crime rate (predicted incidents per 100,000 residents per year).
+      type: object
+      title: CrimeBench
+      description: 'Crime benchmark — median of summed per-100k predicted crime rates
+
+        across microburbs, suburb vs national.'
     ApiResponse_SuburbRiskCgImpact_:
       properties:
         data:
@@ -1914,6 +1591,191 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[SuburbRiskCgImpact]
+    SlopeProfile:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        n_properties:
+          type: integer
+          title: N Properties
+          description: Properties with a terrain sample.
+        median_slope_deg:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Slope Deg
+          description: Median property gradient (degrees).
+        p90_slope_deg:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: P90 Slope Deg
+          description: 90th-percentile property gradient (degrees).
+        steep_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Steep Pct
+          description: Share of properties steeper than the threshold (%).
+        steep_threshold_deg:
+          type: number
+          title: Steep Threshold Deg
+          description: Gradient threshold used for steep_pct (degrees).
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - n_properties
+      - steep_threshold_deg
+      title: SlopeProfile
+      description: Terrain gradient across the suburb's properties (degrees).
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        median_slope_deg: 4.43
+        n_properties: 2727
+        p90_slope_deg: 8.29
+        steep_pct: 4.44
+        steep_threshold_deg: 10.0
+    RiskPerMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        contam_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Contam Pct
+          description: '% of properties within 500 m of contamination.'
+        mine_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mine Pct
+          description: '% of properties in a mine-subsidence district.'
+        anef_med:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Anef Med
+          description: Median aircraft-noise ANEF (null = no exposure).
+        acid_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Acid Pct
+          description: '% of properties at high acid-sulfate risk.'
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: RiskPerMb
+      description: One microburb's per-property risk shares.
+    ApiResponse_SuburbRisk_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRisk'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbRisk]
+    ApiResponse_PropertyHazardCounts_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PropertyHazardCounts'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PropertyHazardCounts]
+    SuburbRisksAll:
+      properties:
+        bushfire:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRisk'
+          - type: 'null'
+          example:
+            area_level: suburb
+            area_name: Belmont North
+            coverage_pct: 45.72
+            name: Bushfire
+            value_unit: '% of suburb area'
+        flood:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRisk'
+          - type: 'null'
+          example:
+            area_level: suburb
+            area_name: Belmont North
+            coverage_pct: 7.2
+            name: Flood
+            risk_band: moderate
+            value_unit: '% of suburb area'
+      type: object
+      title: SuburbRisksAll
+    HazardCount:
+      properties:
+        count:
+          type: integer
+          title: Count
+          description: Properties flagged for this hazard.
+        pct:
+          type: number
+          title: Pct
+          description: Share of the suburb's properties (%).
+      type: object
+      required:
+      - count
+      - pct
+      title: HazardCount
+      description: Count + share of the suburb's properties flagged for one hazard.
     PropertyHazardCounts:
       properties:
         area_name:
@@ -1990,103 +1852,11 @@ components:
           count: 2727
           pct: 100.0
         total_properties: 2727
-    SuburbRiskCgImpact:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Canonical ABS SAL suburb name.
-        area_level:
-          type: string
-          const: suburb
-          title: Area Level
-          description: Always 'suburb'.
-        total_properties:
-          type: integer
-          title: Total Properties
-          description: Principal GNAF addresses in the suburb.
-        study:
-          type: string
-          title: Study
-          description: Provenance of the coefficients.
-        hazards:
-          items:
-            $ref: '#/components/schemas/HazardCgImpact'
-          type: array
-          title: Hazards
-          description: One entry per studied hazard.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - total_properties
-      - study
-      - hazards
-      title: SuburbRiskCgImpact
-      description: Per-hazard capital-growth impact (%/yr) across the suburb's risks.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        hazards:
-        - affected_pct: 23.62
-          coefficient_pct_per_year: 0.9
-          color_class: neutral
-          impact: +0.21%/yr
-          impact_pct_per_year: 0.2126
-          key: bushfire
-          label: Bushfire
-          present: true
-        - affected_pct: 100.0
-          coefficient_pct_per_year: 0.2
-          color_class: neutral
-          impact: +0.2%/yr
-          impact_pct_per_year: 0.2
-          key: mine_subsidence
-          label: Mine subsidence
-          present: true
-        study: Microburbs matched capital-growth study (DBYD) — treated minus control CAGR
-        total_properties: 2727
-    AircraftNoise:
-      properties:
-        anef_avg:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Anef Avg
-          description: Mean ANEF across properties (null = no exposure data).
-        anef_max:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Anef Max
-          description: Max ANEF across properties (null = no exposure data).
-      type: object
-      title: AircraftNoise
-      description: Aircraft-noise exposure (ANEF) across the suburb's properties.
-    InsurancePerMb:
-      properties:
-        mb:
-          type: string
-          title: Mb
-          description: ABS 2021 mesh-block code.
-        score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Score
-          description: Comprehensive landlord premium estimate ($/yr).
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      title: InsurancePerMb
-      description: One microburb's landlord-insurance premium score.
-    ApiResponse_RiskCounts_:
+    ApiResponse_HeritageShare_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/RiskCounts'
+          - $ref: '#/components/schemas/HeritageShare'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -2108,60 +1878,99 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[RiskCounts]
-    RiskExtrasPerMb:
-      properties:
-        insurance:
-          items:
-            $ref: '#/components/schemas/InsurancePerMb'
-          type: array
-          title: Insurance
-          description: Per-MB insurance premium scores.
-        risks:
-          items:
-            $ref: '#/components/schemas/RiskPerMb'
-          type: array
-          title: Risks
-          description: Per-MB contamination / mine / ANEF / acid shares.
-      type: object
-      required:
-      - insurance
-      - risks
-      title: RiskExtrasPerMb
-      description: Per-microburb detail split out from the suburb scalars.
-    HeritageShare:
+      title: ApiResponse[HeritageShare]
+    SuburbRisk:
       properties:
         area_name:
           type: string
           title: Area Name
-          description: Canonical ABS SAL suburb name.
+          description: Suburb (SAL) name.
         area_level:
           type: string
-          const: suburb
           title: Area Level
           description: Always 'suburb'.
-        heritage_pct:
+        name:
+          type: string
+          title: Name
+          description: Risk overlay name — 'Bushfire' or 'Flood'.
+        coverage_pct:
           type: number
-          title: Heritage Pct
-          description: '% of properties inside a heritage polygon.'
+          title: Coverage Pct
+          description: Share of suburb area inside the overlay (%).
         value_unit:
           type: string
           title: Value Unit
-          description: Unit label ('% of properties').
+          description: Unit for coverage_pct — '% of suburb area'.
+        risk_band:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Risk Band
+          description: Coarse band — 'low' / 'moderate' / 'high'. Currently flood only.
+        geojson:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Geojson
+          description: GeoJSON FeatureCollection of the hazard polygons for this layer, ST_Intersection-clipped to the suburb boundary and simplified for browser use. Present only when the request passes `?geojson=true`; absent (and the response byte-identical to before) otherwise.
+        geojson_meta:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Geojson Meta
+          description: Clip / simplify / truncation metadata for `geojson` (clip method, simplify tolerance, coordinate precision, feature cap, and whether the size cap truncated the output). Present only with `?geojson=true`.
       additionalProperties: true
       type: object
       required:
       - area_name
       - area_level
-      - heritage_pct
+      - name
+      - coverage_pct
       - value_unit
-      title: HeritageShare
-      description: Share of the suburb's properties inside a heritage polygon.
+      title: SuburbRisk
+      description: 'One suburb-level risk record (bushfire or flood).
+
+
+        `coverage_pct` is the share of the SAL covered by the modelled
+
+        risk overlay. `risk_band` is a coarse low/moderate/high band — only
+
+        populated for flood today; bushfire reports the raw percentage.'
       example:
         area_level: suburb
         area_name: Belmont North
-        heritage_pct: 10.39
-        value_unit: '% of properties'
+        coverage_pct: 45.72
+        name: Bushfire
+        value_unit: '% of suburb area'
+    ApiResponse_SuburbHvPowerLines_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbHvPowerLines'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbHvPowerLines]
     AcidSulfateCounts:
       properties:
         any_high_count:
@@ -2188,11 +1997,31 @@ components:
       - surface_high_pct
       title: AcidSulfateCounts
       description: Acid-sulfate soil exposure by high-risk tier.
-    ApiResponse_SuburbRisk_:
+    RiskExtrasPerMb:
+      properties:
+        insurance:
+          items:
+            $ref: '#/components/schemas/InsurancePerMb'
+          type: array
+          title: Insurance
+          description: Per-MB insurance premium scores.
+        risks:
+          items:
+            $ref: '#/components/schemas/RiskPerMb'
+          type: array
+          title: Risks
+          description: Per-MB contamination / mine / ANEF / acid shares.
+      type: object
+      required:
+      - insurance
+      - risks
+      title: RiskExtrasPerMb
+      description: Per-microburb detail split out from the suburb scalars.
+    ApiResponse_RiskExtras_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/SuburbRisk'
+          - $ref: '#/components/schemas/RiskExtras'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -2214,7 +2043,178 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[SuburbRisk]
+      title: ApiResponse[RiskExtras]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HazardCgImpact:
+      properties:
+        key:
+          type: string
+          title: Key
+          description: Hazard key (bushfire, flood, contamination, mine_subsidence, aircraft_noise, acid_sulfate_surface).
+        label:
+          type: string
+          title: Label
+          description: Human-readable hazard name.
+        present:
+          type: boolean
+          title: Present
+          description: Whether the hazard is material in this suburb (report's own threshold).
+        affected_pct:
+          type: number
+          title: Affected Pct
+          description: Share of the suburb's properties affected (%).
+        coefficient_pct_per_year:
+          type: number
+          title: Coefficient Pct Per Year
+          description: 'Matched-study coefficient: treated-minus-control CAGR difference (%/yr) for a fully-affected suburb.'
+        impact_pct_per_year:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Impact Pct Per Year
+          description: Coefficient scaled by the affected share (%/yr). Null when the report shows no impact for this hazard here.
+        impact:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Impact
+          description: Impact as the report renders it, e.g. '+0.2%/yr'. Null when not shown.
+        color_class:
+          anyOf:
+          - type: string
+            enum:
+            - positive
+            - negative
+            - neutral
+          - type: 'null'
+          title: Color Class
+          description: 'Report''s colour band: |impact| >= 0.3 %/yr is positive/negative, else neutral.'
+      additionalProperties: true
+      type: object
+      required:
+      - key
+      - label
+      - present
+      - affected_pct
+      - coefficient_pct_per_year
+      title: HazardCgImpact
+      description: One hazard's matched-study capital-growth impact for this suburb.
+    AircraftNoise:
+      properties:
+        anef_avg:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Anef Avg
+          description: Mean ANEF across properties (null = no exposure data).
+        anef_max:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Anef Max
+          description: Max ANEF across properties (null = no exposure data).
+      type: object
+      title: AircraftNoise
+      description: Aircraft-noise exposure (ANEF) across the suburb's properties.
+    SuburbHvPowerLines:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Canonical ABS SAL suburb name.
+        area_level:
+          type: string
+          const: suburb
+          title: Area Level
+          description: Always 'suburb'.
+        present:
+          type: boolean
+          title: Present
+          description: True when at least one HV line crosses the suburb.
+        line_count:
+          type: integer
+          title: Line Count
+          description: Transmission-line features intersecting the suburb boundary.
+        max_kv:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Max Kv
+          description: Highest voltage class among the intersecting lines, in kV (null when none intersect or the source carries no voltage class).
+        overhead_only:
+          type: boolean
+          const: true
+          title: Overhead Only
+          description: Underground segments are excluded from the count — only overhead (and unclassified) transmission is counted.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - present
+      - line_count
+      - overhead_only
+      title: SuburbHvPowerLines
+      description: High-voltage electricity transmission lines crossing the suburb.
+      example:
+        area_level: suburb
+        area_name: Blacktown
+        line_count: 6
+        max_kv: 132
+        overhead_only: true
+        present: true
+    ApiResponse_SuburbRisksAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbRisksAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbRisksAll]
   securitySchemes:
     BearerAuth:
       type: http

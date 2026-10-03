@@ -1655,143 +1655,105 @@ paths:
       x-price-cents: 205
 components:
   schemas:
-    ApiResponse_list_CatchmentRow__:
+    HTTPValidationError:
       properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/CatchmentRow'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[list[CatchmentRow]]
-    ApiResponse_SuburbSchoolsAll_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbSchoolsAll'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbSchoolsAll]
-    ValidationError:
-      properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    SchoolNearbyRow:
+      properties:
+        area_name:
           type: string
-          title: Message
-        type:
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
           type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Area Level
+          description: Always 'suburb'.
+        id:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Id
+          description: Stable numeric identifier for the school, for joining these rows across calls. Delivered as a number but it is an identifier — do not do arithmetic on it or compare its magnitude.
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: The school's full name, as officially registered.
+        school_level_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: School Level Type
+          description: Which years the school covers — 'Primary', 'Secondary', or 'Combined' for a school spanning both.
+        school_sector_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: School Sector Type
+          description: Who runs the school — 'Public' (government), 'Private', or 'Non-Government' (the wider category including Catholic and independent schools). Fee-paying status is implied, not stated.
+        naplan_rank:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Naplan Rank
+          description: The school's academic standing on national NAPLAN testing, as a percentile between 0 and 1 where higher is better — 0.63 puts the school ahead of about 63% of schools, i.e. in roughly the top 40%. A fraction, not a percentage and not a raw test score. Null when the school has no published NAPLAN standing.
+        socioeconomic_rank:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Socioeconomic Rank
+          description: 'How advantaged the school''s community is, as a percentile between 0 and 1 where higher means more advantaged — 0.17 sits near the bottom of the national distribution. Measures the intake''s socio-economic background, not teaching quality, and it is separate from `naplan_rank`: schools rank high on one and low on the other.'
+        attendance_rate:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Attendance Rate
+          description: Share of school days actually attended by the average enrolled student, as a fraction between 0 and 1 — 0.89 means 89%. Multiply by 100 to display. Most schools cluster in the high 0.8s to low 0.9s, so small differences matter more than the range suggests.
+        gender:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gender
+          description: Who the school enrols — 'coed', 'girls' (girls only) or 'boys' (boys only).
+        boys:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Boys
+          description: Number of male students enrolled — a headcount, despite the numeric type. Add to `girls` for total enrolment, which is the best available proxy for school size.
+        girls:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Girls
+          description: Number of female students enrolled — a headcount. See `boys`.
+      additionalProperties: true
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ApiResponse_list_SchoolNearbyRow__:
-      properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/SchoolNearbyRow'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[list[SchoolNearbyRow]]
-    GeoJsonPoint:
-      properties:
-        type:
-          type: string
-          const: Point
-          title: Type
-          description: Always 'Point'.
-        coordinates:
-          items:
-            type: number
-          type: array
-          title: Coordinates
-          description: '`[longitude, latitude]` — 2 numbers, lon first per GeoJSON.'
-      type: object
-      required:
-      - type
-      - coordinates
-      title: GeoJsonPoint
-      description: RFC 7946 GeoJSON Point — `[longitude, latitude]` coordinates.
+      - area_name
+      - area_level
+      title: SchoolNearbyRow
+      description: One school within the suburb's catchment radius.
       example:
-        coordinates:
-        - 151.67
-        - -33.01
-        type: Point
+        area_level: suburb
+        area_name: Belmont North
+        attendance_rate: 0.89
+        boys: 90.0
+        gender: coed
+        girls: 82.0
+        id: 42002.0
+        name: Belmont North Public School
+        naplan_rank: 0.6282832390938133
+        school_level_type: Primary
+        school_sector_type: Public
+        socioeconomic_rank: 0.17342543077837194
     CatchmentRow:
       properties:
         area_name:
@@ -2085,15 +2047,6 @@ components:
         school_name: Floraville Public School
         school_sector_type: Public
         socioeconomic_rank: 0.6239973262032086
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     SuburbSchoolsAll:
       properties:
         catchment:
@@ -2112,96 +2065,86 @@ components:
           title: Nearby
       type: object
       title: SuburbSchoolsAll
-    SchoolNearbyRow:
+    ApiResponse_list_CatchmentRow__:
       properties:
-        area_name:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CatchmentRow'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[CatchmentRow]]
+    GeoJsonPoint:
+      properties:
+        type:
           type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb'.
-        id:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Id
-          description: Stable numeric identifier for the school, for joining these rows across calls. Delivered as a number but it is an identifier — do not do arithmetic on it or compare its magnitude.
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: The school's full name, as officially registered.
-        school_level_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: School Level Type
-          description: Which years the school covers — 'Primary', 'Secondary', or 'Combined' for a school spanning both.
-        school_sector_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: School Sector Type
-          description: Who runs the school — 'Public' (government), 'Private', or 'Non-Government' (the wider category including Catholic and independent schools). Fee-paying status is implied, not stated.
-        naplan_rank:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Naplan Rank
-          description: The school's academic standing on national NAPLAN testing, as a percentile between 0 and 1 where higher is better — 0.63 puts the school ahead of about 63% of schools, i.e. in roughly the top 40%. A fraction, not a percentage and not a raw test score. Null when the school has no published NAPLAN standing.
-        socioeconomic_rank:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Socioeconomic Rank
-          description: 'How advantaged the school''s community is, as a percentile between 0 and 1 where higher means more advantaged — 0.17 sits near the bottom of the national distribution. Measures the intake''s socio-economic background, not teaching quality, and it is separate from `naplan_rank`: schools rank high on one and low on the other.'
-        attendance_rate:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Attendance Rate
-          description: Share of school days actually attended by the average enrolled student, as a fraction between 0 and 1 — 0.89 means 89%. Multiply by 100 to display. Most schools cluster in the high 0.8s to low 0.9s, so small differences matter more than the range suggests.
-        gender:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Gender
-          description: Who the school enrols — 'coed', 'girls' (girls only) or 'boys' (boys only).
-        boys:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Boys
-          description: Number of male students enrolled — a headcount, despite the numeric type. Add to `girls` for total enrolment, which is the best available proxy for school size.
-        girls:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Girls
-          description: Number of female students enrolled — a headcount. See `boys`.
-      additionalProperties: true
+          const: Point
+          title: Type
+          description: Always 'Point'.
+        coordinates:
+          items:
+            type: number
+          type: array
+          title: Coordinates
+          description: '`[longitude, latitude]` — 2 numbers, lon first per GeoJSON.'
       type: object
       required:
-      - area_name
-      - area_level
-      title: SchoolNearbyRow
-      description: One school within the suburb's catchment radius.
+      - type
+      - coordinates
+      title: GeoJsonPoint
+      description: RFC 7946 GeoJSON Point — `[longitude, latitude]` coordinates.
       example:
-        area_level: suburb
-        area_name: Belmont North
-        attendance_rate: 0.89
-        boys: 90.0
-        gender: coed
-        girls: 82.0
-        id: 42002.0
-        name: Belmont North Public School
-        naplan_rank: 0.6282832390938133
-        school_level_type: Primary
-        school_sector_type: Public
-        socioeconomic_rank: 0.17342543077837194
+        coordinates:
+        - 151.67
+        - -33.01
+        type: Point
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     GeoJsonPolygon:
       properties:
         type:
@@ -2242,6 +2185,63 @@ components:
           - - 151.67
             - -32.98
         type: Polygon
+    ApiResponse_SuburbSchoolsAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbSchoolsAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbSchoolsAll]
+    ApiResponse_list_SchoolNearbyRow__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SchoolNearbyRow'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[SchoolNearbyRow]]
   securitySchemes:
     BearerAuth:
       type: http

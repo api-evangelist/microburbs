@@ -549,6 +549,193 @@ paths:
       x-price-cents: 23
 components:
   schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_DwellingType_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/DwellingType'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[DwellingType]
+    LandAreaSqm:
+      properties:
+        land_area_sqm:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Land Area Sqm
+          description: Land size in square metres — the figure the property was advertised with, not a survey or cadastral parcel measurement, so treat it as indicative. Acreage advertised in hectares is converted to square metres for you (1 ha = 10,000 sqm), which means small values are rare by construction and a suspiciously round large number may be a converted one. Null means no listing stated a land size; expect that on most apartments and units.
+      type: object
+      required:
+      - land_area_sqm
+      title: LandAreaSqm
+      example:
+        land_area_sqm: 814.0
+    BathCount:
+      properties:
+        bath_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bath Count
+          description: Bathrooms, as advertised when the property was last on the market. Whole number — half-bathrooms and powder rooms are not represented. Null means unknown, not zero.
+      type: object
+      required:
+      - bath_count
+      title: BathCount
+      example:
+        bath_count: 2
+    ApiResponse_BasicsAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/BasicsAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[BasicsAll]
+    ApiResponse_BathCount_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/BathCount'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[BathCount]
+    ApiResponse_LandAreaSqm_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LandAreaSqm'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LandAreaSqm]
+    ParkingCount:
+      properties:
+        parking_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Parking Count
+          description: Covered car spaces (garage/carport) as advertised. It does not count open driveway or street parking, so a house with a wide driveway and no garage can legitimately read 0 or null. Null means unknown.
+      type: object
+      required:
+      - parking_count
+      title: ParkingCount
+      example:
+        parking_count: 5
+    DwellingType:
+      properties:
+        dwelling_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dwelling Type
+          description: 'What kind of dwelling it is — lowercase free text such as ''house'', ''unit'', ''townhouse'', ''apartment''. Taken from the advertised listing type, falling back to the national address file''s classification when no listing states one. Not a closed set: match case-insensitively and allow for values outside the common few.'
+      type: object
+      required:
+      - dwelling_type
+      title: DwellingType
+      example:
+        dwelling_type: house
+    BedCount:
+      properties:
+        bed_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bed Count
+          description: Bedrooms, as advertised when the property was last on the market. Null means no listing on record ever stated one — read it as unknown, never as zero.
+      type: object
+      required:
+      - bed_count
+      title: BedCount
+      example:
+        bed_count: 4
     BasicsAll:
       properties:
         bed_count:
@@ -601,101 +788,6 @@ components:
         dwelling_type: house
         land_area_sqm: 814.0
         parking_count: 5
-    ApiResponse_BasicsAll_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/BasicsAll'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[BasicsAll]
-    ApiResponse_BedCount_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/BedCount'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[BedCount]
-    ApiResponse_BathCount_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/BathCount'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[BathCount]
-    LandAreaSqm:
-      properties:
-        land_area_sqm:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Land Area Sqm
-          description: Land size in square metres — the figure the property was advertised with, not a survey or cadastral parcel measurement, so treat it as indicative. Acreage advertised in hectares is converted to square metres for you (1 ha = 10,000 sqm), which means small values are rare by construction and a suspiciously round large number may be a converted one. Null means no listing stated a land size; expect that on most apartments and units.
-      type: object
-      required:
-      - land_area_sqm
-      title: LandAreaSqm
-      example:
-        land_area_sqm: 814.0
     ValidationError:
       properties:
         loc:
@@ -722,84 +814,6 @@ components:
       - msg
       - type
       title: ValidationError
-    BedCount:
-      properties:
-        bed_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Bed Count
-          description: Bedrooms, as advertised when the property was last on the market. Null means no listing on record ever stated one — read it as unknown, never as zero.
-      type: object
-      required:
-      - bed_count
-      title: BedCount
-      example:
-        bed_count: 4
-    ApiResponse_LandAreaSqm_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/LandAreaSqm'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[LandAreaSqm]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    BathCount:
-      properties:
-        bath_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Bath Count
-          description: Bathrooms, as advertised when the property was last on the market. Whole number — half-bathrooms and powder rooms are not represented. Null means unknown, not zero.
-      type: object
-      required:
-      - bath_count
-      title: BathCount
-      example:
-        bath_count: 2
-    DwellingType:
-      properties:
-        dwelling_type:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Dwelling Type
-          description: 'What kind of dwelling it is — lowercase free text such as ''house'', ''unit'', ''townhouse'', ''apartment''. Taken from the advertised listing type, falling back to the national address file''s classification when no listing states one. Not a closed set: match case-insensitively and allow for values outside the common few.'
-      type: object
-      required:
-      - dwelling_type
-      title: DwellingType
-      example:
-        dwelling_type: house
     ApiResponse_ParkingCount_:
       properties:
         data:
@@ -827,11 +841,11 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[ParkingCount]
-    ApiResponse_DwellingType_:
+    ApiResponse_BedCount_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/DwellingType'
+          - $ref: '#/components/schemas/BedCount'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -853,21 +867,7 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[DwellingType]
-    ParkingCount:
-      properties:
-        parking_count:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Parking Count
-          description: Covered car spaces (garage/carport) as advertised. It does not count open driveway or street parking, so a house with a wide driveway and no garage can legitimately read 0 or null. Null means unknown.
-      type: object
-      required:
-      - parking_count
-      title: ParkingCount
-      example:
-        parking_count: 5
+      title: ApiResponse[BedCount]
   securitySchemes:
     BearerAuth:
       type: http

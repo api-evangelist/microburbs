@@ -134,101 +134,6 @@ paths:
       x-price-cents: 100
 components:
   schemas:
-    ApiResponse_ForecastSale_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/ForecastSale'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[ForecastSale]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ForecastBand:
-      properties:
-        low:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Low
-          description: Pessimistic end of the 12-month growth forecast, as a decimal fraction (0.0379 = +3.79%; negatives are falls). Not a floor — outcomes can land below it.
-        most_likely:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Most Likely
-          description: Central estimate of 12-month growth, as a decimal fraction. The single number to quote if you can only show one, but it should carry `low`/`high` with it.
-        high:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: High
-          description: Optimistic end of the 12-month growth forecast, same decimal-fraction scale as `low`. Not a ceiling.
-        confidence:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Confidence
-          description: How much weight to put on the forecast, on a 0–5 scale where 5 is most confident — it is not a percentage or a probability. High confidence means the low-to-high band is tight and the underlying market has enough sales to model; low confidence usually means a thin, volatile market where the band is wide.
-      type: object
-      title: ForecastBand
-      description: 'A forecast expressed as a range rather than a single number — a
-
-        most-likely outcome with a plausible low and high either side.
-
-
-        Everywhere this shape appears the three figures are **growth over the
-
-        next 12 months, as a decimal fraction**: 0.0379 means +3.79% over the
-
-        year, and a negative value means a fall. Multiply by 100 to display as a
-
-        percentage. Present the band, not just `most_likely` — the width between
-
-        `low` and `high` is the honest part of the forecast.'
     ForecastSale:
       properties:
         area_name:
@@ -285,6 +190,101 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    ApiResponse_ForecastSale_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ForecastSale'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[ForecastSale]
+    ForecastBand:
+      properties:
+        low:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Low
+          description: Pessimistic end of the 12-month growth forecast, as a decimal fraction (0.0379 = +3.79%; negatives are falls). Not a floor — outcomes can land below it.
+        most_likely:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Most Likely
+          description: Central estimate of 12-month growth, as a decimal fraction. The single number to quote if you can only show one, but it should carry `low`/`high` with it.
+        high:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: High
+          description: Optimistic end of the 12-month growth forecast, same decimal-fraction scale as `low`. Not a ceiling.
+        confidence:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Confidence
+          description: How much weight to put on the forecast, on a 0–5 scale where 5 is most confident — it is not a percentage or a probability. High confidence means the low-to-high band is tight and the underlying market has enough sales to model; low confidence usually means a thin, volatile market where the band is wide.
+      type: object
+      title: ForecastBand
+      description: 'A forecast expressed as a range rather than a single number — a
+
+        most-likely outcome with a plausible low and high either side.
+
+
+        Everywhere this shape appears the three figures are **growth over the
+
+        next 12 months, as a decimal fraction**: 0.0379 means +3.79% over the
+
+        year, and a negative value means a fall. Multiply by 100 to display as a
+
+        percentage. Present the band, not just `most_likely` — the width between
+
+        `low` and `high` is the honest part of the forecast.'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     BearerAuth:
       type: http

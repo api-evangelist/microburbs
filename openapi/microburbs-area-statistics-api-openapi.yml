@@ -402,42 +402,6 @@ paths:
       x-price-cents: 3
 components:
   schemas:
-    AreaStatValueRow:
-      properties:
-        field_code:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Field Code
-          description: Stable field identifier.
-        field_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Field Name
-          description: Human-readable field name (e.g. 'Median rent weekly').
-        topic:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Topic
-          description: Subject of the source table — context for cross-tab fields.
-        label:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Label
-          description: Clean column label for the field.
-        value:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Value
-          description: Field value for the region.
-      additionalProperties: true
-      type: object
-      title: AreaStatValueRow
-      description: One field value for a region.
     ApiResponse_AreaStatValues_:
       properties:
         data:
@@ -465,51 +429,96 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[AreaStatValues]
-    ValidationError:
+    HTTPValidationError:
       properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Detail
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    AreaStatSa1:
+      title: HTTPValidationError
+    AreaStatFieldsResponse:
       properties:
-        region_code:
-          type: string
-          title: Region Code
-          description: SA1 code.
+        count:
+          type: integer
+          title: Count
+          description: Number of fields returned.
         fields:
           items:
-            $ref: '#/components/schemas/AreaStatValueRow'
+            $ref: '#/components/schemas/AreaStatField'
           type: array
           title: Fields
-          description: Field values for this SA1.
-      additionalProperties: true
+          description: Matching fields, best match first.
       type: object
       required:
-      - region_code
+      - count
       - fields
-      title: AreaStatSa1
-      description: Values for one SA1 within a suburb (mode=sa1).
+      title: AreaStatFieldsResponse
+      description: A page of matching fields.
+      example:
+        count: 1
+        fields:
+        - field_code: Median_rent_weekly
+          field_name: Median rent weekly
+          label: Median rent ($/weekly)
+          topic: Selected Medians and Averages
+    ApiResponse_AreaStatRegionsResponse_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AreaStatRegionsResponse'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AreaStatRegionsResponse]
+    AreaStatRegionsResponse:
+      properties:
+        region_level:
+          type: string
+          title: Region Level
+          description: Region level (SAL, SA1-4, LGA, POA, GCCSA, STE, AUS).
+        count:
+          type: integer
+          title: Count
+          description: Number of regions returned.
+        regions:
+          items:
+            $ref: '#/components/schemas/AreaStatRegion'
+          type: array
+          title: Regions
+          description: Regions, name-sorted.
+      type: object
+      required:
+      - region_level
+      - count
+      - regions
+      title: AreaStatRegionsResponse
+      description: The regions available at one level.
+      example:
+        count: 1
+        region_level: LGA
+        regions:
+        - region_code: '14750'
+          region_name: Lake Macquarie
     AreaStatValues:
       properties:
         region_level:
@@ -582,6 +591,42 @@ components:
         region_level: SAL
         region_name: Bondi
         year: 2021
+    AreaStatValueRow:
+      properties:
+        field_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field Code
+          description: Stable field identifier.
+        field_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field Name
+          description: Human-readable field name (e.g. 'Median rent weekly').
+        topic:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Topic
+          description: Subject of the source table — context for cross-tab fields.
+        label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Label
+          description: Clean column label for the field.
+        value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Value
+          description: Field value for the region.
+      additionalProperties: true
+      type: object
+      title: AreaStatValueRow
+      description: One field value for a region.
     AreaStatRegion:
       properties:
         region_code:
@@ -598,33 +643,32 @@ components:
       - region_name
       title: AreaStatRegion
       description: One region at a given level.
-    ApiResponse_AreaStatRegionsResponse_:
+    ValidationError:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/AreaStatRegionsResponse'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
           title: Message
-          description: Human-readable explanation. Omitted on success.
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
-      title: ApiResponse[AreaStatRegionsResponse]
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     AreaStatField:
       properties:
         field_code:
@@ -681,69 +725,25 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[AreaStatFieldsResponse]
-    AreaStatFieldsResponse:
+    AreaStatSa1:
       properties:
-        count:
-          type: integer
-          title: Count
-          description: Number of fields returned.
+        region_code:
+          type: string
+          title: Region Code
+          description: SA1 code.
         fields:
           items:
-            $ref: '#/components/schemas/AreaStatField'
+            $ref: '#/components/schemas/AreaStatValueRow'
           type: array
           title: Fields
-          description: Matching fields, best match first.
+          description: Field values for this SA1.
+      additionalProperties: true
       type: object
       required:
-      - count
+      - region_code
       - fields
-      title: AreaStatFieldsResponse
-      description: A page of matching fields.
-      example:
-        count: 1
-        fields:
-        - field_code: Median_rent_weekly
-          field_name: Median rent weekly
-          label: Median rent ($/weekly)
-          topic: Selected Medians and Averages
-    AreaStatRegionsResponse:
-      properties:
-        region_level:
-          type: string
-          title: Region Level
-          description: Region level (SAL, SA1-4, LGA, POA, GCCSA, STE, AUS).
-        count:
-          type: integer
-          title: Count
-          description: Number of regions returned.
-        regions:
-          items:
-            $ref: '#/components/schemas/AreaStatRegion'
-          type: array
-          title: Regions
-          description: Regions, name-sorted.
-      type: object
-      required:
-      - region_level
-      - count
-      - regions
-      title: AreaStatRegionsResponse
-      description: The regions available at one level.
-      example:
-        count: 1
-        region_level: LGA
-        regions:
-        - region_code: '14750'
-          region_name: Lake Macquarie
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      title: AreaStatSa1
+      description: Values for one SA1 within a suburb (mode=sa1).
   securitySchemes:
     BearerAuth:
       type: http
