@@ -325,6 +325,119 @@ paths:
       x-price-cents: 5
 components:
   schemas:
+    HeroNeighbourRow:
+      properties:
+        sal:
+          type: string
+          title: Sal
+          description: Neighbouring suburb (SAL) name.
+        sa3:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa3
+          description: ABS SA3 region of the neighbour.
+        dist_km:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Dist Km
+          description: Straight-line distance between the two suburbs' boundary centroids (km) — not the gap between boundaries, so touching suburbs still show a positive distance.
+      additionalProperties: true
+      type: object
+      required:
+      - sal
+      title: HeroNeighbourRow
+      description: One neighbouring suburb.
+      example:
+        dist_km: 1.0
+        sa3: Lake Macquarie - East
+        sal: Floraville
+    HeroPriceGrowthRow:
+      properties:
+        property_type:
+          anyOf:
+          - type: string
+            enum:
+            - house
+            - unit
+          - type: 'null'
+          title: Property Type
+          description: '''house'' or ''unit'' (derived from `field`).'
+        field:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Field
+          description: Underlying smart-median field code.
+        current_val:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Current Val
+          description: DEPRECATED — no longer returned. `pct` now comes from the canonical published growth field rather than being re-derived from a median pair, and that field ships a rate with no current/previous values behind it. For medians use `/market/median-sale-price` and `/market/median-sale-price-series`.
+          deprecated: true
+        prev_val:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Prev Val
+          description: DEPRECATED — no longer returned. See `current_val`.
+          deprecated: true
+        pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Pct
+          description: 12-month growth as a percentage (17.83 = +17.83%).
+      additionalProperties: true
+      type: object
+      title: HeroPriceGrowthRow
+      description: 12-month growth for one property type.
+      example:
+        field: prop_list_price_0_5_growth_1_year_buy_house
+        pct: 12.3
+        property_type: house
+    HeroPriceGrowth12mo:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        growth:
+          items:
+            $ref: '#/components/schemas/HeroPriceGrowthRow'
+          type: array
+          title: Growth
+          description: One entry per property type with data.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - growth
+      title: HeroPriceGrowth12mo
+      description: 12-month sale-price growth by property type.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        growth:
+        - field: prop_list_price_0_5_growth_1_year_buy_house
+          pct: 12.3
+          property_type: house
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     ApiResponse_HeroSummary_:
       properties:
         data:
@@ -352,6 +465,32 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[HeroSummary]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     HeroSummary:
       properties:
         area_name:
@@ -435,73 +574,6 @@ components:
         sa4: Newcastle and Lake Macquarie
         state: New South Wales
         state_abbr: NSW
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    HeroPriceGrowth12mo:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        growth:
-          items:
-            $ref: '#/components/schemas/HeroPriceGrowthRow'
-          type: array
-          title: Growth
-          description: One entry per property type with data.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - growth
-      title: HeroPriceGrowth12mo
-      description: 12-month sale-price growth by property type.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        growth:
-        - field: prop_list_price_0_5_growth_1_year_buy_house
-          pct: 12.3
-          property_type: house
-    ApiResponse_HeroNeighbours_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/HeroNeighbours'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[HeroNeighbours]
     ApiResponse_HeroPriceGrowth12mo_:
       properties:
         data:
@@ -529,60 +601,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[HeroPriceGrowth12mo]
-    HeroNeighbourRow:
-      properties:
-        sal:
-          type: string
-          title: Sal
-          description: Neighbouring suburb (SAL) name.
-        sa3:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sa3
-          description: ABS SA3 region of the neighbour.
-        dist_km:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Dist Km
-          description: Straight-line distance between the two suburbs' boundary centroids (km) — not the gap between boundaries, so touching suburbs still show a positive distance.
-      additionalProperties: true
-      type: object
-      required:
-      - sal
-      title: HeroNeighbourRow
-      description: One neighbouring suburb.
-      example:
-        dist_km: 1.0
-        sa3: Lake Macquarie - East
-        sal: Floraville
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
     HeroNeighbours:
       properties:
         area_name:
@@ -617,51 +635,33 @@ components:
         - dist_km: 1.4
           sa3: Lake Macquarie - East
           sal: Belmont (NSW)
-    HeroPriceGrowthRow:
+    ApiResponse_HeroNeighbours_:
       properties:
-        property_type:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HeroNeighbours'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
           anyOf:
           - type: string
-            enum:
-            - house
-            - unit
           - type: 'null'
-          title: Property Type
-          description: '''house'' or ''unit'' (derived from `field`).'
-        field:
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
           anyOf:
           - type: string
           - type: 'null'
-          title: Field
-          description: Underlying smart-median field code.
-        current_val:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Current Val
-          description: DEPRECATED — no longer returned. `pct` now comes from the canonical published growth field rather than being re-derived from a median pair, and that field ships a rate with no current/previous values behind it. For medians use `/market/median-sale-price` and `/market/median-sale-price-series`.
-          deprecated: true
-        prev_val:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Prev Val
-          description: DEPRECATED — no longer returned. See `current_val`.
-          deprecated: true
-        pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Pct
-          description: 12-month growth as a percentage (17.83 = +17.83%).
-      additionalProperties: true
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      title: HeroPriceGrowthRow
-      description: 12-month growth for one property type.
-      example:
-        field: prop_list_price_0_5_growth_1_year_buy_house
-        pct: 12.3
-        property_type: house
+      title: ApiResponse[HeroNeighbours]
   securitySchemes:
     BearerAuth:
       type: http

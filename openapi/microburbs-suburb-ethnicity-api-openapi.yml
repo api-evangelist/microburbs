@@ -356,15 +356,24 @@ paths:
       x-price-cents: 6
 components:
   schemas:
-    HTTPValidationError:
+    EthnicityAll:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        ancestry:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/EthnicityRow'
+            type: array
+          - type: 'null'
+          title: Ancestry
+        birthplace:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/EthnicityRow'
+            type: array
+          - type: 'null'
+          title: Birthplace
       type: object
-      title: HTTPValidationError
+      title: EthnicityAll
     ApiResponse_list_EthnicityRow__:
       properties:
         data:
@@ -395,77 +404,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[EthnicityRow]]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    EthnicityAll:
-      properties:
-        ancestry:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/EthnicityRow'
-            type: array
-          - type: 'null'
-          title: Ancestry
-        birthplace:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/EthnicityRow'
-            type: array
-          - type: 'null'
-          title: Birthplace
-      type: object
-      title: EthnicityAll
-    ApiResponse_EthnicityAll_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/EthnicityAll'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[EthnicityAll]
     EthnicityRow:
       properties:
         area_name:
@@ -506,6 +444,68 @@ components:
         area_level: suburb
         area_name: Belmont North
         proportion: 0.926304347826087
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_EthnicityAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/EthnicityAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[EthnicityAll]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     BearerAuth:
       type: http

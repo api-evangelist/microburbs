@@ -225,44 +225,6 @@ paths:
       x-price-cents: 3
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    MeshBlockListItem:
-      properties:
-        mb_code:
-          type: string
-          title: Mb Code
-          description: ABS Mesh Block code.
-        suburb:
-          type: string
-          title: Suburb
-          description: Suburb (SAL) the MB sits in.
-        state:
-          type: string
-          title: State
-          description: State / Territory abbreviation.
-      type: object
-      required:
-      - mb_code
-      - suburb
-      - state
-      title: MeshBlockListItem
-      description: 'One row in the MB directory — code + the suburb / state it
-
-        sits in (so the customer can read it back without a profile
-
-        round-trip).'
-      example:
-        mb_code: '10434270000'
-        state: NSW
-        suburb: Belmont North
     MeshBlockProfile:
       properties:
         mesh_block:
@@ -363,32 +325,15 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[MeshBlockListItem]]
-    ValidationError:
+    HTTPValidationError:
       properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Detail
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
     ApiResponse_MeshBlockProfile_:
       properties:
         data:
@@ -416,6 +361,61 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[MeshBlockProfile]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    MeshBlockListItem:
+      properties:
+        mb_code:
+          type: string
+          title: Mb Code
+          description: ABS Mesh Block code.
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL) the MB sits in.
+        state:
+          type: string
+          title: State
+          description: State / Territory abbreviation.
+      type: object
+      required:
+      - mb_code
+      - suburb
+      - state
+      title: MeshBlockListItem
+      description: 'One row in the MB directory — code + the suburb / state it
+
+        sits in (so the customer can read it back without a profile
+
+        round-trip).'
+      example:
+        mb_code: '10434270000'
+        state: NSW
+        suburb: Belmont North
   securitySchemes:
     BearerAuth:
       type: http

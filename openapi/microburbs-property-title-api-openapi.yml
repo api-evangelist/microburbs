@@ -129,38 +129,33 @@ paths:
       x-price-cents: 30
 components:
   schemas:
-    Neighbours:
+    ApiResponse_Neighbours_:
       properties:
-        neighbours:
-          items:
-            $ref: '#/components/schemas/Neighbour'
-          type: array
-          title: Neighbours
-          description: Adjoining cadastral parcels, with address + attributes when available.
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/Neighbours'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      required:
-      - neighbours
-      title: Neighbours
-      example:
-        neighbours:
-        - address: 3 TAMAR STREET
-          gnaf_pid: GANSW704083204
-          property_type: house
-        - address: 16 HARRISON STREET
-          gnaf_pid: GANSW704073018
-          property_type: house
-        - address: 14 HARRISON STREET
-          gnaf_pid: GANSW704073016
-          property_type: house
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
+      title: ApiResponse[Neighbours]
     Neighbour:
       properties:
         gnaf_pid:
@@ -203,6 +198,38 @@ components:
       - gnaf_pid
       title: Neighbour
       description: One neighbouring property (adjoining cadastral parcel).
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Neighbours:
+      properties:
+        neighbours:
+          items:
+            $ref: '#/components/schemas/Neighbour'
+          type: array
+          title: Neighbours
+          description: Adjoining cadastral parcels, with address + attributes when available.
+      type: object
+      required:
+      - neighbours
+      title: Neighbours
+      example:
+        neighbours:
+        - address: 3 TAMAR STREET
+          gnaf_pid: GANSW704083204
+          property_type: house
+        - address: 16 HARRISON STREET
+          gnaf_pid: GANSW704073018
+          property_type: house
+        - address: 14 HARRISON STREET
+          gnaf_pid: GANSW704073016
+          property_type: house
     ValidationError:
       properties:
         loc:
@@ -229,33 +256,6 @@ components:
       - msg
       - type
       title: ValidationError
-    ApiResponse_Neighbours_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/Neighbours'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[Neighbours]
   securitySchemes:
     BearerAuth:
       type: http

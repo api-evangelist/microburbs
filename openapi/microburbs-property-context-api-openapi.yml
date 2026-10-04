@@ -566,6 +566,69 @@ paths:
       x-price-cents: 20
 components:
   schemas:
+    NearbyForSale:
+      properties:
+        gnaf_id:
+          type: string
+          title: Gnaf Id
+          description: Subject property GNAF id.
+        center_lat:
+          type: number
+          title: Center Lat
+          description: Subject property latitude.
+        center_lng:
+          type: number
+          title: Center Lng
+          description: Subject property longitude.
+        radius_km:
+          type: number
+          title: Radius Km
+          description: Search radius used (km).
+        count:
+          type: integer
+          title: Count
+          description: Number of listings returned (0-30).
+        listings:
+          items:
+            $ref: '#/components/schemas/NearbyForSaleListing'
+          type: array
+          title: Listings
+          description: For-sale listings, newest listing date first.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_id
+      - center_lat
+      - center_lng
+      - radius_km
+      - count
+      - listings
+      title: NearbyForSale
+      description: 'Currently for-sale listings within the requested radius of the
+
+        property (newest first, max 30), with AVM / rent-yield comparison.'
+      example:
+        center_lat: -33.802479
+        center_lng: 151.219715
+        count: 2
+        gnaf_id: GANSW704360755
+        listings:
+        - address: 8 The Bulwark, Castlecrag NSW 2068
+          avm: 4380000
+          bathrooms: 2
+          bedrooms: 4
+          discount_pct: 2.7
+          gnaf_pid: GANSW704357382
+          land_size: 696
+          lat: -33.8019
+          listing_date: '2026-06-14'
+          lng: 151.2205
+          price: 4500000.0
+          price_label: $4,500,000 Guide
+          property_type: House
+          weekly_rent: 1850.0
+          yield_pct: 2.1
+        radius_km: 1.0
     ApiResponse_StreetBedroomSeries_:
       properties:
         data:
@@ -619,353 +682,6 @@ components:
       description: 'One year of the street''s modelled price history, with the suburb
 
         median as a baseline.'
-    MeshBlockFeatureCollection:
-      properties:
-        type:
-          type: string
-          const: FeatureCollection
-          title: Type
-          description: Always 'FeatureCollection'.
-        features:
-          items:
-            $ref: '#/components/schemas/MeshBlockFeature'
-          type: array
-          title: Features
-          description: One feature per mesh block (max 200).
-      type: object
-      required:
-      - type
-      - features
-      title: MeshBlockFeatureCollection
-      description: RFC 7946 GeoJSON FeatureCollection of buffer mesh blocks.
-    NearbyForSaleListing:
-      properties:
-        gnaf_pid:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Gnaf Pid
-          description: Listing property GNAF id.
-        address:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Address
-          description: Full address, title-cased.
-        property_type:
-          type: string
-          title: Property Type
-          description: 'Bucketed type: House / Townhouse / Unit / Land / Other.'
-        bedrooms:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Bedrooms
-          description: Bedroom count.
-        bathrooms:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Bathrooms
-          description: Bathroom count.
-        land_size:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Land Size
-          description: Land size (sqm) when parseable.
-        price:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Price
-          description: Asking price (AUD) — parsed from the display price when possible.
-        price_label:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Price Label
-          description: Raw asking-price label, e.g. "Auction" or "$3.5M Guide".
-        listing_date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Listing Date
-          description: Listing date (YYYY-MM-DD).
-        lat:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lat
-          description: Listing latitude.
-        lng:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lng
-          description: Listing longitude.
-        avm:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Avm
-          description: Latest AVM prediction (AUD) for the listing, if available.
-        discount_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Discount Pct
-          description: 'Asking price vs AVM: (price - avm) / avm * 100. Negative = under AVM.'
-        weekly_rent:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Weekly Rent
-          description: Predicted weekly rent (AUD) from the rental AVM.
-        yield_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Yield Pct
-          description: Gross rental yield % = weekly_rent * 52 / price * 100.
-      additionalProperties: true
-      type: object
-      required:
-      - property_type
-      title: NearbyForSaleListing
-      description: One currently-for-sale listing near the subject property.
-    ApiResponse_NearbyForSale_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/NearbyForSale'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[NearbyForSale]
-    ApiResponse_PropertyStreetProfile_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/PropertyStreetProfile'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[PropertyStreetProfile]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    MeshBlockStats:
-      properties:
-        mb:
-          type: string
-          title: Mb
-          description: ABS 2021 mesh-block code.
-        modal_street:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Modal Street
-          description: Most common street name inside the mesh block.
-        avg_annual_growth:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Avg Annual Growth
-          description: Average annual price growth for properties in the mesh block, as a decimal fraction per year (0.061 = 6.1%/yr) — same scale as the suburb investor-concentration endpoint.
-        total_properties:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Total Properties
-          description: Total residential properties in the mesh block.
-        rental_properties:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Rental Properties
-          description: Properties identified as rentals in the mesh block.
-        investor_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Investor Pct
-          description: Investor share = rental_properties / total_properties × 100, as a percentage 0-100 (21.43 = 21.43%).
-        median_sold_price:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Median Sold Price
-          description: Median sold price (AUD) across the suburb's last ~12 months of house sales that geocode into this mesh block (min 2 sales, else null).
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      title: MeshBlockStats
-      description: Per-mesh-block stats attached to each GeoJSON feature.
-    ApiResponse_MeshBlocksContext_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/MeshBlocksContext'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[MeshBlocksContext]
-    PropertyStreetProfile:
-      properties:
-        gnaf_id:
-          type: string
-          title: Gnaf Id
-          description: GNAF persistent identifier of the property.
-        address:
-          type: string
-          title: Address
-          description: Street address of the property, e.g. '15 Rengor Close'.
-        suburb:
-          type: string
-          title: Suburb
-          description: Suburb (SAL) name.
-        street:
-          type: string
-          title: Street
-          description: The property's street, suffix-expanded, e.g. 'Rengor Close'.
-        streets_in_suburb:
-          type: integer
-          title: Streets In Suburb
-          description: Forecastable streets in the suburb (the benchmark population).
-        profile:
-          $ref: '#/components/schemas/StreetProfileRow'
-          description: The property's own street.
-        suburb_medians:
-          $ref: '#/components/schemas/StreetSuburbMedians'
-          description: Suburb-wide medians to judge the street against.
-        forecast_rank:
-          anyOf:
-          - $ref: '#/components/schemas/StreetForecastRank'
-          - type: 'null'
-          description: Rank of the street's 4-year forecast within the suburb. None when the street has no 4-year forecast or fewer than two streets rank.
-      additionalProperties: true
-      type: object
-      required:
-      - gnaf_id
-      - address
-      - suburb
-      - street
-      - streets_in_suburb
-      - profile
-      - suburb_medians
-      title: PropertyStreetProfile
-      description: The property's own street, benchmarked against its suburb.
-      example:
-        address: 15 Rengor Close
-        forecast_rank:
-          band: Top 1%
-          percentile_from_top: 1
-          rank: 1
-          tercile: upper third
-          total: 81
-        gnaf_id: GANSW717662275
-        profile:
-          annual_2y: 14.2
-          annual_4y: 11.1
-          annual_8y: 8.7
-          confidence: Medium
-          current_price: 1300000.0
-          history:
-          - price: 1002844.58
-            suburb_med: 866399
-            year: 2024
-          - price: 1300000.0
-            suburb_med: 948908
-            year: 2025
-          - price: 1300000.0
-            suburb_med: 1040068
-            year: 2026
-          houses_on_street: 12
-          median_house_rent_week: 986.5
-          n_sales: 47
-          past_growth_pct: 2.82
-          renters_pct: 0%
-          renters_pct_num: 0.0
-          sale_turnover: Every 9.2 years (very high turnover)
-          sale_turnover_years: 9.2
-          street: Rengor Cl
-          target_2y: 1694197.26
-          target_4y: 1979978.08
-          target_8y: 2532146.5
-          title: Rengor Close
-          units_on_street: 0
-        street: Rengor Close
-        streets_in_suburb: 81
-        suburb: Belmont North
-        suburb_medians:
-          annual_4y: 6.3
-          annual_8y: 4.6
-          past_growth_pct: 3.23
-          rental_turnover_years: 6.0
-          renters_pct: 16.0
-          sale_turnover_years: 14.4
     StreetProfileRow:
       properties:
         street:
@@ -1133,69 +849,6 @@ components:
         target_8y: 2532146.5
         title: Rengor Close
         units_on_street: 0
-    NearbyForSale:
-      properties:
-        gnaf_id:
-          type: string
-          title: Gnaf Id
-          description: Subject property GNAF id.
-        center_lat:
-          type: number
-          title: Center Lat
-          description: Subject property latitude.
-        center_lng:
-          type: number
-          title: Center Lng
-          description: Subject property longitude.
-        radius_km:
-          type: number
-          title: Radius Km
-          description: Search radius used (km).
-        count:
-          type: integer
-          title: Count
-          description: Number of listings returned (0-30).
-        listings:
-          items:
-            $ref: '#/components/schemas/NearbyForSaleListing'
-          type: array
-          title: Listings
-          description: For-sale listings, newest listing date first.
-      additionalProperties: true
-      type: object
-      required:
-      - gnaf_id
-      - center_lat
-      - center_lng
-      - radius_km
-      - count
-      - listings
-      title: NearbyForSale
-      description: 'Currently for-sale listings within the requested radius of the
-
-        property (newest first, max 30), with AVM / rent-yield comparison.'
-      example:
-        center_lat: -33.802479
-        center_lng: 151.219715
-        count: 2
-        gnaf_id: GANSW704360755
-        listings:
-        - address: 8 The Bulwark, Castlecrag NSW 2068
-          avm: 4380000
-          bathrooms: 2
-          bedrooms: 4
-          discount_pct: 2.7
-          gnaf_pid: GANSW704357382
-          land_size: 696
-          lat: -33.8019
-          listing_date: '2026-06-14'
-          lng: 151.2205
-          price: 4500000.0
-          price_label: $4,500,000 Guide
-          property_type: House
-          weekly_rent: 1850.0
-          yield_pct: 2.1
-        radius_km: 1.0
     StreetSuburbMedians:
       properties:
         past_growth_pct:
@@ -1240,6 +893,138 @@ components:
       description: 'Median across every forecastable street in the suburb — the benchmark
 
         the report compares the property''s street against.'
+    NearbyForSaleListing:
+      properties:
+        gnaf_pid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gnaf Pid
+          description: Listing property GNAF id.
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: Full address, title-cased.
+        property_type:
+          type: string
+          title: Property Type
+          description: 'Bucketed type: House / Townhouse / Unit / Land / Other.'
+        bedrooms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bedrooms
+          description: Bedroom count.
+        bathrooms:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Bathrooms
+          description: Bathroom count.
+        land_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Land Size
+          description: Land size (sqm) when parseable.
+        price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price
+          description: Asking price (AUD) — parsed from the display price when possible.
+        price_label:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Price Label
+          description: Raw asking-price label, e.g. "Auction" or "$3.5M Guide".
+        listing_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Listing Date
+          description: Listing date (YYYY-MM-DD).
+        lat:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lat
+          description: Listing latitude.
+        lng:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lng
+          description: Listing longitude.
+        avm:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avm
+          description: Latest AVM prediction (AUD) for the listing, if available.
+        discount_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Discount Pct
+          description: 'Asking price vs AVM: (price - avm) / avm * 100. Negative = under AVM.'
+        weekly_rent:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Weekly Rent
+          description: Predicted weekly rent (AUD) from the rental AVM.
+        yield_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Yield Pct
+          description: Gross rental yield % = weekly_rent * 52 / price * 100.
+      additionalProperties: true
+      type: object
+      required:
+      - property_type
+      title: NearbyForSaleListing
+      description: One currently-for-sale listing near the subject property.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_PropertyStreetProfile_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PropertyStreetProfile'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PropertyStreetProfile]
     BandSeriesPoint:
       properties:
         date:
@@ -1256,6 +1041,209 @@ components:
       - value
       title: BandSeriesPoint
       description: One point in the bedroom-band price series.
+    ApiResponse_MeshBlocksContext_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/MeshBlocksContext'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[MeshBlocksContext]
+    MeshBlockStats:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        modal_street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Modal Street
+          description: Most common street name inside the mesh block.
+        avg_annual_growth:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Avg Annual Growth
+          description: Average annual price growth for properties in the mesh block, as a decimal fraction per year (0.061 = 6.1%/yr) — same scale as the suburb investor-concentration endpoint.
+        total_properties:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Properties
+          description: Total residential properties in the mesh block.
+        rental_properties:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rental Properties
+          description: Properties identified as rentals in the mesh block.
+        investor_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Investor Pct
+          description: Investor share = rental_properties / total_properties × 100, as a percentage 0-100 (21.43 = 21.43%).
+        median_sold_price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Median Sold Price
+          description: Median sold price (AUD) across the suburb's last ~12 months of house sales that geocode into this mesh block (min 2 sales, else null).
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: MeshBlockStats
+      description: Per-mesh-block stats attached to each GeoJSON feature.
+    PropertyStreetProfile:
+      properties:
+        gnaf_id:
+          type: string
+          title: Gnaf Id
+          description: GNAF persistent identifier of the property.
+        address:
+          type: string
+          title: Address
+          description: Street address of the property, e.g. '15 Rengor Close'.
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL) name.
+        street:
+          type: string
+          title: Street
+          description: The property's street, suffix-expanded, e.g. 'Rengor Close'.
+        streets_in_suburb:
+          type: integer
+          title: Streets In Suburb
+          description: Forecastable streets in the suburb (the benchmark population).
+        profile:
+          $ref: '#/components/schemas/StreetProfileRow'
+          description: The property's own street.
+        suburb_medians:
+          $ref: '#/components/schemas/StreetSuburbMedians'
+          description: Suburb-wide medians to judge the street against.
+        forecast_rank:
+          anyOf:
+          - $ref: '#/components/schemas/StreetForecastRank'
+          - type: 'null'
+          description: Rank of the street's 4-year forecast within the suburb. None when the street has no 4-year forecast or fewer than two streets rank.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_id
+      - address
+      - suburb
+      - street
+      - streets_in_suburb
+      - profile
+      - suburb_medians
+      title: PropertyStreetProfile
+      description: The property's own street, benchmarked against its suburb.
+      example:
+        address: 15 Rengor Close
+        forecast_rank:
+          band: Top 1%
+          percentile_from_top: 1
+          rank: 1
+          tercile: upper third
+          total: 81
+        gnaf_id: GANSW717662275
+        profile:
+          annual_2y: 14.2
+          annual_4y: 11.1
+          annual_8y: 8.7
+          confidence: Medium
+          current_price: 1300000.0
+          history:
+          - price: 1002844.58
+            suburb_med: 866399
+            year: 2024
+          - price: 1300000.0
+            suburb_med: 948908
+            year: 2025
+          - price: 1300000.0
+            suburb_med: 1040068
+            year: 2026
+          houses_on_street: 12
+          median_house_rent_week: 986.5
+          n_sales: 47
+          past_growth_pct: 2.82
+          renters_pct: 0%
+          renters_pct_num: 0.0
+          sale_turnover: Every 9.2 years (very high turnover)
+          sale_turnover_years: 9.2
+          street: Rengor Cl
+          target_2y: 1694197.26
+          target_4y: 1979978.08
+          target_8y: 2532146.5
+          title: Rengor Close
+          units_on_street: 0
+        street: Rengor Close
+        streets_in_suburb: 81
+        suburb: Belmont North
+        suburb_medians:
+          annual_4y: 6.3
+          annual_8y: 4.6
+          past_growth_pct: 3.23
+          rental_turnover_years: 6.0
+          renters_pct: 16.0
+          sale_turnover_years: 14.4
+    StreetForecastRank:
+      properties:
+        rank:
+          type: integer
+          title: Rank
+          description: 1-based rank, 1 = strongest 4-year forecast.
+        total:
+          type: integer
+          title: Total
+          description: Streets ranked (those with a 4-year forecast).
+        percentile_from_top:
+          type: integer
+          title: Percentile From Top
+          description: rank/total as a percentage — 1 is best, 100 is worst.
+        band:
+          type: string
+          title: Band
+          description: 'Plain-English band: ''Top N%'', ''Mid-pack'' or ''Bottom N%''.'
+        tercile:
+          type: string
+          title: Tercile
+          description: '''upper third'', ''middle third'' or ''lower third''.'
+      additionalProperties: true
+      type: object
+      required:
+      - rank
+      - total
+      - percentile_from_top
+      - band
+      - tercile
+      title: StreetForecastRank
+      description: 'Where the property''s street sits on 4-year forecast growth against
+
+        every other street in the suburb.'
     MeshBlocksContext:
       properties:
         gnaf_id:
@@ -1321,89 +1309,25 @@ components:
               median_sold_price: 3350000.0
             type: Feature
           type: FeatureCollection
-    MeshBlockFeature:
+    MeshBlockFeatureCollection:
       properties:
         type:
           type: string
-          const: Feature
+          const: FeatureCollection
           title: Type
-          description: Always 'Feature'.
-        geometry:
-          anyOf:
-          - additionalProperties: true
-            type: object
-          - type: 'null'
-          title: Geometry
-          description: GeoJSON geometry (Polygon or MultiPolygon), simplified for rendering. Null if the polygon failed to serialise, or when the request passes `?geojson=false`.
-        properties:
-          $ref: '#/components/schemas/MeshBlockStats'
-          description: Per-mesh-block stats.
-      type: object
-      required:
-      - type
-      - properties
-      title: MeshBlockFeature
-      description: RFC 7946 GeoJSON Feature — one mesh-block polygon + its stats.
-    ValidationError:
-      properties:
-        loc:
+          description: Always 'FeatureCollection'.
+        features:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/MeshBlockFeature'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Features
+          description: One feature per mesh block (max 200).
       type: object
       required:
-      - loc
-      - msg
       - type
-      title: ValidationError
-    StreetForecastRank:
-      properties:
-        rank:
-          type: integer
-          title: Rank
-          description: 1-based rank, 1 = strongest 4-year forecast.
-        total:
-          type: integer
-          title: Total
-          description: Streets ranked (those with a 4-year forecast).
-        percentile_from_top:
-          type: integer
-          title: Percentile From Top
-          description: rank/total as a percentage — 1 is best, 100 is worst.
-        band:
-          type: string
-          title: Band
-          description: 'Plain-English band: ''Top N%'', ''Mid-pack'' or ''Bottom N%''.'
-        tercile:
-          type: string
-          title: Tercile
-          description: '''upper third'', ''middle third'' or ''lower third''.'
-      additionalProperties: true
-      type: object
-      required:
-      - rank
-      - total
-      - percentile_from_top
-      - band
-      - tercile
-      title: StreetForecastRank
-      description: 'Where the property''s street sits on 4-year forecast growth against
-
-        every other street in the suburb.'
+      - features
+      title: MeshBlockFeatureCollection
+      description: RFC 7946 GeoJSON FeatureCollection of buffer mesh blocks.
     StreetBedroomSeries:
       properties:
         gnaf_id:
@@ -1473,6 +1397,82 @@ components:
         - date: '2026-06-28'
           value: 4400000.0
         suburb: Castlecrag
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_NearbyForSale_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/NearbyForSale'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[NearbyForSale]
+    MeshBlockFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          description: Always 'Feature'.
+        geometry:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Geometry
+          description: GeoJSON geometry (Polygon or MultiPolygon), simplified for rendering. Null if the polygon failed to serialise, or when the request passes `?geojson=false`.
+        properties:
+          $ref: '#/components/schemas/MeshBlockStats'
+          description: Per-mesh-block stats.
+      type: object
+      required:
+      - type
+      - properties
+      title: MeshBlockFeature
+      description: RFC 7946 GeoJSON Feature — one mesh-block polygon + its stats.
   securitySchemes:
     BearerAuth:
       type: http

@@ -996,28 +996,87 @@ paths:
       x-price-cents: 3
 components:
   schemas:
-    NearestShop:
+    ApiResponse_LifestyleCbd_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleCbd'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleCbd]
+    PoiFeatureProperties:
       properties:
         name:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Name
-          description: Shop name (e.g. 'Coles').
+          description: POI name; null for unnamed points.
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Display category (e.g. 'Restaurant / Cafe').
+        subtype:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Subtype
+          description: 'L2 subtype — the specific venue type. Filter/count on this for a question like ''how many pubs'': e.g. ''pub'', ''bar'', ''cafe'', ''restaurant'', ''gym'', ''supermarket'', ''school'', ''pharmacy''.'
+        dim:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dim
+          description: Livability dimension the POI contributes to (e.g. 'convenience').
+      additionalProperties: true
+      type: object
+      title: PoiFeatureProperties
+      description: Properties carried on each POI feature.
+    PoiCategoryBreakdown:
+      properties:
         category:
           type: string
           title: Category
-          description: Shop category (e.g. 'Supermarket').
-        dist_km:
-          type: number
-          title: Dist Km
-          description: Straight-line distance (km).
+          description: Friendly category name (e.g. 'Food Drink').
+        count:
+          type: integer
+          title: Count
+          description: Total POIs in this category.
+        top_subtypes:
+          items:
+            $ref: '#/components/schemas/PoiSubtypeCount'
+          type: array
+          title: Top Subtypes
+          description: Most common subtypes inside the category.
       additionalProperties: true
       type: object
       required:
-      - name
       - category
-      - dist_km
-      title: NearestShop
-      description: Nearest major shop / shopping centre to the suburb centroid.
+      - count
+      - top_subtypes
+      title: PoiCategoryBreakdown
+      description: One L1 POI category with its top subtypes.
     LifestyleCbd:
       properties:
         area_name:
@@ -1076,92 +1135,307 @@ components:
         nearest_city:
           distance_km: 14.0
           name: Newcastle
-    ApiResponse_LifestyleSummary_:
+    LifestyleLandmarks:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/LifestyleSummary'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[LifestyleSummary]
-    ApiResponse_LifestyleCbd_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/LifestyleCbd'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[LifestyleCbd]
-    LivabilityMb:
-      properties:
-        mb:
+        area_name:
           type: string
-          title: Mb
-          description: ABS 2021 mesh-block code.
-        street:
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        nearest_beach:
           anyOf:
-          - type: string
+          - $ref: '#/components/schemas/LandmarkPlace'
           - type: 'null'
-          title: Street
-          description: Modal street name for the mesh block, title-cased.
-        scores:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Scores
-          description: Dimension key → score 0-100, higher is better. Dimensions with no score for this microburb are absent.
-        levels:
-          additionalProperties:
-            type: string
-          type: object
-          title: Levels
-          description: 'Dimension key → human band for the same score: ''Very low'' (<25), ''Low'' (25-49), ''Moderate'' (50-74), ''High'' (75-89), ''Very high'' (90+).'
+          description: Nearest beach.
+        nearest_hospital:
+          anyOf:
+          - $ref: '#/components/schemas/LandmarkPlace'
+          - type: 'null'
+          description: Nearest hospital.
       additionalProperties: true
       type: object
       required:
-      - mb
-      - scores
-      - levels
-      title: LivabilityMb
-      description: Livability scores for one microburb (mesh block).
+      - area_name
+      - area_level
+      title: LifestyleLandmarks
+      description: Nearest beach and hospital (null = none within ~50 km).
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        nearest_beach:
+          dist_km: 1.5
+          name: Redhead Beach, NSW
+        nearest_hospital:
+          dist_km: 1.4
+          name: Narla Village
+    PoiImpactDriver:
+      properties:
+        label:
+          type: string
+          title: Label
+          description: Driver label (e.g. 'No petrol station nearby').
+        premium_dollars:
+          type: integer
+          title: Premium Dollars
+          description: Estimated price premium attributable to the absence (AUD).
+        coverage_pct:
+          type: number
+          title: Coverage Pct
+          description: Share of recent sales the absence applies to (%).
+        pct_of_median:
+          type: number
+          title: Pct Of Median
+          description: Premium as a share of the median price (%).
+        detail:
+          type: string
+          title: Detail
+          description: Plain-English explanation of the driver.
+      additionalProperties: true
+      type: object
+      required:
+      - label
+      - premium_dollars
+      - coverage_pct
+      - pct_of_median
+      - detail
+      title: PoiImpactDriver
+      description: One amenity-absence price driver.
+    LandmarkPlace:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Landmark name.
+        dist_km:
+          type: number
+          title: Dist Km
+          description: Straight-line distance (km).
+      additionalProperties: true
+      type: object
+      required:
+      - dist_km
+      title: LandmarkPlace
+      description: A named landmark with straight-line distance.
+    NarrativeSentences:
+      properties:
+        affluence:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Affluence
+          description: Affluence narrative.
+        community:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Community
+          description: Community narrative.
+        family:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Family
+          description: Family narrative.
+        hip:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hip
+          description: Hip narrative.
+        lifestyle:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Lifestyle
+          description: Lifestyle narrative.
+        convenience:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Convenience
+          description: Convenience narrative.
+        tranquility:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tranquility
+          description: Tranquility narrative.
+      additionalProperties: true
+      type: object
+      title: NarrativeSentences
+      description: 'One plain-English sentence per livability dimension. A dimension
+
+        is omitted when no sentence exists for it. No ``safety`` key —
+
+        the upstream crime sentence is SEIFA text, deliberately excluded.'
+    ApiResponse_LifestyleLivability_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleLivability'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleLivability]
+    PoiFeatureCollection:
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+          title: Type
+          description: Always 'FeatureCollection'.
+        features:
+          items:
+            $ref: '#/components/schemas/PoiFeature'
+          type: array
+          title: Features
+          description: One feature per POI.
+      type: object
+      required:
+      - type
+      - features
+      title: PoiFeatureCollection
+      description: GeoJSON FeatureCollection of POI points.
+    ApiResponse_LifestyleNarrative_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleNarrative'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleNarrative]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    LifestyleNarrative:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        sentences:
+          $ref: '#/components/schemas/NarrativeSentences'
+          description: Per-dimension sentences.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      - sentences
+      title: LifestyleNarrative
+      description: Suburb livability narrative sentences.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        sentences:
+          affluence: 37% own outright. Only 10% hold university degrees. Household income $1,728/wk.
+          convenience: 'No train nearby (9 km). Nearest supermarket: Coles (851m). Hospital 2.9 km.'
+    PoiCategoryCount:
+      properties:
+        category:
+          type: string
+          title: Category
+          description: Display category.
+        count:
+          type: integer
+          title: Count
+          description: POIs in the category.
+      type: object
+      required:
+      - category
+      - count
+      title: PoiCategoryCount
+      description: Per-display-category POI count.
+    PoiSubtypeCount:
+      properties:
+        label:
+          type: string
+          title: Label
+          description: Subtype label, title-cased (e.g. 'Restaurant').
+        count:
+          type: integer
+          title: Count
+          description: Number of POIs of this subtype.
+      type: object
+      required:
+      - label
+      - count
+      title: PoiSubtypeCount
+      description: One L2 subtype count inside a POI category.
+    LivabilityDimension:
+      properties:
+        key:
+          type: string
+          title: Key
+          description: Machine key, e.g. 'safety'.
+        label:
+          type: string
+          title: Label
+          description: Display label, e.g. 'Safety'.
+        description:
+          type: string
+          title: Description
+          description: What the dimension measures.
+      additionalProperties: true
+      type: object
+      required:
+      - key
+      - label
+      - description
+      title: LivabilityDimension
+      description: One of the seven scored dimensions.
     SuburbLivabilityMap:
       properties:
         suburb:
@@ -1237,30 +1511,33 @@ components:
         n_microburbs: 63
         suburb: Belmont North
         unit: score_0_100
-    PoiCategoryBreakdown:
+    ApiResponse_LifestyleLandmarks_:
       properties:
-        category:
-          type: string
-          title: Category
-          description: Friendly category name (e.g. 'Food Drink').
-        count:
-          type: integer
-          title: Count
-          description: Total POIs in this category.
-        top_subtypes:
-          items:
-            $ref: '#/components/schemas/PoiSubtypeCount'
-          type: array
-          title: Top Subtypes
-          description: Most common subtypes inside the category.
-      additionalProperties: true
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleLandmarks'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      required:
-      - category
-      - count
-      - top_subtypes
-      title: PoiCategoryBreakdown
-      description: One L1 POI category with its top subtypes.
+      title: ApiResponse[LifestyleLandmarks]
     ApiResponse_SuburbLivabilityMap_:
       properties:
         data:
@@ -1288,42 +1565,7 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[SuburbLivabilityMap]
-    NearestTrain:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Station name.
-        dist_km:
-          type: number
-          title: Dist Km
-          description: Straight-line distance (km).
-      type: object
-      required:
-      - name
-      - dist_km
-      title: NearestTrain
-      description: Nearest train station to the suburb centroid.
-    PoiFeatureCollection:
-      properties:
-        type:
-          type: string
-          const: FeatureCollection
-          title: Type
-          description: Always 'FeatureCollection'.
-        features:
-          items:
-            $ref: '#/components/schemas/PoiFeature'
-          type: array
-          title: Features
-          description: One feature per POI.
-      type: object
-      required:
-      - type
-      - features
-      title: PoiFeatureCollection
-      description: GeoJSON FeatureCollection of POI points.
-    LifestyleNarrative:
+    LifestylePois:
       properties:
         area_name:
           type: string
@@ -1333,37 +1575,62 @@ components:
           type: string
           title: Area Level
           description: Always 'suburb' for these endpoints.
-        sentences:
-          $ref: '#/components/schemas/NarrativeSentences'
-          description: Per-dimension sentences.
+        count:
+          type: integer
+          title: Count
+          description: POIs available in the suburb (after any `category` filter), counted before `limit`/`offset`.
+        returned:
+          type: integer
+          title: Returned
+          description: Features actually in this response — equals `count` when unpaged.
+        categories:
+          items:
+            $ref: '#/components/schemas/PoiCategoryCount'
+          type: array
+          title: Categories
+          description: Per-category counts across the whole suburb, largest first.
+        pois:
+          $ref: '#/components/schemas/PoiFeatureCollection'
+          description: GeoJSON FeatureCollection of points.
       additionalProperties: true
       type: object
       required:
       - area_name
       - area_level
-      - sentences
-      title: LifestyleNarrative
-      description: Suburb livability narrative sentences.
+      - count
+      - returned
+      - categories
+      - pois
+      title: LifestylePois
+      description: Every amenity point in the suburb as GeoJSON, with category counts.
       example:
         area_level: suburb
         area_name: Belmont North
-        sentences:
-          affluence: 37% own outright. Only 10% hold university degrees. Household income $1,728/wk.
-          convenience: 'No train nearby (9 km). Nearest supermarket: Coles (851m). Hospital 2.9 km.'
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ApiResponse_LifestyleNarrative_:
+        categories:
+        - category: Shopping
+          count: 32
+        - category: Sport & Fitness
+          count: 26
+        count: 177
+        pois:
+          features:
+          - geometry:
+              coordinates:
+              - 151.66231
+              - -33.02463
+              type: Point
+            properties:
+              name: Ampol Foodary
+              category: Shopping
+              subtype: newsagent
+              dim: convenience
+            type: Feature
+          type: FeatureCollection
+    ApiResponse_LifestylePoiImpacts_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/LifestyleNarrative'
+          - $ref: '#/components/schemas/LifestylePoiImpacts'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -1385,88 +1652,111 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[LifestyleNarrative]
-    LivabilityDimension:
+      title: ApiResponse[LifestylePoiImpacts]
+    LivabilityScore:
       properties:
         key:
           type: string
           title: Key
-          description: Machine key, e.g. 'safety'.
+          description: Dimension key — affluence | lifestyle | hip | convenience | family | safety | tranquility.
         label:
           type: string
           title: Label
-          description: Display label, e.g. 'Safety'.
-        description:
+          description: Human dimension label.
+        value:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Value
+          description: Score 0–100; null when no data.
+        level:
           type: string
-          title: Description
-          description: What the dimension measures.
+          title: Level
+          description: Human level — Very low / Low / Moderate / High / Very high.
       additionalProperties: true
       type: object
       required:
       - key
       - label
-      - description
-      title: LivabilityDimension
-      description: One of the seven scored dimensions.
-    LifestyleLivability:
+      - level
+      title: LivabilityScore
+      description: One livability dimension score (0–100).
+    NearestShop:
       properties:
-        area_name:
+        name:
           type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
+          title: Name
+          description: Shop name (e.g. 'Coles').
+        category:
           type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        n_mesh_blocks:
-          type: integer
-          title: N Mesh Blocks
-          description: Mesh blocks the scores aggregate over.
-        scores:
-          items:
-            $ref: '#/components/schemas/LivabilityScore'
-          type: array
-          title: Scores
-          description: One entry per dimension.
-        benchmark:
-          anyOf:
-          - $ref: '#/components/schemas/LivabilityBenchmark'
-          - type: 'null'
-          description: SA4 benchmark; null when the region has no bench row.
+          title: Category
+          description: Shop category (e.g. 'Supermarket').
+        dist_km:
+          type: number
+          title: Dist Km
+          description: Straight-line distance (km).
       additionalProperties: true
       type: object
       required:
-      - area_name
-      - area_level
-      - n_mesh_blocks
-      - scores
-      title: LifestyleLivability
-      description: Suburb livability scores (mesh-block average) + regional benchmark.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        benchmark:
-          n_suburbs: 149
-          region: Newcastle and Lake Macquarie
-          scores:
-            affluence: 66.9
-            hip: 59.5
-            lifestyle: 73.4
-            safety: 84.8
-        n_mesh_blocks: 63
-        scores:
-        - key: affluence
-          label: Affluence
-          level: Moderate
-          value: 56
-        - key: lifestyle
-          label: Lifestyle
-          level: Moderate
-          value: 72
-        - key: safety
-          label: Safety
-          level: High
-          value: 76
+      - name
+      - category
+      - dist_km
+      title: NearestShop
+      description: Nearest major shop / shopping centre to the suburb centroid.
+    ApiResponse_LifestylePois_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestylePois'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestylePois]
+    ApiResponse_LifestyleSummary_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/LifestyleSummary'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[LifestyleSummary]
     TerrainSummary:
       properties:
         n_properties:
@@ -1519,85 +1809,124 @@ components:
       - pct_steep
       title: TerrainSummary
       description: Pre-aggregated terrain scalars across the suburb's properties.
-    ApiResponse_LifestyleLandmarks_:
+    LifestylePoiImpacts:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/LifestyleLandmarks'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        n_sales:
+          type: integer
+          title: N Sales
+          description: Recent sales in the analysis window.
+        median_price:
+          type: integer
+          title: Median Price
+          description: Median sale price across those sales (AUD).
+        total_premium:
+          type: integer
+          title: Total Premium
+          description: Combined absence premium across all drivers (AUD).
+        drivers:
+          items:
+            $ref: '#/components/schemas/PoiImpactDriver'
+          type: array
+          title: Drivers
+          description: Drivers, largest premium first.
+      additionalProperties: true
       type: object
-      title: ApiResponse[LifestyleLandmarks]
-    NarrativeSentences:
+      required:
+      - area_name
+      - area_level
+      - n_sales
+      - median_price
+      - total_premium
+      - drivers
+      title: LifestylePoiImpacts
+      description: 'What the absence of petrol / fast food / bottle shops near sold
+
+        properties was worth in this suburb.'
+      example:
+        area_level: suburb
+        area_name: Castlecrag
+        drivers:
+        - coverage_pct: 100.0
+          detail: 100% of 9 recent sales in Castlecrag were at properties with no petrol station nearby. Those sales cleared about $184,500 more than comparable suburbs with petrol stations, equivalent to 4.1% of the $4,500,000 median price here.
+          label: No petrol station nearby
+          pct_of_median: 4.1
+          premium_dollars: 184500
+        median_price: 4500000
+        n_sales: 9
+        total_premium: 263000
+    NearestTrain:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Station name.
+        dist_km:
+          type: number
+          title: Dist Km
+          description: Straight-line distance (km).
+      type: object
+      required:
+      - name
+      - dist_km
+      title: NearestTrain
+      description: Nearest train station to the suburb centroid.
+    PoiFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          description: Always 'Feature'.
+        geometry:
+          $ref: '#/components/schemas/GeoJsonPointGeometry'
+          description: Point location.
+        properties:
+          $ref: '#/components/schemas/PoiFeatureProperties'
+          description: Name/category/dim props.
+      type: object
+      required:
+      - type
+      - geometry
+      - properties
+      title: PoiFeature
+      description: One POI as a GeoJSON Feature.
+    LivabilityBenchmarkScores:
       properties:
         affluence:
           anyOf:
-          - type: string
+          - type: number
           - type: 'null'
           title: Affluence
-          description: Affluence narrative.
-        community:
+          description: Region average affluence.
+        safety:
           anyOf:
-          - type: string
+          - type: number
           - type: 'null'
-          title: Community
-          description: Community narrative.
-        family:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Family
-          description: Family narrative.
+          title: Safety
+          description: Region average safety.
         hip:
           anyOf:
-          - type: string
+          - type: number
           - type: 'null'
           title: Hip
-          description: Hip narrative.
+          description: Region average hip.
         lifestyle:
           anyOf:
-          - type: string
+          - type: number
           - type: 'null'
           title: Lifestyle
-          description: Lifestyle narrative.
-        convenience:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Convenience
-          description: Convenience narrative.
-        tranquility:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Tranquility
-          description: Tranquility narrative.
-      additionalProperties: true
+          description: Region average lifestyle.
       type: object
-      title: NarrativeSentences
-      description: 'One plain-English sentence per livability dimension. A dimension
-
-        is omitted when no sentence exists for it. No ``safety`` key —
-
-        the upstream crime sentence is SEIFA text, deliberately excluded.'
+      title: LivabilityBenchmarkScores
+      description: Region-average scores (0–100) for the benchmarked dimensions.
     LifestyleSummary:
       properties:
         area_name:
@@ -1699,6 +2028,24 @@ components:
           n_steep: 231
           pct_steep: 13
         total_pois: 43
+    CityDistance:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: City name (e.g. 'Newcastle').
+        distance_km:
+          type: number
+          title: Distance Km
+          description: Straight-line distance (km).
+      additionalProperties: true
+      type: object
+      required:
+      - distance_km
+      title: CityDistance
+      description: A named city and the straight-line distance to it.
     LivabilityBenchmark:
       properties:
         region:
@@ -1720,150 +2067,6 @@ components:
       - scores
       title: LivabilityBenchmark
       description: SA4-region benchmark for comparing the suburb's scores.
-    LivabilityBenchmarkScores:
-      properties:
-        affluence:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Affluence
-          description: Region average affluence.
-        safety:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Safety
-          description: Region average safety.
-        hip:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Hip
-          description: Region average hip.
-        lifestyle:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lifestyle
-          description: Region average lifestyle.
-      type: object
-      title: LivabilityBenchmarkScores
-      description: Region-average scores (0–100) for the benchmarked dimensions.
-    PoiCategoryCount:
-      properties:
-        category:
-          type: string
-          title: Category
-          description: Display category.
-        count:
-          type: integer
-          title: Count
-          description: POIs in the category.
-      type: object
-      required:
-      - category
-      - count
-      title: PoiCategoryCount
-      description: Per-display-category POI count.
-    CityDistance:
-      properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: City name (e.g. 'Newcastle').
-        distance_km:
-          type: number
-          title: Distance Km
-          description: Straight-line distance (km).
-      additionalProperties: true
-      type: object
-      required:
-      - distance_km
-      title: CityDistance
-      description: A named city and the straight-line distance to it.
-    PoiFeature:
-      properties:
-        type:
-          type: string
-          const: Feature
-          title: Type
-          description: Always 'Feature'.
-        geometry:
-          $ref: '#/components/schemas/GeoJsonPointGeometry'
-          description: Point location.
-        properties:
-          $ref: '#/components/schemas/PoiFeatureProperties'
-          description: Name/category/dim props.
-      type: object
-      required:
-      - type
-      - geometry
-      - properties
-      title: PoiFeature
-      description: One POI as a GeoJSON Feature.
-    LifestylePois:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        count:
-          type: integer
-          title: Count
-          description: POIs available in the suburb (after any `category` filter), counted before `limit`/`offset`.
-        returned:
-          type: integer
-          title: Returned
-          description: Features actually in this response — equals `count` when unpaged.
-        categories:
-          items:
-            $ref: '#/components/schemas/PoiCategoryCount'
-          type: array
-          title: Categories
-          description: Per-category counts across the whole suburb, largest first.
-        pois:
-          $ref: '#/components/schemas/PoiFeatureCollection'
-          description: GeoJSON FeatureCollection of points.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      - count
-      - returned
-      - categories
-      - pois
-      title: LifestylePois
-      description: Every amenity point in the suburb as GeoJSON, with category counts.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        categories:
-        - category: Shopping
-          count: 32
-        - category: Sport & Fitness
-          count: 26
-        count: 177
-        pois:
-          features:
-          - geometry:
-              coordinates:
-              - 151.66231
-              - -33.02463
-              type: Point
-            properties:
-              name: Ampol Foodary
-              category: Shopping
-              subtype: newsagent
-              dim: convenience
-            type: Feature
-          type: FeatureCollection
     GeoJsonPointGeometry:
       properties:
         type:
@@ -1883,201 +2086,38 @@ components:
       - coordinates
       title: GeoJsonPointGeometry
       description: RFC 7946 GeoJSON Point — `[longitude, latitude]` coordinates.
-    PoiFeatureProperties:
+    LivabilityMb:
       properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: POI name; null for unnamed points.
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-          description: Display category (e.g. 'Restaurant / Cafe').
-        subtype:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Subtype
-          description: 'L2 subtype — the specific venue type. Filter/count on this for a question like ''how many pubs'': e.g. ''pub'', ''bar'', ''cafe'', ''restaurant'', ''gym'', ''supermarket'', ''school'', ''pharmacy''.'
-        dim:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Dim
-          description: Livability dimension the POI contributes to (e.g. 'convenience').
-      additionalProperties: true
-      type: object
-      title: PoiFeatureProperties
-      description: Properties carried on each POI feature.
-    PoiImpactDriver:
-      properties:
-        label:
+        mb:
           type: string
-          title: Label
-          description: Driver label (e.g. 'No petrol station nearby').
-        premium_dollars:
-          type: integer
-          title: Premium Dollars
-          description: Estimated price premium attributable to the absence (AUD).
-        coverage_pct:
-          type: number
-          title: Coverage Pct
-          description: Share of recent sales the absence applies to (%).
-        pct_of_median:
-          type: number
-          title: Pct Of Median
-          description: Premium as a share of the median price (%).
-        detail:
-          type: string
-          title: Detail
-          description: Plain-English explanation of the driver.
+          title: Mb
+          description: ABS 2021 mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name for the mesh block, title-cased.
+        scores:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Scores
+          description: Dimension key → score 0-100, higher is better. Dimensions with no score for this microburb are absent.
+        levels:
+          additionalProperties:
+            type: string
+          type: object
+          title: Levels
+          description: 'Dimension key → human band for the same score: ''Very low'' (<25), ''Low'' (25-49), ''Moderate'' (50-74), ''High'' (75-89), ''Very high'' (90+).'
       additionalProperties: true
       type: object
       required:
-      - label
-      - premium_dollars
-      - coverage_pct
-      - pct_of_median
-      - detail
-      title: PoiImpactDriver
-      description: One amenity-absence price driver.
-    LifestyleLandmarks:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        nearest_beach:
-          anyOf:
-          - $ref: '#/components/schemas/LandmarkPlace'
-          - type: 'null'
-          description: Nearest beach.
-        nearest_hospital:
-          anyOf:
-          - $ref: '#/components/schemas/LandmarkPlace'
-          - type: 'null'
-          description: Nearest hospital.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      title: LifestyleLandmarks
-      description: Nearest beach and hospital (null = none within ~50 km).
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        nearest_beach:
-          dist_km: 1.5
-          name: Redhead Beach, NSW
-        nearest_hospital:
-          dist_km: 1.4
-          name: Narla Village
-    ApiResponse_LifestyleLivability_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/LifestyleLivability'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[LifestyleLivability]
-    ApiResponse_LifestylePois_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/LifestylePois'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[LifestylePois]
-    ApiResponse_LifestylePoiImpacts_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/LifestylePoiImpacts'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[LifestylePoiImpacts]
-    PoiSubtypeCount:
-      properties:
-        label:
-          type: string
-          title: Label
-          description: Subtype label, title-cased (e.g. 'Restaurant').
-        count:
-          type: integer
-          title: Count
-          description: Number of POIs of this subtype.
-      type: object
-      required:
-      - label
-      - count
-      title: PoiSubtypeCount
-      description: One L2 subtype count inside a POI category.
+      - mb
+      - scores
+      - levels
+      title: LivabilityMb
+      description: Livability scores for one microburb (mesh block).
     ValidationError:
       properties:
         loc:
@@ -2104,7 +2144,7 @@ components:
       - msg
       - type
       title: ValidationError
-    LifestylePoiImpacts:
+    LifestyleLivability:
       properties:
         area_name:
           type: string
@@ -2114,95 +2154,55 @@ components:
           type: string
           title: Area Level
           description: Always 'suburb' for these endpoints.
-        n_sales:
+        n_mesh_blocks:
           type: integer
-          title: N Sales
-          description: Recent sales in the analysis window.
-        median_price:
-          type: integer
-          title: Median Price
-          description: Median sale price across those sales (AUD).
-        total_premium:
-          type: integer
-          title: Total Premium
-          description: Combined absence premium across all drivers (AUD).
-        drivers:
+          title: N Mesh Blocks
+          description: Mesh blocks the scores aggregate over.
+        scores:
           items:
-            $ref: '#/components/schemas/PoiImpactDriver'
+            $ref: '#/components/schemas/LivabilityScore'
           type: array
-          title: Drivers
-          description: Drivers, largest premium first.
+          title: Scores
+          description: One entry per dimension.
+        benchmark:
+          anyOf:
+          - $ref: '#/components/schemas/LivabilityBenchmark'
+          - type: 'null'
+          description: SA4 benchmark; null when the region has no bench row.
       additionalProperties: true
       type: object
       required:
       - area_name
       - area_level
-      - n_sales
-      - median_price
-      - total_premium
-      - drivers
-      title: LifestylePoiImpacts
-      description: 'What the absence of petrol / fast food / bottle shops near sold
-
-        properties was worth in this suburb.'
+      - n_mesh_blocks
+      - scores
+      title: LifestyleLivability
+      description: Suburb livability scores (mesh-block average) + regional benchmark.
       example:
         area_level: suburb
-        area_name: Castlecrag
-        drivers:
-        - coverage_pct: 100.0
-          detail: 100% of 9 recent sales in Castlecrag were at properties with no petrol station nearby. Those sales cleared about $184,500 more than comparable suburbs with petrol stations, equivalent to 4.1% of the $4,500,000 median price here.
-          label: No petrol station nearby
-          pct_of_median: 4.1
-          premium_dollars: 184500
-        median_price: 4500000
-        n_sales: 9
-        total_premium: 263000
-    LandmarkPlace:
-      properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: Landmark name.
-        dist_km:
-          type: number
-          title: Dist Km
-          description: Straight-line distance (km).
-      additionalProperties: true
-      type: object
-      required:
-      - dist_km
-      title: LandmarkPlace
-      description: A named landmark with straight-line distance.
-    LivabilityScore:
-      properties:
-        key:
-          type: string
-          title: Key
-          description: Dimension key — affluence | lifestyle | hip | convenience | family | safety | tranquility.
-        label:
-          type: string
-          title: Label
-          description: Human dimension label.
-        value:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Value
-          description: Score 0–100; null when no data.
-        level:
-          type: string
-          title: Level
-          description: Human level — Very low / Low / Moderate / High / Very high.
-      additionalProperties: true
-      type: object
-      required:
-      - key
-      - label
-      - level
-      title: LivabilityScore
-      description: One livability dimension score (0–100).
+        area_name: Belmont North
+        benchmark:
+          n_suburbs: 149
+          region: Newcastle and Lake Macquarie
+          scores:
+            affluence: 66.9
+            hip: 59.5
+            lifestyle: 73.4
+            safety: 84.8
+        n_mesh_blocks: 63
+        scores:
+        - key: affluence
+          label: Affluence
+          level: Moderate
+          value: 56
+        - key: lifestyle
+          label: Lifestyle
+          level: Moderate
+          value: 72
+        - key: safety
+          label: Safety
+          level: High
+          value: 76
   securitySchemes:
     BearerAuth:
       type: http

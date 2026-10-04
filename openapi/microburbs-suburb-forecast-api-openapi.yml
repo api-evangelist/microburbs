@@ -134,53 +134,6 @@ paths:
       x-price-cents: 100
 components:
   schemas:
-    ForecastSale:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb' for these endpoints.
-        metric:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Metric
-          description: Metric label, e.g. 'sale_price_growth_forecast'.
-        house:
-          anyOf:
-          - $ref: '#/components/schemas/ForecastBand'
-          - type: 'null'
-          description: House forecast band.
-        unit:
-          anyOf:
-          - $ref: '#/components/schemas/ForecastBand'
-          - type: 'null'
-          description: Unit forecast band.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      title: ForecastSale
-      description: 12-month sale-price growth forecast by property type.
-      example:
-        area_level: suburb
-        area_name: Belmont North
-        house:
-          confidence: 2.0
-          high: 0.0927
-          low: 0.0379
-          most_likely: 0.0686
-        metric: sale_price_growth_forecast
-        unit:
-          confidence: 2.0
-          high: 0.0993
-          low: 0.0353
-          most_likely: 0.0762
     HTTPValidationError:
       properties:
         detail:
@@ -285,6 +238,53 @@ components:
       - msg
       - type
       title: ValidationError
+    ForecastSale:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb' for these endpoints.
+        metric:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Metric
+          description: Metric label, e.g. 'sale_price_growth_forecast'.
+        house:
+          anyOf:
+          - $ref: '#/components/schemas/ForecastBand'
+          - type: 'null'
+          description: House forecast band.
+        unit:
+          anyOf:
+          - $ref: '#/components/schemas/ForecastBand'
+          - type: 'null'
+          description: Unit forecast band.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: ForecastSale
+      description: 12-month sale-price growth forecast by property type.
+      example:
+        area_level: suburb
+        area_name: Belmont North
+        house:
+          confidence: 2.0
+          high: 0.0927
+          low: 0.0379
+          most_likely: 0.0686
+        metric: sale_price_growth_forecast
+        unit:
+          confidence: 2.0
+          high: 0.0993
+          low: 0.0353
+          most_likely: 0.0762
   securitySchemes:
     BearerAuth:
       type: http

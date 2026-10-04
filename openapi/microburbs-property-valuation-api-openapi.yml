@@ -621,21 +621,6 @@ paths:
       x-price-cents: 50
 components:
   schemas:
-    ValuationAll:
-      properties:
-        avm:
-          anyOf:
-          - $ref: '#/components/schemas/AvmEstimate'
-          - type: 'null'
-      type: object
-      title: ValuationAll
-      description: 'All valuation outputs in one call. Today: just the AVM (which
-
-        now includes confidence_score inline). Kept as a bundle so future
-
-        valuation outputs — rental AVM, off-market signals — slot in
-
-        without a new endpoint.'
     AvmEstimate:
       properties:
         predicted_price:
@@ -675,159 +660,6 @@ components:
         predicted_price_high: 1183479
         predicted_price_low: 569823
         prediction_date: '2026-04-20'
-    LandValueYear:
-      properties:
-        year:
-          type: integer
-          title: Year
-          description: Valuation year.
-        value:
-          type: number
-          title: Value
-          description: Council land value (AUD).
-        yoy_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Yoy Pct
-          description: Change vs the previous valued year (%). Null on the first year or after a gap.
-        price_per_sqm:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Price Per Sqm
-          description: Land value per square metre (AUD/sqm). Null when the lot area is unknown.
-      additionalProperties: true
-      type: object
-      required:
-      - year
-      - value
-      title: LandValueYear
-      description: One year of the council land-valuation series.
-      example:
-        price_per_sqm: 3177.05
-        value: 2270000.0
-        year: 2025
-        yoy_pct: 0.0
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PropertyLandValues:
-      properties:
-        land_value:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Land Value
-          description: Latest council land value (AUD).
-        area_sqm:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Area Sqm
-          description: Lot area (square metres).
-        zone_desc:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Zone Desc
-          description: Zoning description (e.g. 'R2 - Low Density Residential').
-        history:
-          items:
-            $ref: '#/components/schemas/LandValueYear'
-          type: array
-          title: History
-          description: Per-year valuation series, oldest first.
-      additionalProperties: true
-      type: object
-      required:
-      - history
-      title: PropertyLandValues
-      description: Council land valuations for the parcel — 5-year series + lot area + zoning.
-      example:
-        area_sqm: 714.5
-        history:
-        - price_per_sqm: 2449.27
-          value: 1750000.0
-          year: 2021
-        - price_per_sqm: 3177.05
-          value: 2270000.0
-          year: 2022
-          yoy_pct: 29.71
-        - price_per_sqm: 2883.14
-          value: 2060000.0
-          year: 2023
-          yoy_pct: -9.25
-        - price_per_sqm: 3177.05
-          value: 2270000.0
-          year: 2024
-          yoy_pct: 10.19
-        - price_per_sqm: 3177.05
-          value: 2270000.0
-          year: 2025
-          yoy_pct: 0.0
-        land_value: 2270000.0
-        zone_desc: C4 - Environmental Living
-    ApiResponse_AgentQuoting_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/AgentQuoting'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[AgentQuoting]
-    ApiResponse_PropertyLandValues_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/PropertyLandValues'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[PropertyLandValues]
     AgentQuoting:
       properties:
         agency_name:
@@ -940,6 +772,136 @@ components:
         guide_price: 287500
         sold_date: '2026-03-19'
         sold_price: 442500
+    ValueSeriesPoint:
+      properties:
+        month:
+          type: string
+          title: Month
+          description: Month (YYYY-MM).
+        value:
+          type: number
+          title: Value
+          description: Modelled property value at that month (AUD).
+      additionalProperties: true
+      type: object
+      required:
+      - month
+      - value
+      title: ValueSeriesPoint
+      description: One point of the AVM value-over-time series.
+      example:
+        month: 2026-05
+        value: 4168459.0
+    ApiResponse_AgentQuoting_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AgentQuoting'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AgentQuoting]
+    ApiResponse_AvmEstimate_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AvmEstimate'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AvmEstimate]
+    PropertyLandValues:
+      properties:
+        land_value:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Land Value
+          description: Latest council land value (AUD).
+        area_sqm:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Area Sqm
+          description: Lot area (square metres).
+        zone_desc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Zone Desc
+          description: Zoning description (e.g. 'R2 - Low Density Residential').
+        history:
+          items:
+            $ref: '#/components/schemas/LandValueYear'
+          type: array
+          title: History
+          description: Per-year valuation series, oldest first.
+      additionalProperties: true
+      type: object
+      required:
+      - history
+      title: PropertyLandValues
+      description: Council land valuations for the parcel — 5-year series + lot area + zoning.
+      example:
+        area_sqm: 714.5
+        history:
+        - price_per_sqm: 2449.27
+          value: 1750000.0
+          year: 2021
+        - price_per_sqm: 3177.05
+          value: 2270000.0
+          year: 2022
+          yoy_pct: 29.71
+        - price_per_sqm: 2883.14
+          value: 2060000.0
+          year: 2023
+          yoy_pct: -9.25
+        - price_per_sqm: 3177.05
+          value: 2270000.0
+          year: 2024
+          yoy_pct: 10.19
+        - price_per_sqm: 3177.05
+          value: 2270000.0
+          year: 2025
+          yoy_pct: 0.0
+        land_value: 2270000.0
+        zone_desc: C4 - Environmental Living
     NegativeGearing:
       properties:
         level:
@@ -1056,32 +1018,67 @@ components:
         net_cashflow_80lvr: -189996.0
         net_cashflow_80lvr_wk: -3654.0
         rent_estimate_suspect: true
-    ValidationError:
+    ApiResponse_PropertyLandValues_:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PropertyLandValues'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
           title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PropertyLandValues]
+    LandValueYear:
+      properties:
+        year:
+          type: integer
+          title: Year
+          description: Valuation year.
+        value:
+          type: number
+          title: Value
+          description: Council land value (AUD).
+        yoy_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Yoy Pct
+          description: Change vs the previous valued year (%). Null on the first year or after a gap.
+        price_per_sqm:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price Per Sqm
+          description: Land value per square metre (AUD/sqm). Null when the lot area is unknown.
+      additionalProperties: true
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      - year
+      - value
+      title: LandValueYear
+      description: One year of the council land-valuation series.
+      example:
+        price_per_sqm: 3177.05
+        value: 2270000.0
+        year: 2025
+        yoy_pct: 0.0
     ApiResponse_NegativeGearing_:
       properties:
         data:
@@ -1136,53 +1133,56 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[ValuationAll]
-    ApiResponse_AvmEstimate_:
+    HTTPValidationError:
       properties:
-        data:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValuationAll:
+      properties:
+        avm:
           anyOf:
           - $ref: '#/components/schemas/AvmEstimate'
           - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[AvmEstimate]
-    ValueSeriesPoint:
+      title: ValuationAll
+      description: 'All valuation outputs in one call. Today: just the AVM (which
+
+        now includes confidence_score inline). Kept as a bundle so future
+
+        valuation outputs — rental AVM, off-market signals — slot in
+
+        without a new endpoint.'
+    ValidationError:
       properties:
-        month:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
           type: string
-          title: Month
-          description: Month (YYYY-MM).
-        value:
-          type: number
-          title: Value
-          description: Modelled property value at that month (AUD).
-      additionalProperties: true
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - month
-      - value
-      title: ValueSeriesPoint
-      description: One point of the AVM value-over-time series.
-      example:
-        month: 2026-05
-        value: 4168459.0
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ApiResponse_list_ValueSeriesPoint__:
       properties:
         data:

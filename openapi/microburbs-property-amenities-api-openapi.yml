@@ -261,74 +261,6 @@ paths:
       x-price-cents: 5
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    TransportNearby:
-      properties:
-        gnaf_id:
-          type: string
-          title: Gnaf Id
-          description: GNAF property identifier.
-        center_lat:
-          type: number
-          title: Center Lat
-          description: Property latitude (WGS84).
-        center_lng:
-          type: number
-          title: Center Lng
-          description: Property longitude (WGS84).
-        radius_m:
-          type: integer
-          title: Radius M
-          description: Search radius applied, metres.
-        counts:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Counts
-          description: Count per mode within the radius (train / tram / bus / ferry).
-        nearest:
-          additionalProperties:
-            anyOf:
-            - $ref: '#/components/schemas/TransportStop'
-            - type: 'null'
-          type: object
-          title: Nearest
-          description: Nearest stop per mode; null when none falls inside the radius.
-      additionalProperties: true
-      type: object
-      required:
-      - gnaf_id
-      - center_lat
-      - center_lng
-      - radius_m
-      - counts
-      - nearest
-      title: TransportNearby
-      description: Nearest public-transport stop per mode within the radius.
-      example:
-        center_lat: -33.802479
-        center_lng: 151.219715
-        counts:
-          bus: 6
-          ferry: 0
-          train: 0
-          tram: 0
-        gnaf_id: GANSW704360755
-        nearest:
-          bus:
-            distance_m: 130
-            label: Bus stop
-            lat: -33.8031
-            lng: 151.2201
-        radius_m: 1000
     AmenitiesNearby:
       properties:
         gnaf_id:
@@ -389,96 +321,6 @@ components:
           distance_m: 190
           lat: -33.8038
           lng: 151.218
-    ApiResponse_AmenitiesNearby_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/AmenitiesNearby'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[AmenitiesNearby]
-    AmenityRow:
-      properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: Amenity name, where known.
-        category:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Category
-          description: 'Bucket: Supermarket / Green Spaces / Restaurant.'
-        lat:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lat
-          description: Latitude (WGS84).
-        lng:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Lng
-          description: Longitude (WGS84).
-        distance_m:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Distance M
-          description: Straight-line distance from the property, metres.
-      additionalProperties: true
-      type: object
-      title: AmenityRow
-      description: One nearby amenity.
-    ApiResponse_TransportNearby_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/TransportNearby'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[TransportNearby]
     TransportStop:
       properties:
         name:
@@ -515,6 +357,42 @@ components:
       type: object
       title: TransportStop
       description: The nearest stop/station of one mode.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_TransportNearby_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/TransportNearby'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[TransportNearby]
     ValidationError:
       properties:
         loc:
@@ -541,6 +419,128 @@ components:
       - msg
       - type
       title: ValidationError
+    AmenityRow:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: Amenity name, where known.
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: 'Bucket: Supermarket / Green Spaces / Restaurant.'
+        lat:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lat
+          description: Latitude (WGS84).
+        lng:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Lng
+          description: Longitude (WGS84).
+        distance_m:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Distance M
+          description: Straight-line distance from the property, metres.
+      additionalProperties: true
+      type: object
+      title: AmenityRow
+      description: One nearby amenity.
+    TransportNearby:
+      properties:
+        gnaf_id:
+          type: string
+          title: Gnaf Id
+          description: GNAF property identifier.
+        center_lat:
+          type: number
+          title: Center Lat
+          description: Property latitude (WGS84).
+        center_lng:
+          type: number
+          title: Center Lng
+          description: Property longitude (WGS84).
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Search radius applied, metres.
+        counts:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Counts
+          description: Count per mode within the radius (train / tram / bus / ferry).
+        nearest:
+          additionalProperties:
+            anyOf:
+            - $ref: '#/components/schemas/TransportStop'
+            - type: 'null'
+          type: object
+          title: Nearest
+          description: Nearest stop per mode; null when none falls inside the radius.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_id
+      - center_lat
+      - center_lng
+      - radius_m
+      - counts
+      - nearest
+      title: TransportNearby
+      description: Nearest public-transport stop per mode within the radius.
+      example:
+        center_lat: -33.802479
+        center_lng: 151.219715
+        counts:
+          bus: 6
+          ferry: 0
+          train: 0
+          tram: 0
+        gnaf_id: GANSW704360755
+        nearest:
+          bus:
+            distance_m: 130
+            label: Bus stop
+            lat: -33.8031
+            lng: 151.2201
+        radius_m: 1000
+    ApiResponse_AmenitiesNearby_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/AmenitiesNearby'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[AmenitiesNearby]
   securitySchemes:
     BearerAuth:
       type: http

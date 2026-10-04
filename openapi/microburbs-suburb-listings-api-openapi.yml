@@ -503,6 +503,36 @@ paths:
       x-price-cents: 20
 components:
   schemas:
+    ForSaleAddress:
+      properties:
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Street number and name (e.g. '49A John Street').
+        sal:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sal
+          description: ABS Suburb and Locality (SAL) name the property falls in.
+        sa1:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sa1
+          description: ABS SA1 code — the Statistical Area Level 1 (2021 ASGS, ~200–800 people) the property sits in. Useful for joining ABS census geography.
+        state:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: State
+          description: State/territory abbreviation (NSW, VIC, QLD, SA, WA, TAS, NT, ACT).
+      additionalProperties: true
+      type: object
+      title: ForSaleAddress
+      description: Parsed address fields for a for-sale listing.
     ForSaleAttributes:
       properties:
         bedrooms:
@@ -552,6 +582,23 @@ components:
         tidy as the agent''s ad — counts can be null and the size fields are
 
         free-text, not normalised numbers.'
+    ForSaleCoordinates:
+      properties:
+        latitude:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Latitude
+          description: Latitude in decimal degrees (WGS84).
+        longitude:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Longitude
+          description: Longitude in decimal degrees (WGS84).
+      type: object
+      title: ForSaleCoordinates
+      description: Listing point in WGS84 (EPSG:4326), geocoded from the GNAF address.
     HTTPValidationError:
       properties:
         detail:
@@ -561,57 +608,6 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ForSaleListing:
-      properties:
-        gnaf_pid:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Gnaf Pid
-          description: GNAF persistent identifier of the matched property; null if the listing couldn't be matched to a GNAF address.
-        area_level:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Area Level
-          description: Geographic level of this result — always 'address' for a listing row (echoed so the response is self-describing).
-        area_name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Area Name
-          description: Full display address (street, suburb, state).
-        address:
-          anyOf:
-          - $ref: '#/components/schemas/ForSaleAddress'
-          - type: 'null'
-          description: Parsed address components.
-        attributes:
-          anyOf:
-          - $ref: '#/components/schemas/ForSaleAttributes'
-          - type: 'null'
-          description: Listed property attributes (as advertised).
-        coordinates:
-          anyOf:
-          - $ref: '#/components/schemas/ForSaleCoordinates'
-          - type: 'null'
-          description: Geocoded WGS84 lat/long of the property.
-        listing_date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Listing Date
-          description: Date the listing was first observed on market (YYYY-MM-DD).
-        price:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Price
-          description: Advertised list price in AUD; null when the ad withholds it (e.g. 'Contact Agent', POA, or price-on-auction).
-      additionalProperties: true
-      type: object
-      title: ForSaleListing
-      description: One for-sale listing currently on market in the suburb.
     ForSale:
       properties:
         results:
@@ -988,23 +984,57 @@ components:
           listing_date: '2026-04-07'
           price: 1450000.0
           property_type: House
-    ForSaleCoordinates:
+    ForSaleListing:
       properties:
-        latitude:
+        gnaf_pid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gnaf Pid
+          description: GNAF persistent identifier of the matched property; null if the listing couldn't be matched to a GNAF address.
+        area_level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Level
+          description: Geographic level of this result — always 'address' for a listing row (echoed so the response is self-describing).
+        area_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Area Name
+          description: Full display address (street, suburb, state).
+        address:
+          anyOf:
+          - $ref: '#/components/schemas/ForSaleAddress'
+          - type: 'null'
+          description: Parsed address components.
+        attributes:
+          anyOf:
+          - $ref: '#/components/schemas/ForSaleAttributes'
+          - type: 'null'
+          description: Listed property attributes (as advertised).
+        coordinates:
+          anyOf:
+          - $ref: '#/components/schemas/ForSaleCoordinates'
+          - type: 'null'
+          description: Geocoded WGS84 lat/long of the property.
+        listing_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Listing Date
+          description: Date the listing was first observed on market (YYYY-MM-DD).
+        price:
           anyOf:
           - type: number
           - type: 'null'
-          title: Latitude
-          description: Latitude in decimal degrees (WGS84).
-        longitude:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Longitude
-          description: Longitude in decimal degrees (WGS84).
+          title: Price
+          description: Advertised list price in AUD; null when the ad withholds it (e.g. 'Contact Agent', POA, or price-on-auction).
+      additionalProperties: true
       type: object
-      title: ForSaleCoordinates
-      description: Listing point in WGS84 (EPSG:4326), geocoded from the GNAF address.
+      title: ForSaleListing
+      description: One for-sale listing currently on market in the suburb.
     ValidationError:
       properties:
         loc:
@@ -1031,36 +1061,6 @@ components:
       - msg
       - type
       title: ValidationError
-    ForSaleAddress:
-      properties:
-        street:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Street
-          description: Street number and name (e.g. '49A John Street').
-        sal:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sal
-          description: ABS Suburb and Locality (SAL) name the property falls in.
-        sa1:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sa1
-          description: ABS SA1 code — the Statistical Area Level 1 (2021 ASGS, ~200–800 people) the property sits in. Useful for joining ABS census geography.
-        state:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: State
-          description: State/territory abbreviation (NSW, VIC, QLD, SA, WA, TAS, NT, ACT).
-      additionalProperties: true
-      type: object
-      title: ForSaleAddress
-      description: Parsed address fields for a for-sale listing.
     ApiResponse_ForSale_:
       properties:
         data:

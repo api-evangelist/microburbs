@@ -326,6 +326,39 @@ paths:
       x-price-cents: 3
 components:
   schemas:
+    SuburbListItem:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Suburb (SAL) name.
+        state:
+          type: string
+          title: State
+          description: State / Territory.
+        match:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Match
+          description: 'How this row matched the `q` you sent — `exact`, `contains`, or `fuzzy` (a near-miss recovered from a likely typo). Only present when `q` was supplied. **Anything other than `exact` is a suggestion, not a confirmation: tell the user which suburb and state you used before you quote numbers for it.** A `fuzzy` row in a different state from the one the user named is very often the wrong place.'
+        score:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Score
+          description: Match confidence 0-1 (1.0 = exact). Only present when `q` was supplied. Use it to decide between asking the user and proceeding — not as a licence to pick silently.
+      type: object
+      required:
+      - suburb
+      - state
+      title: SuburbListItem
+      description: 'One row in the suburb directory — minimum to disambiguate SAL
+
+        names that collide across states (e.g. ''Springfield'' in NSW + QLD).'
+      example:
+        state: New South Wales
+        suburb: Belmont North
     HTTPValidationError:
       properties:
         detail:
@@ -335,6 +368,36 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    ApiResponse_list_SuburbListItem__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SuburbListItem'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[SuburbListItem]]
     SuburbProfile:
       properties:
         suburb:
@@ -397,39 +460,32 @@ components:
         sa4: Newcastle and Lake Macquarie
         state: New South Wales
         suburb: Belmont North
-    SuburbListItem:
+    ValidationError:
       properties:
-        suburb:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
           type: string
-          title: Suburb
-          description: Suburb (SAL) name.
-        state:
+          title: Message
+        type:
           type: string
-          title: State
-          description: State / Territory.
-        match:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Match
-          description: 'How this row matched the `q` you sent — `exact`, `contains`, or `fuzzy` (a near-miss recovered from a likely typo). Only present when `q` was supplied. **Anything other than `exact` is a suggestion, not a confirmation: tell the user which suburb and state you used before you quote numbers for it.** A `fuzzy` row in a different state from the one the user named is very often the wrong place.'
-        score:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Score
-          description: Match confidence 0-1 (1.0 = exact). Only present when `q` was supplied. Use it to decide between asking the user and proceeding — not as a licence to pick silently.
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - suburb
-      - state
-      title: SuburbListItem
-      description: 'One row in the suburb directory — minimum to disambiguate SAL
-
-        names that collide across states (e.g. ''Springfield'' in NSW + QLD).'
-      example:
-        state: New South Wales
-        suburb: Belmont North
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ApiResponse_SuburbProfile_:
       properties:
         data:
@@ -457,62 +513,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[SuburbProfile]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ApiResponse_list_SuburbListItem__:
-      properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/SuburbListItem'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[list[SuburbListItem]]
   securitySchemes:
     BearerAuth:
       type: http

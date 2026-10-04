@@ -1655,15 +1655,70 @@ paths:
       x-price-cents: 205
 components:
   schemas:
-    HTTPValidationError:
+    GeoJsonPoint:
       properties:
-        detail:
+        type:
+          type: string
+          const: Point
+          title: Type
+          description: Always 'Point'.
+        coordinates:
           items:
-            $ref: '#/components/schemas/ValidationError'
+            type: number
           type: array
-          title: Detail
+          title: Coordinates
+          description: '`[longitude, latitude]` — 2 numbers, lon first per GeoJSON.'
       type: object
-      title: HTTPValidationError
+      required:
+      - type
+      - coordinates
+      title: GeoJsonPoint
+      description: RFC 7946 GeoJSON Point — `[longitude, latitude]` coordinates.
+      example:
+        coordinates:
+        - 151.67
+        - -33.01
+        type: Point
+    GeoJsonPolygon:
+      properties:
+        type:
+          type: string
+          const: Polygon
+          title: Type
+          description: Always 'Polygon'.
+        coordinates:
+          items:
+            items:
+              items:
+                type: number
+              type: array
+            type: array
+          type: array
+          title: Coordinates
+          description: '`[ring][point][lon|lat]`. First ring is outer boundary; subsequent rings are holes (none today). Each ring is a list of `[lon, lat]` pairs; rings are explicitly closed (first pair == last pair).'
+      type: object
+      required:
+      - type
+      - coordinates
+      title: GeoJsonPolygon
+      description: 'RFC 7946 GeoJSON Polygon — list of linear rings, each ring a list
+
+        of `[lon, lat]` pairs. First ring is the outer boundary; any
+
+        additional rings are inner holes.'
+      example:
+        coordinates:
+        - - - 151.67
+            - -32.98
+          - - 151.68
+            - -32.98
+          - - 151.68
+            - -32.99
+          - - 151.67
+            - -32.99
+          - - 151.67
+            - -32.98
+        type: Polygon
     SchoolNearbyRow:
       properties:
         area_name:
@@ -1754,6 +1809,116 @@ components:
         school_level_type: Primary
         school_sector_type: Public
         socioeconomic_rank: 0.17342543077837194
+    SuburbSchoolsAll:
+      properties:
+        catchment:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/CatchmentRow'
+            type: array
+          - type: 'null'
+          title: Catchment
+        nearby:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SchoolNearbyRow'
+            type: array
+          - type: 'null'
+          title: Nearby
+      type: object
+      title: SuburbSchoolsAll
+    ApiResponse_SuburbSchoolsAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbSchoolsAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbSchoolsAll]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ApiResponse_list_SchoolNearbyRow__:
+      properties:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/SchoolNearbyRow'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[list[SchoolNearbyRow]]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     CatchmentRow:
       properties:
         area_name:
@@ -2047,24 +2212,6 @@ components:
         school_name: Floraville Public School
         school_sector_type: Public
         socioeconomic_rank: 0.6239973262032086
-    SuburbSchoolsAll:
-      properties:
-        catchment:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/CatchmentRow'
-            type: array
-          - type: 'null'
-          title: Catchment
-        nearby:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/SchoolNearbyRow'
-            type: array
-          - type: 'null'
-          title: Nearby
-      type: object
-      title: SuburbSchoolsAll
     ApiResponse_list_CatchmentRow__:
       properties:
         data:
@@ -2095,153 +2242,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[CatchmentRow]]
-    GeoJsonPoint:
-      properties:
-        type:
-          type: string
-          const: Point
-          title: Type
-          description: Always 'Point'.
-        coordinates:
-          items:
-            type: number
-          type: array
-          title: Coordinates
-          description: '`[longitude, latitude]` — 2 numbers, lon first per GeoJSON.'
-      type: object
-      required:
-      - type
-      - coordinates
-      title: GeoJsonPoint
-      description: RFC 7946 GeoJSON Point — `[longitude, latitude]` coordinates.
-      example:
-        coordinates:
-        - 151.67
-        - -33.01
-        type: Point
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    GeoJsonPolygon:
-      properties:
-        type:
-          type: string
-          const: Polygon
-          title: Type
-          description: Always 'Polygon'.
-        coordinates:
-          items:
-            items:
-              items:
-                type: number
-              type: array
-            type: array
-          type: array
-          title: Coordinates
-          description: '`[ring][point][lon|lat]`. First ring is outer boundary; subsequent rings are holes (none today). Each ring is a list of `[lon, lat]` pairs; rings are explicitly closed (first pair == last pair).'
-      type: object
-      required:
-      - type
-      - coordinates
-      title: GeoJsonPolygon
-      description: 'RFC 7946 GeoJSON Polygon — list of linear rings, each ring a list
-
-        of `[lon, lat]` pairs. First ring is the outer boundary; any
-
-        additional rings are inner holes.'
-      example:
-        coordinates:
-        - - - 151.67
-            - -32.98
-          - - 151.68
-            - -32.98
-          - - 151.68
-            - -32.99
-          - - 151.67
-            - -32.99
-          - - 151.67
-            - -32.98
-        type: Polygon
-    ApiResponse_SuburbSchoolsAll_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbSchoolsAll'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbSchoolsAll]
-    ApiResponse_list_SchoolNearbyRow__:
-      properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/SchoolNearbyRow'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[list[SchoolNearbyRow]]
   securitySchemes:
     BearerAuth:
       type: http

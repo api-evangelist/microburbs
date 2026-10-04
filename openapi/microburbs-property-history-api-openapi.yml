@@ -528,6 +528,72 @@ paths:
       x-price-cents: 80
 components:
   schemas:
+    HistoryRecord:
+      properties:
+        date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date
+          description: 'When the event happened, as `YYYY-MM-DD`. For a `Sold` record this is the sale date; for `For Sale` / `For Rent` it is the date the listing appeared. Note for sold records: where the state land registry is the source this is the contract date rather than settlement, but sold dates sourced from listing portals are not guaranteed to be one or the other — treat it as accurate to the month, not the day.'
+        price:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Price
+          description: The money figure attached to the event, in AUD. On `Sold` and `For Sale` records that is the whole price of the property; on `For Rent` it is the advertised rent, normally per week (the Australian convention) — but it is taken from the advertised text as-is and is not converted, so an agent who advertised monthly can leave a monthly figure here. Sanity-check rents that look ~4x too high. Null when the listing showed no number (e.g. 'Auction', 'Contact Agent').
+        type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Type
+          description: 'Which kind of event this is. One of exactly three values: `''Sold''`, `''For Sale''` (advertised for sale, outcome not necessarily known) or `''For Rent''`. Determines how to read `price` and `date` above.'
+        address:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Address
+          description: The property's address, title-cased. This is its current address as recorded in the national address file, repeated on every record — not the address text used in that particular listing, so it will not reflect a renumbering or a name change since.
+      additionalProperties: true
+      type: object
+      title: HistoryRecord
+      description: 'One event in a property''s market history — a sale, or a time it was
+
+        advertised for sale or for rent.
+
+
+        Records come from listing feeds, so this is the property''s *advertised*
+
+        history rather than a title/transfer register: a sale that never went to
+
+        market may be absent. Records are returned newest first.'
+    ApiResponse_HistoryRecord_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/HistoryRecord'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[HistoryRecord]
     HTTPValidationError:
       properties:
         detail:
@@ -564,63 +630,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[HistoryAll]
-    ApiResponse_HistoryRecord_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/HistoryRecord'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[HistoryRecord]
-    ApiResponse_list_HistoryRecord__:
-      properties:
-        data:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/HistoryRecord'
-            type: array
-          - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[list[HistoryRecord]]
     ValidationError:
       properties:
         loc:
@@ -701,45 +710,36 @@ components:
           date: '2025-06-05'
           price: 990000
           type: Sold
-    HistoryRecord:
+    ApiResponse_list_HistoryRecord__:
       properties:
-        date:
+        data:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/HistoryRecord'
+            type: array
+          - type: 'null'
+          title: Data
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
           anyOf:
           - type: string
           - type: 'null'
-          title: Date
-          description: 'When the event happened, as `YYYY-MM-DD`. For a `Sold` record this is the sale date; for `For Sale` / `For Rent` it is the date the listing appeared. Note for sold records: where the state land registry is the source this is the contract date rather than settlement, but sold dates sourced from listing portals are not guaranteed to be one or the other — treat it as accurate to the month, not the day.'
-        price:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Price
-          description: The money figure attached to the event, in AUD. On `Sold` and `For Sale` records that is the whole price of the property; on `For Rent` it is the advertised rent, normally per week (the Australian convention) — but it is taken from the advertised text as-is and is not converted, so an agent who advertised monthly can leave a monthly figure here. Sanity-check rents that look ~4x too high. Null when the listing showed no number (e.g. 'Auction', 'Contact Agent').
-        type:
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
           anyOf:
           - type: string
           - type: 'null'
-          title: Type
-          description: 'Which kind of event this is. One of exactly three values: `''Sold''`, `''For Sale''` (advertised for sale, outcome not necessarily known) or `''For Rent''`. Determines how to read `price` and `date` above.'
-        address:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Address
-          description: The property's address, title-cased. This is its current address as recorded in the national address file, repeated on every record — not the address text used in that particular listing, so it will not reflect a renumbering or a name change since.
-      additionalProperties: true
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      title: HistoryRecord
-      description: 'One event in a property''s market history — a sale, or a time it was
-
-        advertised for sale or for rent.
-
-
-        Records come from listing feeds, so this is the property''s *advertised*
-
-        history rather than a title/transfer register: a sale that never went to
-
-        market may be absent. Records are returned newest first.'
+      title: ApiResponse[list[HistoryRecord]]
   securitySchemes:
     BearerAuth:
       type: http

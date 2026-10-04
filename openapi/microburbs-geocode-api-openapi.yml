@@ -275,15 +275,29 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[GnafCandidate]]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+    SuburbCandidate:
+      properties: {}
+      additionalProperties: true
       type: object
-      title: HTTPValidationError
+      title: SuburbCandidate
+      description: 'One candidate row returned by the suburb autocomplete.
+
+
+        Open shape — see GnafCandidate. The helper returns
+
+        ``area_name`` / ``area_level`` / ``information`` (a nested chain of
+
+        POA / SA2 / SA3 / SA4 / LGA / state).'
+      example:
+        area_level: suburb
+        area_name: Belmont (NSW)
+        information:
+          lga: Lake Macquarie
+          poa: '2280'
+          sa2: Belmont - Bennetts Green
+          sa3: Lake Macquarie - East
+          sa4: Newcastle and Lake Macquarie
+          state: New South Wales
     GnafCandidate:
       properties: {}
       additionalProperties: true
@@ -305,32 +319,15 @@ components:
         id: GANSW704074813
         name: 27 Arlington Street, Belmont North
         property_type: house
-    ValidationError:
+    HTTPValidationError:
       properties:
-        loc:
+        detail:
           items:
-            anyOf:
-            - type: string
-            - type: integer
+            $ref: '#/components/schemas/ValidationError'
           type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+          title: Detail
       type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: HTTPValidationError
     ApiResponse_list_SuburbCandidate__:
       properties:
         data:
@@ -361,29 +358,32 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[SuburbCandidate]]
-    SuburbCandidate:
-      properties: {}
-      additionalProperties: true
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
-      title: SuburbCandidate
-      description: 'One candidate row returned by the suburb autocomplete.
-
-
-        Open shape — see GnafCandidate. The helper returns
-
-        ``area_name`` / ``area_level`` / ``information`` (a nested chain of
-
-        POA / SA2 / SA3 / SA4 / LGA / state).'
-      example:
-        area_level: suburb
-        area_name: Belmont (NSW)
-        information:
-          lga: Lake Macquarie
-          poa: '2280'
-          sa2: Belmont - Bennetts Green
-          sa3: Lake Macquarie - East
-          sa4: Newcastle and Lake Macquarie
-          state: New South Wales
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     BearerAuth:
       type: http

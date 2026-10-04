@@ -342,15 +342,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[PlanningAll]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ZoningCode:
       properties:
         code:
@@ -377,6 +368,15 @@ components:
         category: Residential Zones
         code: R2
         name: Low Density Residential
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     PlanningAll:
       properties:
         zoning_code:
@@ -405,89 +405,6 @@ components:
           value: 5.5 m
         - layer: hob
           value: 8.5 m
-    ApiResponse_ZoningCode_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/ZoningCode'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[ZoningCode]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    ZoningOverlay:
-      properties:
-        layer:
-          type: string
-          title: Layer
-          description: Overlay layer code, e.g. 'fsr', 'hob'.
-        value:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Value
-          description: Value at this point (e.g. '1.5' for FSR, '9.5' for HoB metres).
-      additionalProperties: true
-      type: object
-      required:
-      - layer
-      title: ZoningOverlay
-      description: 'One planning overlay intersecting the property''s buffer.
-
-
-        ``layer`` is the overlay family (e.g. ``"fsr"`` Floor Space Ratio,
-
-        ``"hob"`` Height of Building). ``value`` is the numeric/string
-
-        value that overlay carries at this point (e.g. ``"1.5"`` for FSR
-
-        or ``"9.5"`` for HoB metres).'
-      example:
-        layer: fsr
-        value: '1.5'
     ApiResponse_list_ZoningOverlay__:
       properties:
         data:
@@ -518,6 +435,89 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[list[ZoningOverlay]]
+    ZoningOverlay:
+      properties:
+        layer:
+          type: string
+          title: Layer
+          description: Overlay layer code, e.g. 'fsr', 'hob'.
+        value:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Value
+          description: Value at this point (e.g. '1.5' for FSR, '9.5' for HoB metres).
+      additionalProperties: true
+      type: object
+      required:
+      - layer
+      title: ZoningOverlay
+      description: 'One planning overlay intersecting the property''s buffer.
+
+
+        ``layer`` is the overlay family (e.g. ``"fsr"`` Floor Space Ratio,
+
+        ``"hob"`` Height of Building). ``value`` is the numeric/string
+
+        value that overlay carries at this point (e.g. ``"1.5"`` for FSR
+
+        or ``"9.5"`` for HoB metres).'
+      example:
+        layer: fsr
+        value: '1.5'
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_ZoningCode_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/ZoningCode'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[ZoningCode]
   securitySchemes:
     BearerAuth:
       type: http

@@ -1681,67 +1681,954 @@ paths:
       x-price-cents: 10
 components:
   schemas:
-    SuburbIncomeMap:
+    PrivateSchool:
       properties:
         suburb:
           type: string
           title: Suburb
           description: Canonical SAL name.
-        median_weekly_income:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Median Weekly Income
-          description: Suburb median household income ($/week).
-        national_percentile:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: National Percentile
-          description: National income percentile, clamped 1-99.
+        private_school_pct:
+          type: number
+          title: Private School Pct
+          description: Share of residents attending Catholic / Independent schools, as a percentage.
+        basis:
+          type: string
+          enum:
+          - microburb_downscale
+          - census_count_over_population
+          title: Basis
+          description: How private_school_pct was derived — 'microburb_downscale' (mesh-block share rollup, preferred) or 'census_count_over_population' (suburb census student count over mesh-block population).
+        growth_impact:
+          $ref: '#/components/schemas/GrowthImpact'
+          description: Capital-growth impact associated with the share band.
         n_microburbs:
           type: integer
           title: N Microburbs
-          description: Microburbs with income data.
+          description: Mesh blocks in the microburbs list.
         microburbs:
           items:
-            $ref: '#/components/schemas/IncomeMb'
+            $ref: '#/components/schemas/PrivateSchoolMicroburb'
           type: array
           title: Microburbs
-          description: Per-microburb incomes.
-        highest:
+          description: Per-mesh-block private-school shares (sparse cells dropped).
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - private_school_pct
+      - basis
+      - growth_impact
+      - n_microburbs
+      - microburbs
+      title: PrivateSchool
+      description: Share of residents attending Catholic / Independent schools.
+      example:
+        basis: microburb_downscale
+        growth_impact:
+          band: Low private-school share
+          pct_per_year: -0.3
+        microburbs:
+        - mb: '10664530000'
+          private_school_pct: 5.8
+          street: Marquis St
+        n_microburbs: 71
+        private_school_pct: 4.7
+        suburb: Belmont North
+    CohortNeighbours:
+      properties:
+        n:
+          type: integer
+          title: N
+          description: Touching suburbs with a value.
+        lowest_in_group:
+          type: boolean
+          title: Lowest In Group
+          description: True when every neighbour is at or above the suburb.
+        highest_in_group:
+          type: boolean
+          title: Highest In Group
+          description: True when every neighbour is at or below the suburb.
+        dramatic:
           anyOf:
-          - $ref: '#/components/schemas/IncomePocket'
+          - $ref: '#/components/schemas/DramaticNeighbour'
           - type: 'null'
-          description: Highest-income pocket.
-        lowest:
+          description: Largest-delta neighbour (only when mixed).
+      additionalProperties: true
+      type: object
+      required:
+      - n
+      - lowest_in_group
+      - highest_in_group
+      title: CohortNeighbours
+      description: Touching-suburb comparison for one metric.
+    BusinessPattern:
+      properties:
+        label:
+          type: string
+          title: Label
+          description: 'Pattern tag: Diverse / Professional-services-heavy / Mining-exposed / Low-commercial residential.'
+        headline:
+          type: string
+          title: Headline
+          description: One-line market read for the pattern.
+        subline:
+          type: string
+          title: Subline
+          description: Context sentence (may be empty).
+      additionalProperties: true
+      type: object
+      required:
+      - label
+      - headline
+      - subline
+      title: BusinessPattern
+      description: Business-mix pattern classification.
+    ApiResponse_SuburbAncestryMap_:
+      properties:
+        data:
           anyOf:
-          - $ref: '#/components/schemas/IncomePocket'
+          - $ref: '#/components/schemas/SuburbAncestryMap'
           - type: 'null'
-          description: Lowest-income pocket.
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbAncestryMap]
+    SuburbAncestryMap:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Microburbs with ancestry data.
+        microburbs:
+          items:
+            $ref: '#/components/schemas/AncestryMb'
+          type: array
+          title: Microburbs
+          description: Dominant ancestry per microburb.
+        suburb_ancestry_shares:
+          items:
+            $ref: '#/components/schemas/AncestryShare'
+          type: array
+          title: Suburb Ancestry Shares
+          description: Suburb-level ancestry shares, descending.
       additionalProperties: true
       type: object
       required:
       - suburb
       - n_microburbs
       - microburbs
-      title: SuburbIncomeMap
-      description: Per-microburb median household income map.
+      - suburb_ancestry_shares
+      title: SuburbAncestryMap
+      description: Per-microburb dominant ancestry (pilot-coverage dataset).
       example:
-        highest:
-          street: Marquis St
-          weekly_income: 2105
-        lowest:
-          street: Kalaroo Rd
-          weekly_income: 1188
-        median_weekly_income: 1740
+        microburbs:
+        - dominant_ancestry: Anglo-Australian
+          mb: '10694860000'
+          persons: 118
+          share_pct: 62.1
+          street: Edinburgh Rd
+        n_microburbs: 37
+        suburb: Castlecrag
+        suburb_ancestry_shares:
+        - ancestry: Anglo-Australian
+          pct: 58.4
+        - ancestry: Chinese
+          pct: 12.9
+    PrivateSchoolMicroburb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the mesh block.
+        private_school_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Private School Pct
+          description: Downscaled private-school share for the mesh block.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: PrivateSchoolMicroburb
+      description: One mesh block's private-school share.
+    ApiResponse_SuburbTenure_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbTenure'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbTenure]
+    ApiResponse_SuburbIncomeMap_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbIncomeMap'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbIncomeMap]
+    TenureMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS 2021 mesh-block code identifying this microburb, as a string of digits (keep it a string — leading digits are significant and it overflows a 32-bit int).
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: The most common street name inside the microburb, title-cased — a human handle for an area that otherwise has only a numeric code. Not a boundary or a full address, and several microburbs in a suburb can share one.
+        owned_outright_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Owned Outright Pct
+          description: Share of dwellings owned outright with no mortgage, as a percent 0–100 (34.7 = 34.7%). Typically tracks an older, longer-settled population.
+        mortgaged_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mortgaged Pct
+          description: Share of dwellings owner-occupied but still mortgaged, as a percent 0–100. Add it to `owned_outright_pct` for total owner-occupation.
+        renting_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Renting Pct
+          description: Share of dwellings rented, as a percent 0–100 — all renting, private landlords and public housing together. This is the figure the suburb-level `tier` is banded on.
+        public_housing_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Public Housing Pct
+          description: Share of dwellings rented from a state or territory housing authority, as a percent 0–100. A subset of `renting_pct`, not a fourth category — these dwellings are counted in both fields. Stacking all four in one chart double-counts; use owned-outright + mortgaged + renting for a breakdown (which still sums slightly under 100, the remainder being other and not-stated tenures) and show public housing separately.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: TenureMb
+      description: 'How the households in one microburb hold their homes — owned, being
+
+        paid off, or rented.
+
+
+        All four shares are **percentages 0–100** (not fractions) of the same
+
+        denominator: occupied private dwellings, including those whose tenure
+
+        was not stated. Two things follow, and both bite people who chart these
+
+        naively — see `public_housing_pct` and the note on summing below.
+
+
+        These come from a model, not a published count: Census tenure is
+
+        published for larger areas and statistically downscaled to microburb
+
+        level, so read a single microburb as an estimate with real uncertainty.'
+    AncestryMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the MB.
+        dominant_ancestry:
+          type: string
+          title: Dominant Ancestry
+          description: Largest ancestry bucket.
+        share_pct:
+          type: number
+          title: Share Pct
+          description: Dominant bucket's share of ancestry responses (%).
+        persons:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Persons
+          description: Total persons in the MB.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      - dominant_ancestry
+      - share_pct
+      title: AncestryMb
+      description: One microburb's dominant ancestry.
+    ApiResponse_SuburbVoting_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbVoting'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbVoting]
+    SuburbTenure:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: The suburb these figures describe, as the canonical ABS suburb (SAL) name — the resolved form of whatever was requested.
+        census_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Census Year
+          description: Reference year of the underlying ABS Census tenure inputs (currently 2021). This is not a current-year occupancy survey.
+        owned_outright_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Owned Outright Pct
+          description: Suburb-wide share of dwellings owned outright, percent 0–100.
+        mortgaged_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Mortgaged Pct
+          description: Suburb-wide share owner-occupied with a mortgage, percent 0–100.
+        owner_occupied_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Owner Occupied Pct
+          description: 'Total suburb owner-occupation rate, percent 0–100: `owned_outright_pct + mortgaged_pct`. Null unless both components are available. This is a modelled, unweighted average across microburbs, not an exact dwelling-weighted ABS SAL count.'
+        renting_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Renting Pct
+          description: Suburb-wide share of dwellings rented, percent 0–100 — private and public renting combined. Drives `tier`.
+        public_housing_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Public Housing Pct
+          description: Suburb-wide share rented from a state/territory housing authority, percent 0–100. Included within `renting_pct`, not additional to it.
+        tier:
+          type: string
+          title: Tier
+          description: 'One-word read on the suburb''s ownership mix, banded on `renting_pct`: ''Owner-Occupier'' under 7% renters, ''Mixed'' under 20%, ''Investor-Heavy'' at 20% or above (''Unknown'' when there is no renting share). A convenience label — the underlying percentage is the precise figure.'
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: 'How many microburbs are listed in `microburbs`. Not the number behind the suburb figures above: very small or sparsely-populated microburbs are filtered out of the list but still counted in the suburb averages, so re-averaging `microburbs` will not exactly reproduce them.'
+        microburbs:
+          items:
+            $ref: '#/components/schemas/TenureMb'
+          type: array
+          title: Microburbs
+          description: Tenure shares for each microburb in the suburb, showing how ownership varies street by street — often the more useful signal, since a single suburb average can hide an owner-occupied pocket next to a rental-heavy one.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - tier
+      - n_microburbs
+      - microburbs
+      title: SuburbTenure
+      description: 'Who owns and who rents across a suburb — one headline set of shares
+
+        plus the microburb-by-microburb detail underneath.
+
+
+        The suburb figures are an **unweighted average across the suburb''s
+
+        microburbs**, so each microburb counts equally regardless of how many
+
+        dwellings it holds. That is close to, but not identical with, a true
+
+        dwelling-weighted suburb share; do not expect it to reconcile exactly
+
+        with published Census suburb tenure counts. Same 0–100 percent scale
+
+        and same overlapping-categories caveat as `TenureMb`.'
+      example:
+        census_year: 2021
         microburbs:
         - mb: '10664530000'
+          mortgaged_pct: 41.0
+          owned_outright_pct: 38.2
+          public_housing_pct: 0.9
+          renting_pct: 17.3
           street: Marquis St
-          weekly_income: 2105
+        mortgaged_pct: 40.1
         n_microburbs: 71
-        national_percentile: 55
+        owned_outright_pct: 34.7
+        owner_occupied_pct: 74.8
+        public_housing_pct: 1.8
+        renting_pct: 20.9
         suburb: Belmont North
+        tier: Mixed
+    ApiResponse_PopulationHistory_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/PopulationHistory'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[PopulationHistory]
+    AncestryShare:
+      properties:
+        ancestry:
+          type: string
+          title: Ancestry
+          description: Ancestry bucket name.
+        pct:
+          type: number
+          title: Pct
+          description: Share of all ancestry responses (%).
+      additionalProperties: true
+      type: object
+      required:
+      - ancestry
+      - pct
+      title: AncestryShare
+      description: Suburb-level ancestry share.
+    CohortSa4Rank:
+      properties:
+        percentile:
+          type: integer
+          title: Percentile
+          description: Share of SA4 cohort strictly below the suburb (0-100).
+        position:
+          type: string
+          enum:
+          - top
+          - bottom
+          title: Position
+          description: Which tail the suburb sits in.
+        delta_pct:
+          type: integer
+          title: Delta Pct
+          description: Distance from the tail — 6 reads as 'Top 6%'.
+        n:
+          type: integer
+          title: N
+          description: SA4 cohort suburbs with a value.
+      additionalProperties: true
+      type: object
+      required:
+      - percentile
+      - position
+      - delta_pct
+      - n
+      title: CohortSa4Rank
+      description: SA4-cohort percentile position for one metric.
+    DemographicRow:
+      properties:
+        area_name:
+          type: string
+          title: Area Name
+          description: Suburb (SAL) name.
+        area_level:
+          type: string
+          title: Area Level
+          description: Always 'suburb'.
+        proportion:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Proportion
+          description: Share of the suburb in this bracket (0–1).
+        age_bracket:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Age Bracket
+          description: Only on /demographics/age.
+        gender:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Gender
+          description: Only on /demographics/age — 'males' / 'females' / 'persons'.
+        income_bracket:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Income Bracket
+          description: Only on /demographics/income.
+        median_income:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Median Income
+          description: Only on /demographics/income.
+      additionalProperties: true
+      type: object
+      required:
+      - area_name
+      - area_level
+      title: DemographicRow
+      description: 'One row of demographic data — age bracket or income bracket. The
+
+        shape varies per endpoint; common keys are always present, the rest
+
+        are open (``extra=allow``) so a renamed sub-key doesn''t break
+
+        clients.'
+      example:
+        age_bracket: 0-4
+        area_level: suburb
+        area_name: Belmont North
+        gender: females
+        proportion: 0.0272
+    CohortMetric:
+      properties:
+        field:
+          type: string
+          title: Field
+          description: suburb_finder field code.
+        label:
+          type: string
+          title: Label
+          description: Human metric name.
+        value_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Value Pct
+          description: The suburb's value (%).
+        sa4:
+          anyOf:
+          - $ref: '#/components/schemas/CohortSa4Rank'
+          - type: 'null'
+          description: SA4 percentile rank.
+        neighbours:
+          anyOf:
+          - $ref: '#/components/schemas/CohortNeighbours'
+          - type: 'null'
+          description: Touching-suburb comparison.
+      additionalProperties: true
+      type: object
+      required:
+      - field
+      - label
+      title: CohortMetric
+      description: One ranked metric with its SA4 + neighbour comparisons.
+    SuburbVoting:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        n_microburbs:
+          type: integer
+          title: N Microburbs
+          description: Microburbs in the aggregate.
+        projection:
+          type: string
+          title: Projection
+          description: What the projection represents (and its provenance).
+        winner:
+          $ref: '#/components/schemas/PartyResult'
+          description: Leading party.
+        runner_up:
+          $ref: '#/components/schemas/PartyResult'
+          description: Second-placed party.
+        margin_pct:
+          type: number
+          title: Margin Pct
+          description: Winner-minus-runner-up margin (pp).
+        lean:
+          type: string
+          title: Lean
+          description: Strong <party> (≥15pp) / <party> lean (≥5pp) / Marginal.
+        parties:
+          items:
+            $ref: '#/components/schemas/PartyResult'
+          type: array
+          title: Parties
+          description: All parties polling ≥0.5%, descending.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - n_microburbs
+      - projection
+      - winner
+      - runner_up
+      - margin_pct
+      - lean
+      - parties
+      title: SuburbVoting
+      description: Projected voting profile, aggregated across the suburb's microburbs.
+      example:
+        lean: Labor lean
+        margin_pct: 6.7
+        n_microburbs: 85
+        parties:
+        - label: Labor
+          party: ALP
+          pct: 38.2
+        - label: Liberal
+          party: LIB
+          pct: 31.5
+        - label: Greens
+          party: GRN
+          pct: 11.3
+        projection: Federal election held May 2026 (projected — not an actual vote)
+        runner_up:
+          label: Liberal
+          party: LIB
+          pct: 31.5
+        suburb: Belmont North
+        winner:
+          label: Labor
+          party: ALP
+          pct: 38.2
+    ApiResponse_Unemployment_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/Unemployment'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[Unemployment]
+    ApiResponse_SuburbCohorts_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SuburbCohorts'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SuburbCohorts]
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    CohortSa4:
+      properties:
+        name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Name
+          description: SA4 region name.
+        cohort_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cohort Size
+          description: Suburbs in the SA4 cohort.
+      additionalProperties: true
+      type: object
+      title: CohortSa4
+      description: The suburb's SA4 cohort.
+    UnderclassDrag:
+      properties:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        welfare_dependency_pct:
+          type: number
+          title: Welfare Dependency Pct
+          description: Share of working-age residents on JobSeeker / Disability Support / carer payments, as a percentage.
+        public_housing_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Public Housing Pct
+          description: Public-housing share of dwellings, as a percentage.
+        public_housing_basis:
+          anyOf:
+          - type: string
+            enum:
+            - microburb_downscale
+            - census_suburb
+          - type: 'null'
+          title: Public Housing Basis
+          description: Which denominator produced public_housing_pct — 'microburb_downscale' (mesh-block tenure base, preferred) or 'census_suburb' (suburb census population share).
+        tier:
+          type: string
+          enum:
+          - High
+          - Mid
+          - Low
+          title: Tier
+          description: Underclass concentration tier. High = welfare >= 20% or public housing >= 15%; Low = welfare < 10% and public housing < 2%.
+        growth_impact:
+          $ref: '#/components/schemas/GrowthImpact'
+          description: Capital-growth impact associated with the tier.
+        n_microburbs:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: N Microburbs
+          description: Mesh blocks behind the public-housing rollup.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - welfare_dependency_pct
+      - tier
+      - growth_impact
+      title: UnderclassDrag
+      description: Welfare dependency + public housing, with the underclass tier.
+      example:
+        growth_impact:
+          band: Middle 90%
+          pct_per_year: 0.0
+        n_microburbs: 77
+        public_housing_basis: microburb_downscale
+        public_housing_pct: 6.6
+        suburb: Belmont North
+        tier: Mid
+        welfare_dependency_pct: 16.2
+    LgaPopulationPoint:
+      properties:
+        year:
+          type: integer
+          title: Year
+          description: Calendar year.
+        population:
+          type: integer
+          title: Population
+          description: Estimated resident population.
+        projected:
+          type: boolean
+          title: Projected
+          description: True on the 10-year modelled projection tail.
+      additionalProperties: true
+      type: object
+      required:
+      - year
+      - population
+      - projected
+      title: LgaPopulationPoint
+      description: One LGA population reading — ABS ERP history or projection tail.
+    ApiResponse_SingleParents_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SingleParents'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SingleParents]
+    CulturalIntegrationMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the MB.
+        score_100:
+          type: number
+          title: Score 100
+          description: Composite score, 0-100.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      - score_100
+      title: CulturalIntegrationMb
+      description: One microburb's cultural-integration composite.
+    ApiResponse_DemographicsAll_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/DemographicsAll'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[DemographicsAll]
     Unemployment:
       properties:
         suburb:
@@ -1810,12 +2697,15 @@ components:
         suburb: Belmont North
         unemployment_pct: 4.2
         vs_national: below
-    ApiResponse_SingleParents_:
+    ApiResponse_list_DemographicRow__:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/SingleParents'
+          - items:
+              $ref: '#/components/schemas/DemographicRow'
+            type: array
           - type: 'null'
+          title: Data
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
           anyOf:
@@ -1836,278 +2726,91 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[SingleParents]
-    GrowthImpact:
-      properties:
-        pct_per_year:
-          type: number
-          title: Pct Per Year
-          description: The growth difference historically associated with this band, in percentage points per year on a percent scale — `-3.8` means 3.8 percentage points a year worse, `0.5` means half a point a year better, and `0.0` (the common case, for suburbs in the middle band) means no association either way. A relative difference, not a growth rate in its own right.
-        band:
-          type: string
-          title: Band
-          description: Plain-language name of the band the suburb landed in, suitable for display alongside the figure — e.g. 'Middle 90%', 'High unemployment', 'Low private-school share'. The wording differs per indicator; treat it as a label, not a shared enum.
-      additionalProperties: true
-      type: object
-      required:
-      - pct_per_year
-      - band
-      title: GrowthImpact
-      description: 'What a suburb''s score on this indicator has historically gone
-
-        together with, in capital-growth terms.
-
-
-        ⚠️ **This is an association, not a prediction, and not a calculation
-
-        from this suburb''s own numbers.** The suburb is sorted into one of a
-
-        few bands, and each band carries a fixed figure drawn from Microburbs''
-
-        research across many suburbs. Two suburbs in the same band always
-
-        return exactly the same `pct_per_year`. Do not add these up across
-
-        indicators to build a growth forecast, and do not present the figure
-
-        as something this suburb will do.'
-    BusinessIndustry:
-      properties:
-        industry:
-          type: string
-          title: Industry
-          description: Industry key (e.g. trade_construction).
-        label:
-          type: string
-          title: Label
-          description: Human industry label.
-        share:
-          type: number
-          title: Share
-          description: Share of classified ABNs (0-1).
-        n:
-          type: integer
-          title: N
-          description: ABN count in the industry.
-      additionalProperties: true
-      type: object
-      required:
-      - industry
-      - label
-      - share
-      - n
-      title: BusinessIndustry
-      description: One ABN industry share row.
-    IncomePocket:
-      properties:
-        street:
-          type: string
-          title: Street
-          description: Modal street of the pocket's MB.
-        weekly_income:
-          type: integer
-          title: Weekly Income
-          description: Median household income ($/week).
-      additionalProperties: true
-      type: object
-      required:
-      - street
-      - weekly_income
-      title: IncomePocket
-      description: Highest/lowest income pocket callout.
-    AncestryShare:
-      properties:
-        ancestry:
-          type: string
-          title: Ancestry
-          description: Ancestry bucket name.
-        pct:
-          type: number
-          title: Pct
-          description: Share of all ancestry responses (%).
-      additionalProperties: true
-      type: object
-      required:
-      - ancestry
-      - pct
-      title: AncestryShare
-      description: Suburb-level ancestry share.
-    SuburbAncestryMap:
+      title: ApiResponse[list[DemographicRow]]
+    SuburbBusiness:
       properties:
         suburb:
           type: string
           title: Suburb
           description: Canonical SAL name.
-        n_microburbs:
-          type: integer
-          title: N Microburbs
-          description: Microburbs with ancestry data.
-        microburbs:
+        pattern:
+          $ref: '#/components/schemas/BusinessPattern'
+          description: Business-mix pattern.
+        industries:
           items:
-            $ref: '#/components/schemas/AncestryMb'
+            $ref: '#/components/schemas/BusinessIndustry'
           type: array
-          title: Microburbs
-          description: Dominant ancestry per microburb.
-        suburb_ancestry_shares:
+          title: Industries
+          description: Top ABN industries by share (up to 5).
+        distinctive_categories:
           items:
-            $ref: '#/components/schemas/AncestryShare'
+            $ref: '#/components/schemas/DistinctiveCategory'
           type: array
-          title: Suburb Ancestry Shares
-          description: Suburb-level ancestry shares, descending.
+          title: Distinctive Categories
+          description: POI categories unusually common here (up to 4).
+        busiest_street_footnote:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Busiest Street Footnote
+          description: Busiest-residential-street context sentence.
       additionalProperties: true
       type: object
       required:
       - suburb
-      - n_microburbs
-      - microburbs
-      - suburb_ancestry_shares
-      title: SuburbAncestryMap
-      description: Per-microburb dominant ancestry (pilot-coverage dataset).
+      - pattern
+      - industries
+      - distinctive_categories
+      title: SuburbBusiness
+      description: Local business mix — ABN industry pattern + distinctive POI categories.
       example:
-        microburbs:
-        - dominant_ancestry: Anglo-Australian
-          mb: '10694860000'
-          persons: 118
-          share_pct: 62.1
-          street: Edinburgh Rd
-        n_microburbs: 37
-        suburb: Castlecrag
-        suburb_ancestry_shares:
-        - ancestry: Anglo-Australian
-          pct: 58.4
-        - ancestry: Chinese
-          pct: 12.9
-    ApiResponse_SuburbAncestryMap_:
+        busiest_street_footnote: On the busiest residential street, Croudace Bay Rd, the median house price sits at $890k.
+        distinctive_categories:
+        - category: Takeaway
+          count: 6
+          examples:
+          - Golden Wok
+          - Belmont North Pizza
+          times_more_common: 4.9
+        industries:
+        - industry: trade_construction
+          label: Trades & construction
+          n: 143
+          share: 0.21
+        pattern:
+          headline: Mostly residential — too few businesses to identify a market pattern.
+          label: Low-commercial residential
+          subline: The local business mix below shows what is distinctive in this suburb regardless.
+        suburb: Belmont North
+    DistinctiveCategory:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbAncestryMap'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbAncestryMap]
-    DramaticNeighbour:
-      properties:
-        suburb:
+        category:
           type: string
-          title: Suburb
-          description: Neighbouring SAL name.
-        value_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Value Pct
-          description: Neighbour's value (%).
-        delta_pct:
+          title: Category
+          description: Category name (title-cased).
+        count:
           type: integer
-          title: Delta Pct
-          description: Percent difference vs the subject (signed).
-      additionalProperties: true
-      type: object
-      required:
-      - suburb
-      - delta_pct
-      title: DramaticNeighbour
-      description: Largest-delta neighbouring suburb (|delta| >= 25%).
-    PopulationGrowth:
-      properties:
-        start_year:
-          type: integer
-          title: Start Year
-          description: First year of the window.
-        end_year:
-          type: integer
-          title: End Year
-          description: Last year of the window.
-        start_population:
-          type: integer
-          title: Start Population
-          description: Population at start_year.
-        end_population:
-          type: integer
-          title: End Population
-          description: Population at end_year.
-        pct_change:
+          title: Count
+          description: POIs of this category in the suburb.
+        times_more_common:
           type: number
-          title: Pct Change
-          description: Percent change over the window.
+          title: Times More Common
+          description: How many times more common than the national base rate.
+        examples:
+          items:
+            type: string
+          type: array
+          title: Examples
+          description: Up to 3 named example POIs.
       additionalProperties: true
       type: object
       required:
-      - start_year
-      - end_year
-      - start_population
-      - end_population
-      - pct_change
-      title: PopulationGrowth
-      description: Start → end growth summary over a population series.
-    ApiResponse_SuburbVoting_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbVoting'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbVoting]
-    BusinessPattern:
-      properties:
-        label:
-          type: string
-          title: Label
-          description: 'Pattern tag: Diverse / Professional-services-heavy / Mining-exposed / Low-commercial residential.'
-        headline:
-          type: string
-          title: Headline
-          description: One-line market read for the pattern.
-        subline:
-          type: string
-          title: Subline
-          description: Context sentence (may be empty).
-      additionalProperties: true
-      type: object
-      required:
-      - label
-      - headline
-      - subline
-      title: BusinessPattern
-      description: Business-mix pattern classification.
+      - category
+      - count
+      - times_more_common
+      - examples
+      title: DistinctiveCategory
+      description: A POI category unusually common in this suburb.
     LgaProjection:
       properties:
         to_year:
@@ -2130,201 +2833,6 @@ components:
       - source
       title: LgaProjection
       description: LGA 10-year projection summary.
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    PrivateSchoolMicroburb:
-      properties:
-        mb:
-          type: string
-          title: Mb
-          description: ABS mesh-block code.
-        street:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Street
-          description: Modal street name in the mesh block.
-        private_school_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Private School Pct
-          description: Downscaled private-school share for the mesh block.
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      title: PrivateSchoolMicroburb
-      description: One mesh block's private-school share.
-    UnemploymentMicroburb:
-      properties:
-        mb:
-          type: string
-          title: Mb
-          description: ABS mesh-block code.
-        street:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Street
-          description: Modal street name in the mesh block.
-        unemployment_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Unemployment Pct
-          description: Downscaled unemployment share for the mesh block.
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      title: UnemploymentMicroburb
-      description: One mesh block's unemployment share.
-    CulturalIntegrationMb:
-      properties:
-        mb:
-          type: string
-          title: Mb
-          description: ABS mesh-block code.
-        street:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Street
-          description: Modal street name in the MB.
-        score_100:
-          type: number
-          title: Score 100
-          description: Composite score, 0-100.
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      - score_100
-      title: CulturalIntegrationMb
-      description: One microburb's cultural-integration composite.
-    ApiResponse_SuburbIncomeMap_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbIncomeMap'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbIncomeMap]
-    AncestryMb:
-      properties:
-        mb:
-          type: string
-          title: Mb
-          description: ABS mesh-block code.
-        street:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Street
-          description: Modal street name in the MB.
-        dominant_ancestry:
-          type: string
-          title: Dominant Ancestry
-          description: Largest ancestry bucket.
-        share_pct:
-          type: number
-          title: Share Pct
-          description: Dominant bucket's share of ancestry responses (%).
-        persons:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Persons
-          description: Total persons in the MB.
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      - dominant_ancestry
-      - share_pct
-      title: AncestryMb
-      description: One microburb's dominant ancestry.
-    SuburbCohorts:
-      properties:
-        suburb:
-          type: string
-          title: Suburb
-          description: Canonical SAL name.
-        sa4:
-          anyOf:
-          - $ref: '#/components/schemas/CohortSa4'
-          - type: 'null'
-          description: SA4 cohort metadata.
-        n_neighbours:
-          type: integer
-          title: N Neighbours
-          description: Touching suburbs in the cohort.
-        metrics:
-          items:
-            $ref: '#/components/schemas/CohortMetric'
-          type: array
-          title: Metrics
-          description: Per-metric comparisons.
-      additionalProperties: true
-      type: object
-      required:
-      - suburb
-      - n_neighbours
-      - metrics
-      title: SuburbCohorts
-      description: 'SA4-cohort percentile ranks + neighbour comparisons for four
-
-        demographic metrics (renters, welfare, overseas-born, public housing).'
-      example:
-        metrics:
-        - field: mib_perc_renters
-          label: Renter share
-          neighbours:
-            dramatic:
-              delta_pct: 258
-              suburb: Windale
-              value_pct: 39.4
-            highest_in_group: false
-            lowest_in_group: false
-            n: 7
-          sa4:
-            delta_pct: 34
-            n: 135
-            percentile: 34
-            position: bottom
-          value_pct: 11.0
-        n_neighbours: 7
-        sa4:
-          cohort_size: 148
-          name: Newcastle and Lake Macquarie
-        suburb: Belmont North
     ApiResponse_SuburbCulturalIntegration_:
       properties:
         data:
@@ -2352,6 +2860,74 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[SuburbCulturalIntegration]
+    UnemploymentMicroburb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the mesh block.
+        unemployment_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Unemployment Pct
+          description: Downscaled unemployment share for the mesh block.
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      title: UnemploymentMicroburb
+      description: One mesh block's unemployment share.
+    IncomePocket:
+      properties:
+        street:
+          type: string
+          title: Street
+          description: Modal street of the pocket's MB.
+        weekly_income:
+          type: integer
+          title: Weekly Income
+          description: Median household income ($/week).
+      additionalProperties: true
+      type: object
+      required:
+      - street
+      - weekly_income
+      title: IncomePocket
+      description: Highest/lowest income pocket callout.
+    BusinessIndustry:
+      properties:
+        industry:
+          type: string
+          title: Industry
+          description: Industry key (e.g. trade_construction).
+        label:
+          type: string
+          title: Label
+          description: Human industry label.
+        share:
+          type: number
+          title: Share
+          description: Share of classified ABNs (0-1).
+        n:
+          type: integer
+          title: N
+          description: ABN count in the industry.
+      additionalProperties: true
+      type: object
+      required:
+      - industry
+      - label
+      - share
+      - n
+      title: BusinessIndustry
+      description: One ABN industry share row.
     PopulationHistory:
       properties:
         suburb:
@@ -2455,260 +3031,154 @@ components:
           year: 2016
         - population: 6302
           year: 2021
-    ApiResponse_list_DemographicRow__:
+    SuburbCohorts:
       properties:
-        data:
+        suburb:
+          type: string
+          title: Suburb
+          description: Canonical SAL name.
+        sa4:
+          anyOf:
+          - $ref: '#/components/schemas/CohortSa4'
+          - type: 'null'
+          description: SA4 cohort metadata.
+        n_neighbours:
+          type: integer
+          title: N Neighbours
+          description: Touching suburbs in the cohort.
+        metrics:
+          items:
+            $ref: '#/components/schemas/CohortMetric'
+          type: array
+          title: Metrics
+          description: Per-metric comparisons.
+      additionalProperties: true
+      type: object
+      required:
+      - suburb
+      - n_neighbours
+      - metrics
+      title: SuburbCohorts
+      description: 'SA4-cohort percentile ranks + neighbour comparisons for four
+
+        demographic metrics (renters, welfare, overseas-born, public housing).'
+      example:
+        metrics:
+        - field: mib_perc_renters
+          label: Renter share
+          neighbours:
+            dramatic:
+              delta_pct: 258
+              suburb: Windale
+              value_pct: 39.4
+            highest_in_group: false
+            lowest_in_group: false
+            n: 7
+          sa4:
+            delta_pct: 34
+            n: 135
+            percentile: 34
+            position: bottom
+          value_pct: 11.0
+        n_neighbours: 7
+        sa4:
+          cohort_size: 148
+          name: Newcastle and Lake Macquarie
+        suburb: Belmont North
+    DemographicsAll:
+      properties:
+        age:
           anyOf:
           - items:
               $ref: '#/components/schemas/DemographicRow'
             type: array
           - type: 'null'
-          title: Data
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
+          title: Age
+        income:
           anyOf:
-          - type: boolean
+          - items:
+              $ref: '#/components/schemas/DemographicRow'
+            type: array
           - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+          title: Income
       type: object
-      title: ApiResponse[list[DemographicRow]]
-    ApiResponse_DemographicsAll_:
+      title: DemographicsAll
+    GrowthImpact:
       properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/DemographicsAll'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+        pct_per_year:
+          type: number
+          title: Pct Per Year
+          description: The growth difference historically associated with this band, in percentage points per year on a percent scale — `-3.8` means 3.8 percentage points a year worse, `0.5` means half a point a year better, and `0.0` (the common case, for suburbs in the middle band) means no association either way. A relative difference, not a growth rate in its own right.
+        band:
+          type: string
+          title: Band
+          description: Plain-language name of the band the suburb landed in, suitable for display alongside the figure — e.g. 'Middle 90%', 'High unemployment', 'Low private-school share'. The wording differs per indicator; treat it as a label, not a shared enum.
+      additionalProperties: true
       type: object
-      title: ApiResponse[DemographicsAll]
-    UnderclassDrag:
+      required:
+      - pct_per_year
+      - band
+      title: GrowthImpact
+      description: 'What a suburb''s score on this indicator has historically gone
+
+        together with, in capital-growth terms.
+
+
+        ⚠️ **This is an association, not a prediction, and not a calculation
+
+        from this suburb''s own numbers.** The suburb is sorted into one of a
+
+        few bands, and each band carries a fixed figure drawn from Microburbs''
+
+        research across many suburbs. Two suburbs in the same band always
+
+        return exactly the same `pct_per_year`. Do not add these up across
+
+        indicators to build a growth forecast, and do not present the figure
+
+        as something this suburb will do.'
+    SingleParents:
       properties:
         suburb:
           type: string
           title: Suburb
           description: Canonical SAL name.
-        welfare_dependency_pct:
+        single_parent_pct:
           type: number
-          title: Welfare Dependency Pct
-          description: Share of working-age residents on JobSeeker / Disability Support / carer payments, as a percentage.
-        public_housing_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Public Housing Pct
-          description: Public-housing share of dwellings, as a percentage.
-        public_housing_basis:
-          anyOf:
-          - type: string
-            enum:
-            - microburb_downscale
-            - census_suburb
-          - type: 'null'
-          title: Public Housing Basis
-          description: Which denominator produced public_housing_pct — 'microburb_downscale' (mesh-block tenure base, preferred) or 'census_suburb' (suburb census population share).
-        tier:
+          title: Single Parent Pct
+          description: Single-parent-family share as a percentage.
+        national_median_pct:
+          type: number
+          title: National Median Pct
+          description: The Australia-wide single-parent-family share to compare `single_parent_pct` against, as a percentage — a fixed 2021 Census benchmark, identical in every response. A different metric and a different number from the unemployment endpoint's benchmark of the same name.
+        vs_national:
           type: string
           enum:
-          - High
-          - Mid
-          - Low
-          title: Tier
-          description: Underclass concentration tier. High = welfare >= 20% or public housing >= 15%; Low = welfare < 10% and public housing < 2%.
+          - below
+          - above
+          title: Vs National
+          description: Whether this suburb's single-parent share sits 'below' or 'above' the national benchmark. Exact equality is reported as 'above'.
         growth_impact:
           $ref: '#/components/schemas/GrowthImpact'
-          description: Capital-growth impact associated with the tier.
-        n_microburbs:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: N Microburbs
-          description: Mesh blocks behind the public-housing rollup.
+          description: The capital-growth difference historically associated with suburbs in this single-parent-share band. An association, not a forecast — see the field's own description.
       additionalProperties: true
       type: object
       required:
       - suburb
-      - welfare_dependency_pct
-      - tier
+      - single_parent_pct
+      - national_median_pct
+      - vs_national
       - growth_impact
-      title: UnderclassDrag
-      description: Welfare dependency + public housing, with the underclass tier.
+      title: SingleParents
+      description: Single-parent-family share vs the national median.
       example:
         growth_impact:
-          band: Middle 90%
-          pct_per_year: 0.0
-        n_microburbs: 77
-        public_housing_basis: microburb_downscale
-        public_housing_pct: 6.6
+          band: High single-parent share
+          pct_per_year: -0.5
+        national_median_pct: 5.8
+        single_parent_pct: 11.0
         suburb: Belmont North
-        tier: Mid
-        welfare_dependency_pct: 16.2
-    PartyResult:
-      properties:
-        party:
-          type: string
-          title: Party
-          description: Party code (LIB/ALP/GRN/TEAL/…).
-        label:
-          type: string
-          title: Label
-          description: Human party name.
-        pct:
-          type: number
-          title: Pct
-          description: Projected first-preference share (%).
-      additionalProperties: true
-      type: object
-      required:
-      - party
-      - label
-      - pct
-      title: PartyResult
-      description: One party's projected first-preference share.
-    SuburbBusiness:
-      properties:
-        suburb:
-          type: string
-          title: Suburb
-          description: Canonical SAL name.
-        pattern:
-          $ref: '#/components/schemas/BusinessPattern'
-          description: Business-mix pattern.
-        industries:
-          items:
-            $ref: '#/components/schemas/BusinessIndustry'
-          type: array
-          title: Industries
-          description: Top ABN industries by share (up to 5).
-        distinctive_categories:
-          items:
-            $ref: '#/components/schemas/DistinctiveCategory'
-          type: array
-          title: Distinctive Categories
-          description: POI categories unusually common here (up to 4).
-        busiest_street_footnote:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Busiest Street Footnote
-          description: Busiest-residential-street context sentence.
-      additionalProperties: true
-      type: object
-      required:
-      - suburb
-      - pattern
-      - industries
-      - distinctive_categories
-      title: SuburbBusiness
-      description: Local business mix — ABN industry pattern + distinctive POI categories.
-      example:
-        busiest_street_footnote: On the busiest residential street, Croudace Bay Rd, the median house price sits at $890k.
-        distinctive_categories:
-        - category: Takeaway
-          count: 6
-          examples:
-          - Golden Wok
-          - Belmont North Pizza
-          times_more_common: 4.9
-        industries:
-        - industry: trade_construction
-          label: Trades & construction
-          n: 143
-          share: 0.21
-        pattern:
-          headline: Mostly residential — too few businesses to identify a market pattern.
-          label: Low-commercial residential
-          subline: The local business mix below shows what is distinctive in this suburb regardless.
-        suburb: Belmont North
-    DemographicRow:
-      properties:
-        area_name:
-          type: string
-          title: Area Name
-          description: Suburb (SAL) name.
-        area_level:
-          type: string
-          title: Area Level
-          description: Always 'suburb'.
-        proportion:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Proportion
-          description: Share of the suburb in this bracket (0–1).
-        age_bracket:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Age Bracket
-          description: Only on /demographics/age.
-        gender:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Gender
-          description: Only on /demographics/age — 'males' / 'females' / 'persons'.
-        income_bracket:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Income Bracket
-          description: Only on /demographics/income.
-        median_income:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Median Income
-          description: Only on /demographics/income.
-      additionalProperties: true
-      type: object
-      required:
-      - area_name
-      - area_level
-      title: DemographicRow
-      description: 'One row of demographic data — age bracket or income bracket. The
-
-        shape varies per endpoint; common keys are always present, the rest
-
-        are open (``extra=allow``) so a renamed sub-key doesn''t break
-
-        clients.'
-      example:
-        age_bracket: 0-4
-        area_level: suburb
-        area_name: Belmont North
-        gender: females
-        proportion: 0.0272
+        vs_national: above
     SuburbCulturalIntegration:
       properties:
         suburb:
@@ -2787,107 +3257,123 @@ components:
         suburb: Belmont North
         tier: Top
         tier_growth_pct_4y: 1.7
-    LgaPopulationPoint:
+    IntegrationPocket:
+      properties:
+        street:
+          type: string
+          title: Street
+          description: Modal street of the pocket's MB.
+        score_100:
+          type: number
+          title: Score 100
+          description: Composite score, 0-100.
+      additionalProperties: true
+      type: object
+      required:
+      - street
+      - score_100
+      title: IntegrationPocket
+      description: Most/least-integrated pocket callout.
+    IncomeMb:
+      properties:
+        mb:
+          type: string
+          title: Mb
+          description: ABS mesh-block code.
+        street:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Street
+          description: Modal street name in the MB.
+        weekly_income:
+          type: integer
+          title: Weekly Income
+          description: Median household income ($/week).
+      additionalProperties: true
+      type: object
+      required:
+      - mb
+      - weekly_income
+      title: IncomeMb
+      description: One microburb's median weekly household income.
+    PopulationPoint:
       properties:
         year:
           type: integer
           title: Year
-          description: Calendar year.
+          description: Census year (2011/2016/2021).
         population:
           type: integer
           title: Population
-          description: Estimated resident population.
-        projected:
-          type: boolean
-          title: Projected
-          description: True on the 10-year modelled projection tail.
+          description: Residents counted that year.
       additionalProperties: true
       type: object
       required:
       - year
       - population
-      - projected
-      title: LgaPopulationPoint
-      description: One LGA population reading — ABS ERP history or projection tail.
-    ApiResponse_Unemployment_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/Unemployment'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[Unemployment]
-    PrivateSchool:
+      title: PopulationPoint
+      description: One suburb census reading (ABS Census years).
+    SuburbIncomeMap:
       properties:
         suburb:
           type: string
           title: Suburb
           description: Canonical SAL name.
-        private_school_pct:
-          type: number
-          title: Private School Pct
-          description: Share of residents attending Catholic / Independent schools, as a percentage.
-        basis:
-          type: string
-          enum:
-          - microburb_downscale
-          - census_count_over_population
-          title: Basis
-          description: How private_school_pct was derived — 'microburb_downscale' (mesh-block share rollup, preferred) or 'census_count_over_population' (suburb census student count over mesh-block population).
-        growth_impact:
-          $ref: '#/components/schemas/GrowthImpact'
-          description: Capital-growth impact associated with the share band.
+        median_weekly_income:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Median Weekly Income
+          description: Suburb median household income ($/week).
+        national_percentile:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: National Percentile
+          description: National income percentile, clamped 1-99.
         n_microburbs:
           type: integer
           title: N Microburbs
-          description: Mesh blocks in the microburbs list.
+          description: Microburbs with income data.
         microburbs:
           items:
-            $ref: '#/components/schemas/PrivateSchoolMicroburb'
+            $ref: '#/components/schemas/IncomeMb'
           type: array
           title: Microburbs
-          description: Per-mesh-block private-school shares (sparse cells dropped).
+          description: Per-microburb incomes.
+        highest:
+          anyOf:
+          - $ref: '#/components/schemas/IncomePocket'
+          - type: 'null'
+          description: Highest-income pocket.
+        lowest:
+          anyOf:
+          - $ref: '#/components/schemas/IncomePocket'
+          - type: 'null'
+          description: Lowest-income pocket.
       additionalProperties: true
       type: object
       required:
       - suburb
-      - private_school_pct
-      - basis
-      - growth_impact
       - n_microburbs
       - microburbs
-      title: PrivateSchool
-      description: Share of residents attending Catholic / Independent schools.
+      title: SuburbIncomeMap
+      description: Per-microburb median household income map.
       example:
-        basis: microburb_downscale
-        growth_impact:
-          band: Low private-school share
-          pct_per_year: -0.3
+        highest:
+          street: Marquis St
+          weekly_income: 2105
+        lowest:
+          street: Kalaroo Rd
+          weekly_income: 1188
+        median_weekly_income: 1740
         microburbs:
         - mb: '10664530000'
-          private_school_pct: 5.8
           street: Marquis St
+          weekly_income: 2105
         n_microburbs: 71
-        private_school_pct: 4.7
+        national_percentile: 55
         suburb: Belmont North
     ApiResponse_SuburbBusiness_:
       properties:
@@ -2916,146 +3402,6 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[SuburbBusiness]
-    SuburbVoting:
-      properties:
-        suburb:
-          type: string
-          title: Suburb
-          description: Canonical SAL name.
-        n_microburbs:
-          type: integer
-          title: N Microburbs
-          description: Microburbs in the aggregate.
-        projection:
-          type: string
-          title: Projection
-          description: What the projection represents (and its provenance).
-        winner:
-          $ref: '#/components/schemas/PartyResult'
-          description: Leading party.
-        runner_up:
-          $ref: '#/components/schemas/PartyResult'
-          description: Second-placed party.
-        margin_pct:
-          type: number
-          title: Margin Pct
-          description: Winner-minus-runner-up margin (pp).
-        lean:
-          type: string
-          title: Lean
-          description: Strong <party> (≥15pp) / <party> lean (≥5pp) / Marginal.
-        parties:
-          items:
-            $ref: '#/components/schemas/PartyResult'
-          type: array
-          title: Parties
-          description: All parties polling ≥0.5%, descending.
-      additionalProperties: true
-      type: object
-      required:
-      - suburb
-      - n_microburbs
-      - projection
-      - winner
-      - runner_up
-      - margin_pct
-      - lean
-      - parties
-      title: SuburbVoting
-      description: Projected voting profile, aggregated across the suburb's microburbs.
-      example:
-        lean: Labor lean
-        margin_pct: 6.7
-        n_microburbs: 85
-        parties:
-        - label: Labor
-          party: ALP
-          pct: 38.2
-        - label: Liberal
-          party: LIB
-          pct: 31.5
-        - label: Greens
-          party: GRN
-          pct: 11.3
-        projection: Federal election held May 2026 (projected — not an actual vote)
-        runner_up:
-          label: Liberal
-          party: LIB
-          pct: 31.5
-        suburb: Belmont North
-        winner:
-          label: Labor
-          party: ALP
-          pct: 38.2
-    SingleParents:
-      properties:
-        suburb:
-          type: string
-          title: Suburb
-          description: Canonical SAL name.
-        single_parent_pct:
-          type: number
-          title: Single Parent Pct
-          description: Single-parent-family share as a percentage.
-        national_median_pct:
-          type: number
-          title: National Median Pct
-          description: The Australia-wide single-parent-family share to compare `single_parent_pct` against, as a percentage — a fixed 2021 Census benchmark, identical in every response. A different metric and a different number from the unemployment endpoint's benchmark of the same name.
-        vs_national:
-          type: string
-          enum:
-          - below
-          - above
-          title: Vs National
-          description: Whether this suburb's single-parent share sits 'below' or 'above' the national benchmark. Exact equality is reported as 'above'.
-        growth_impact:
-          $ref: '#/components/schemas/GrowthImpact'
-          description: The capital-growth difference historically associated with suburbs in this single-parent-share band. An association, not a forecast — see the field's own description.
-      additionalProperties: true
-      type: object
-      required:
-      - suburb
-      - single_parent_pct
-      - national_median_pct
-      - vs_national
-      - growth_impact
-      title: SingleParents
-      description: Single-parent-family share vs the national median.
-      example:
-        growth_impact:
-          band: High single-parent share
-          pct_per_year: -0.5
-        national_median_pct: 5.8
-        single_parent_pct: 11.0
-        suburb: Belmont North
-        vs_national: above
-    ApiResponse_UnderclassDrag_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/UnderclassDrag'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[UnderclassDrag]
     ApiResponse_PrivateSchool_:
       properties:
         data:
@@ -3083,11 +3429,11 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[PrivateSchool]
-    ApiResponse_PopulationHistory_:
+    ApiResponse_UnderclassDrag_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/PopulationHistory'
+          - $ref: '#/components/schemas/UnderclassDrag'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -3109,164 +3455,30 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[PopulationHistory]
-    CohortNeighbours:
+      title: ApiResponse[UnderclassDrag]
+    DramaticNeighbour:
       properties:
-        n:
-          type: integer
-          title: N
-          description: Touching suburbs with a value.
-        lowest_in_group:
-          type: boolean
-          title: Lowest In Group
-          description: True when every neighbour is at or above the suburb.
-        highest_in_group:
-          type: boolean
-          title: Highest In Group
-          description: True when every neighbour is at or below the suburb.
-        dramatic:
-          anyOf:
-          - $ref: '#/components/schemas/DramaticNeighbour'
-          - type: 'null'
-          description: Largest-delta neighbour (only when mixed).
-      additionalProperties: true
-      type: object
-      required:
-      - n
-      - lowest_in_group
-      - highest_in_group
-      title: CohortNeighbours
-      description: Touching-suburb comparison for one metric.
-    IncomeMb:
-      properties:
-        mb:
+        suburb:
           type: string
-          title: Mb
-          description: ABS mesh-block code.
-        street:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Street
-          description: Modal street name in the MB.
-        weekly_income:
-          type: integer
-          title: Weekly Income
-          description: Median household income ($/week).
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      - weekly_income
-      title: IncomeMb
-      description: One microburb's median weekly household income.
-    IntegrationPocket:
-      properties:
-        street:
-          type: string
-          title: Street
-          description: Modal street of the pocket's MB.
-        score_100:
-          type: number
-          title: Score 100
-          description: Composite score, 0-100.
-      additionalProperties: true
-      type: object
-      required:
-      - street
-      - score_100
-      title: IntegrationPocket
-      description: Most/least-integrated pocket callout.
-    TenureMb:
-      properties:
-        mb:
-          type: string
-          title: Mb
-          description: ABS 2021 mesh-block code identifying this microburb, as a string of digits (keep it a string — leading digits are significant and it overflows a 32-bit int).
-        street:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Street
-          description: The most common street name inside the microburb, title-cased — a human handle for an area that otherwise has only a numeric code. Not a boundary or a full address, and several microburbs in a suburb can share one.
-        owned_outright_pct:
+          title: Suburb
+          description: Neighbouring SAL name.
+        value_pct:
           anyOf:
           - type: number
           - type: 'null'
-          title: Owned Outright Pct
-          description: Share of dwellings owned outright with no mortgage, as a percent 0–100 (34.7 = 34.7%). Typically tracks an older, longer-settled population.
-        mortgaged_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Mortgaged Pct
-          description: Share of dwellings owner-occupied but still mortgaged, as a percent 0–100. Add it to `owned_outright_pct` for total owner-occupation.
-        renting_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Renting Pct
-          description: Share of dwellings rented, as a percent 0–100 — all renting, private landlords and public housing together. This is the figure the suburb-level `tier` is banded on.
-        public_housing_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Public Housing Pct
-          description: Share of dwellings rented from a state or territory housing authority, as a percent 0–100. A subset of `renting_pct`, not a fourth category — these dwellings are counted in both fields. Stacking all four in one chart double-counts; use owned-outright + mortgaged + renting for a breakdown (which still sums slightly under 100, the remainder being other and not-stated tenures) and show public housing separately.
-      additionalProperties: true
-      type: object
-      required:
-      - mb
-      title: TenureMb
-      description: 'How the households in one microburb hold their homes — owned, being
-
-        paid off, or rented.
-
-
-        All four shares are **percentages 0–100** (not fractions) of the same
-
-        denominator: occupied private dwellings, including those whose tenure
-
-        was not stated. Two things follow, and both bite people who chart these
-
-        naively — see `public_housing_pct` and the note on summing below.
-
-
-        These come from a model, not a published count: Census tenure is
-
-        published for larger areas and statistically downscaled to microburb
-
-        level, so read a single microburb as an estimate with real uncertainty.'
-    CohortSa4Rank:
-      properties:
-        percentile:
-          type: integer
-          title: Percentile
-          description: Share of SA4 cohort strictly below the suburb (0-100).
-        position:
-          type: string
-          enum:
-          - top
-          - bottom
-          title: Position
-          description: Which tail the suburb sits in.
+          title: Value Pct
+          description: Neighbour's value (%).
         delta_pct:
           type: integer
           title: Delta Pct
-          description: Distance from the tail — 6 reads as 'Top 6%'.
-        n:
-          type: integer
-          title: N
-          description: SA4 cohort suburbs with a value.
+          description: Percent difference vs the subject (signed).
       additionalProperties: true
       type: object
       required:
-      - percentile
-      - position
+      - suburb
       - delta_pct
-      - n
-      title: CohortSa4Rank
-      description: SA4-cohort percentile position for one metric.
+      title: DramaticNeighbour
+      description: Largest-delta neighbouring suburb (|delta| >= 25%).
     ValidationError:
       properties:
         loc:
@@ -3293,272 +3505,60 @@ components:
       - msg
       - type
       title: ValidationError
-    DemographicsAll:
+    PopulationGrowth:
       properties:
-        age:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/DemographicRow'
-            type: array
-          - type: 'null'
-          title: Age
-        income:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/DemographicRow'
-            type: array
-          - type: 'null'
-          title: Income
-      type: object
-      title: DemographicsAll
-    PopulationPoint:
-      properties:
-        year:
+        start_year:
           type: integer
-          title: Year
-          description: Census year (2011/2016/2021).
-        population:
+          title: Start Year
+          description: First year of the window.
+        end_year:
           type: integer
-          title: Population
-          description: Residents counted that year.
+          title: End Year
+          description: Last year of the window.
+        start_population:
+          type: integer
+          title: Start Population
+          description: Population at start_year.
+        end_population:
+          type: integer
+          title: End Population
+          description: Population at end_year.
+        pct_change:
+          type: number
+          title: Pct Change
+          description: Percent change over the window.
       additionalProperties: true
       type: object
       required:
-      - year
-      - population
-      title: PopulationPoint
-      description: One suburb census reading (ABS Census years).
-    CohortMetric:
+      - start_year
+      - end_year
+      - start_population
+      - end_population
+      - pct_change
+      title: PopulationGrowth
+      description: Start → end growth summary over a population series.
+    PartyResult:
       properties:
-        field:
+        party:
           type: string
-          title: Field
-          description: suburb_finder field code.
+          title: Party
+          description: Party code (LIB/ALP/GRN/TEAL/…).
         label:
           type: string
           title: Label
-          description: Human metric name.
-        value_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Value Pct
-          description: The suburb's value (%).
-        sa4:
-          anyOf:
-          - $ref: '#/components/schemas/CohortSa4Rank'
-          - type: 'null'
-          description: SA4 percentile rank.
-        neighbours:
-          anyOf:
-          - $ref: '#/components/schemas/CohortNeighbours'
-          - type: 'null'
-          description: Touching-suburb comparison.
-      additionalProperties: true
-      type: object
-      required:
-      - field
-      - label
-      title: CohortMetric
-      description: One ranked metric with its SA4 + neighbour comparisons.
-    ApiResponse_SuburbCohorts_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbCohorts'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbCohorts]
-    SuburbTenure:
-      properties:
-        suburb:
-          type: string
-          title: Suburb
-          description: The suburb these figures describe, as the canonical ABS suburb (SAL) name — the resolved form of whatever was requested.
-        census_year:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Census Year
-          description: Reference year of the underlying ABS Census tenure inputs (currently 2021). This is not a current-year occupancy survey.
-        owned_outright_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Owned Outright Pct
-          description: Suburb-wide share of dwellings owned outright, percent 0–100.
-        mortgaged_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Mortgaged Pct
-          description: Suburb-wide share owner-occupied with a mortgage, percent 0–100.
-        owner_occupied_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Owner Occupied Pct
-          description: 'Total suburb owner-occupation rate, percent 0–100: `owned_outright_pct + mortgaged_pct`. Null unless both components are available. This is a modelled, unweighted average across microburbs, not an exact dwelling-weighted ABS SAL count.'
-        renting_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Renting Pct
-          description: Suburb-wide share of dwellings rented, percent 0–100 — private and public renting combined. Drives `tier`.
-        public_housing_pct:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Public Housing Pct
-          description: Suburb-wide share rented from a state/territory housing authority, percent 0–100. Included within `renting_pct`, not additional to it.
-        tier:
-          type: string
-          title: Tier
-          description: 'One-word read on the suburb''s ownership mix, banded on `renting_pct`: ''Owner-Occupier'' under 7% renters, ''Mixed'' under 20%, ''Investor-Heavy'' at 20% or above (''Unknown'' when there is no renting share). A convenience label — the underlying percentage is the precise figure.'
-        n_microburbs:
-          type: integer
-          title: N Microburbs
-          description: 'How many microburbs are listed in `microburbs`. Not the number behind the suburb figures above: very small or sparsely-populated microburbs are filtered out of the list but still counted in the suburb averages, so re-averaging `microburbs` will not exactly reproduce them.'
-        microburbs:
-          items:
-            $ref: '#/components/schemas/TenureMb'
-          type: array
-          title: Microburbs
-          description: Tenure shares for each microburb in the suburb, showing how ownership varies street by street — often the more useful signal, since a single suburb average can hide an owner-occupied pocket next to a rental-heavy one.
-      additionalProperties: true
-      type: object
-      required:
-      - suburb
-      - tier
-      - n_microburbs
-      - microburbs
-      title: SuburbTenure
-      description: 'Who owns and who rents across a suburb — one headline set of shares
-
-        plus the microburb-by-microburb detail underneath.
-
-
-        The suburb figures are an **unweighted average across the suburb''s
-
-        microburbs**, so each microburb counts equally regardless of how many
-
-        dwellings it holds. That is close to, but not identical with, a true
-
-        dwelling-weighted suburb share; do not expect it to reconcile exactly
-
-        with published Census suburb tenure counts. Same 0–100 percent scale
-
-        and same overlapping-categories caveat as `TenureMb`.'
-      example:
-        census_year: 2021
-        microburbs:
-        - mb: '10664530000'
-          mortgaged_pct: 41.0
-          owned_outright_pct: 38.2
-          public_housing_pct: 0.9
-          renting_pct: 17.3
-          street: Marquis St
-        mortgaged_pct: 40.1
-        n_microburbs: 71
-        owned_outright_pct: 34.7
-        owner_occupied_pct: 74.8
-        public_housing_pct: 1.8
-        renting_pct: 20.9
-        suburb: Belmont North
-        tier: Mixed
-    ApiResponse_SuburbTenure_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SuburbTenure'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SuburbTenure]
-    DistinctiveCategory:
-      properties:
-        category:
-          type: string
-          title: Category
-          description: Category name (title-cased).
-        count:
-          type: integer
-          title: Count
-          description: POIs of this category in the suburb.
-        times_more_common:
+          description: Human party name.
+        pct:
           type: number
-          title: Times More Common
-          description: How many times more common than the national base rate.
-        examples:
-          items:
-            type: string
-          type: array
-          title: Examples
-          description: Up to 3 named example POIs.
+          title: Pct
+          description: Projected first-preference share (%).
       additionalProperties: true
       type: object
       required:
-      - category
-      - count
-      - times_more_common
-      - examples
-      title: DistinctiveCategory
-      description: A POI category unusually common in this suburb.
-    CohortSa4:
-      properties:
-        name:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Name
-          description: SA4 region name.
-        cohort_size:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Cohort Size
-          description: Suburbs in the SA4 cohort.
-      additionalProperties: true
-      type: object
-      title: CohortSa4
-      description: The suburb's SA4 cohort.
+      - party
+      - label
+      - pct
+      title: PartyResult
+      description: One party's projected first-preference share.
   securitySchemes:
     BearerAuth:
       type: http
