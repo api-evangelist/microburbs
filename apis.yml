@@ -1144,6 +1144,10 @@ apis:
   - type: Sandbox
     url: sandbox/microburbs-sandbox.yml
 common:
+- type: Plans
+  url: plans/microburbs-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/microburbs-rate-limits.yml
 - type: MCPServer
   url: mcp/microburbs-mcp.yml
 - type: Overlay
