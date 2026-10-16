@@ -14,7 +14,7 @@ edges:
     registered_name: au.com.microburbs/property-data
     register_id: au.com.microburbs/property-data
     detected_by: sweep-agent-tools.py
-    detected: '2026-10-14'
+    detected: '2026-10-15'
   mcp_registry:
     servers:
     - au.com.microburbs/property-data
