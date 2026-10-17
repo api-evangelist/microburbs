@@ -129,6 +129,29 @@ paths:
       x-price-cents: 30
 components:
   schemas:
+    Neighbours:
+      properties:
+        neighbours:
+          items:
+            $ref: '#/components/schemas/Neighbour'
+          type: array
+          title: Neighbours
+          description: Adjoining cadastral parcels, with address + attributes when available.
+      type: object
+      required:
+      - neighbours
+      title: Neighbours
+      example:
+        neighbours:
+        - address: 3 TAMAR STREET
+          gnaf_pid: GANSW704083204
+          property_type: house
+        - address: 16 HARRISON STREET
+          gnaf_pid: GANSW704073018
+          property_type: house
+        - address: 14 HARRISON STREET
+          gnaf_pid: GANSW704073016
+          property_type: house
     ApiResponse_Neighbours_:
       properties:
         data:
@@ -156,6 +179,41 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[Neighbours]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     Neighbour:
       properties:
         gnaf_pid:
@@ -198,64 +256,6 @@ components:
       - gnaf_pid
       title: Neighbour
       description: One neighbouring property (adjoining cadastral parcel).
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    Neighbours:
-      properties:
-        neighbours:
-          items:
-            $ref: '#/components/schemas/Neighbour'
-          type: array
-          title: Neighbours
-          description: Adjoining cadastral parcels, with address + attributes when available.
-      type: object
-      required:
-      - neighbours
-      title: Neighbours
-      example:
-        neighbours:
-        - address: 3 TAMAR STREET
-          gnaf_pid: GANSW704083204
-          property_type: house
-        - address: 16 HARRISON STREET
-          gnaf_pid: GANSW704073018
-          property_type: house
-        - address: 14 HARRISON STREET
-          gnaf_pid: GANSW704073016
-          property_type: house
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
   securitySchemes:
     BearerAuth:
       type: http

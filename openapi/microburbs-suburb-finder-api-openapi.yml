@@ -578,11 +578,11 @@ paths:
       x-price-cents: 30
 components:
   schemas:
-    ApiResponse_FinderSearchResponse_:
+    ApiResponse_RegionsResponse_:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/FinderSearchResponse'
+          - $ref: '#/components/schemas/RegionsResponse'
           - type: 'null'
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
@@ -604,32 +604,25 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[FinderSearchResponse]
-    FinderField:
+      title: ApiResponse[RegionsResponse]
+    FieldsResponse:
       properties:
-        key:
-          type: string
-          title: Key
-          description: camelCase field key — pass this in `filter` / `sort`.
-        label:
-          type: string
-          title: Label
-          description: Human-readable label.
-        unit:
-          type: string
-          title: Unit
-          description: Unit of the value — currency | percent | count | days | km | score | index.
+        fields:
+          items:
+            $ref: '#/components/schemas/FinderField'
+          type: array
+          title: Fields
+          description: Every filterable / returnable field.
       type: object
       required:
-      - key
-      - label
-      - unit
-      title: FinderField
-      description: One filterable / sortable metric in the finder catalog.
+      - fields
+      title: FieldsResponse
+      description: The finder field catalog.
       example:
-        key: grossYield
-        label: Gross rental yield
-        unit: percent
+        fields:
+        - key: grossYield
+          label: Gross rental yield
+          unit: percent
     ApiResponse_CountResponse_:
       properties:
         data:
@@ -657,28 +650,109 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[CountResponse]
-    CountResponse:
+    ValidationError:
       properties:
-        total:
-          type: integer
-          title: Total
-          description: Suburbs matching every range filter (after the hard exclusions).
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
-      - total
-      title: CountResponse
-      description: How many suburbs match the filter — without paying for the rows.
-      example:
-        total: 126
-    HTTPValidationError:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    ApiResponse_FinderSearchResponse_:
       properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/FinderSearchResponse'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
       type: object
-      title: HTTPValidationError
+      title: ApiResponse[FinderSearchResponse]
+    FinderSearchResponse:
+      properties:
+        suburbs:
+          items:
+            $ref: '#/components/schemas/FinderRow'
+          type: array
+          title: Suburbs
+          description: Matched suburbs, sorted.
+        meta:
+          $ref: '#/components/schemas/FinderMeta'
+          description: Total + pagination.
+      type: object
+      required:
+      - suburbs
+      - meta
+      title: FinderSearchResponse
+      description: A page of matched suburbs.
+      example:
+        meta:
+          limit: 25
+          offset: 0
+          returned: 25
+          total: 126
+        suburbs:
+        - lga: Lake Macquarie
+          rank: 3
+          sa4: Newcastle and Lake Macquarie
+          state: NSW
+          suburb: Windale
+          value: 0.163
+    RegionsResponse:
+      properties:
+        regions:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+          title: Regions
+          description: '`{state: [sa4, ...]}` — pass a state to `states` and/or an SA4 to `regions`.'
+      type: object
+      required:
+      - regions
+      title: RegionsResponse
+      description: Scope options — SA4 regions grouped by state abbreviation.
+      example:
+        regions:
+          NSW:
+          - Sydney - City and Inner South
+          - Newcastle and Lake Macquarie
     ApiResponse_FieldsResponse_:
       properties:
         data:
@@ -706,45 +780,40 @@ components:
           description: Human-readable explanation. Omitted on success.
       type: object
       title: ApiResponse[FieldsResponse]
-    FinderMeta:
+    HTTPValidationError:
       properties:
-        total:
-          type: integer
-          title: Total
-          description: Total suburbs matching the filter (ignores limit/offset).
-        limit:
-          type: integer
-          title: Limit
-          description: Applied page size (clamped to 25).
-        offset:
-          type: integer
-          title: Offset
-          description: Applied row offset.
-        returned:
-          type: integer
-          title: Returned
-          description: Rows in this page.
-        sort_field:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Sort Field
-          description: Field the results are ranked by.
-        values:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Values
-          description: How values are exposed for this search (top/bottom-5 reveal, or withheld).
-      additionalProperties: true
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    FinderField:
+      properties:
+        key:
+          type: string
+          title: Key
+          description: camelCase field key — pass this in `filter` / `sort`.
+        label:
+          type: string
+          title: Label
+          description: Human-readable label.
+        unit:
+          type: string
+          title: Unit
+          description: Unit of the value — currency | percent | count | days | km | score | index.
       type: object
       required:
-      - total
-      - limit
-      - offset
-      - returned
-      title: FinderMeta
-      description: Pagination + total + the value-reveal policy for a search.
+      - key
+      - label
+      - unit
+      title: FinderField
+      description: One filterable / sortable metric in the finder catalog.
+      example:
+        key: grossYield
+        label: Gross rental yield
+        unit: percent
     FinderRow:
       properties:
         rank:
@@ -803,127 +872,58 @@ components:
         state: NSW
         suburb: Windale
         value: 0.163
-    ValidationError:
+    CountResponse:
       properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
+        total:
+          type: integer
+          title: Total
+          description: Suburbs matching every range filter (after the hard exclusions).
       type: object
       required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    FinderSearchResponse:
-      properties:
-        suburbs:
-          items:
-            $ref: '#/components/schemas/FinderRow'
-          type: array
-          title: Suburbs
-          description: Matched suburbs, sorted.
-        meta:
-          $ref: '#/components/schemas/FinderMeta'
-          description: Total + pagination.
-      type: object
-      required:
-      - suburbs
-      - meta
-      title: FinderSearchResponse
-      description: A page of matched suburbs.
+      - total
+      title: CountResponse
+      description: How many suburbs match the filter — without paying for the rows.
       example:
-        meta:
-          limit: 25
-          offset: 0
-          returned: 25
-          total: 126
-        suburbs:
-        - lga: Lake Macquarie
-          rank: 3
-          sa4: Newcastle and Lake Macquarie
-          state: NSW
-          suburb: Windale
-          value: 0.163
-    FieldsResponse:
+        total: 126
+    FinderMeta:
       properties:
-        fields:
-          items:
-            $ref: '#/components/schemas/FinderField'
-          type: array
-          title: Fields
-          description: Every filterable / returnable field.
-      type: object
-      required:
-      - fields
-      title: FieldsResponse
-      description: The finder field catalog.
-      example:
-        fields:
-        - key: grossYield
-          label: Gross rental yield
-          unit: percent
-    RegionsResponse:
-      properties:
-        regions:
-          additionalProperties:
-            items:
-              type: string
-            type: array
-          type: object
-          title: Regions
-          description: '`{state: [sa4, ...]}` — pass a state to `states` and/or an SA4 to `regions`.'
-      type: object
-      required:
-      - regions
-      title: RegionsResponse
-      description: Scope options — SA4 regions grouped by state abbreviation.
-      example:
-        regions:
-          NSW:
-          - Sydney - City and Inner South
-          - Newcastle and Lake Macquarie
-    ApiResponse_RegionsResponse_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/RegionsResponse'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
+        total:
+          type: integer
+          title: Total
+          description: Total suburbs matching the filter (ignores limit/offset).
+        limit:
+          type: integer
+          title: Limit
+          description: Applied page size (clamped to 25).
+        offset:
+          type: integer
+          title: Offset
+          description: Applied row offset.
+        returned:
+          type: integer
+          title: Returned
+          description: Rows in this page.
+        sort_field:
           anyOf:
           - type: string
           - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
+          title: Sort Field
+          description: Field the results are ranked by.
+        values:
           anyOf:
           - type: string
           - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
+          title: Values
+          description: How values are exposed for this search (top/bottom-5 reveal, or withheld).
+      additionalProperties: true
       type: object
-      title: ApiResponse[RegionsResponse]
+      required:
+      - total
+      - limit
+      - offset
+      - returned
+      title: FinderMeta
+      description: Pagination + total + the value-reveal policy for a search.
   securitySchemes:
     BearerAuth:
       type: http

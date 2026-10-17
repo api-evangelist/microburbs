@@ -537,6 +537,497 @@ paths:
       x-price-cents: 20
 components:
   schemas:
+    SurroundingPublicHousing:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        property_count:
+          type: integer
+          title: Property Count
+          description: Total properties inside the search box.
+        flagged_count:
+          type: integer
+          title: Flagged Count
+          description: How many of those the classifier flags as public housing.
+        flagged:
+          items:
+            $ref: '#/components/schemas/PublicHousingFlag'
+          type: array
+          title: Flagged
+          description: The flagged properties (empty when none).
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - property_count
+      - flagged_count
+      - flagged
+      title: SurroundingPublicHousing
+      description: Public-housing classifier flags for properties around the subject.
+      example:
+        flagged:
+        - address: 3 The Bulwark
+          gnaf_pid: GANSW704349559
+          lat: -33.80311
+          lng: 151.21899
+          ph_chance: 3.0
+        flagged_count: 1
+        gnaf_pid: GANSW704360755
+        property_count: 128
+        radius_m: 200
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ListingHistorySignal:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: GNAF PID of the property.
+        last_sold_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Sold Date
+          description: Most recent Sold/Buy listing date (YYYY-MM-DD).
+        last_rent_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Rent Date
+          description: Most recent rental listing date (YYYY-MM-DD).
+        last_sold_years_ago:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Last Sold Years Ago
+          description: Years since the last sale listing (1 dp).
+        last_rent_years_ago:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Last Rent Years Ago
+          description: Years since the last rental listing (1 dp).
+        signal:
+          type: string
+          enum:
+          - previously_rented
+          - previously_for_sale
+          - no_recent_listings
+          title: Signal
+          description: 'Likely owner status: recent rent listing → `previously_rented` (likely investor); recent sale → `previously_for_sale` (likely mortgaged); neither within the window → `no_recent_listings` (likely owned outright).'
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - signal
+      title: ListingHistorySignal
+      description: Derived owner-status signal for one nearby property.
+    ApiResponse_SurroundingListingSignals_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingListingSignals'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingListingSignals]
+    ApiResponse_SurroundingProperties_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingProperties'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingProperties]
+    GeoJsonGeometry:
+      properties:
+        type:
+          type: string
+          title: Type
+          description: GeoJSON geometry type, e.g. 'MultiPolygon'.
+        coordinates:
+          title: Coordinates
+          description: Nested coordinate arrays per the GeoJSON spec, lon first.
+      additionalProperties: true
+      type: object
+      required:
+      - type
+      - coordinates
+      title: GeoJsonGeometry
+      description: RFC 7946 GeoJSON geometry (Polygon or MultiPolygon in practice).
+    ParcelFeatureCollection:
+      properties:
+        type:
+          type: string
+          const: FeatureCollection
+          title: Type
+          description: Always 'FeatureCollection'.
+        features:
+          items:
+            $ref: '#/components/schemas/ParcelFeature'
+          type: array
+          title: Features
+          description: One feature per parcel.
+      additionalProperties: true
+      type: object
+      required:
+      - type
+      - features
+      title: ParcelFeatureCollection
+      description: RFC 7946 GeoJSON FeatureCollection of parcel polygons.
+    ListingSignalSummary:
+      properties:
+        previously_rented:
+          type: integer
+          title: Previously Rented
+          description: Properties with a recent rental.
+        previously_for_sale:
+          type: integer
+          title: Previously For Sale
+          description: Properties with a recent sale.
+        no_recent_listings:
+          type: integer
+          title: No Recent Listings
+          description: Properties with no listing inside the window.
+      additionalProperties: true
+      type: object
+      required:
+      - previously_rented
+      - previously_for_sale
+      - no_recent_listings
+      title: ListingSignalSummary
+      description: Counts of each signal across the returned properties.
+    ParcelFeature:
+      properties:
+        type:
+          type: string
+          const: Feature
+          title: Type
+          description: Always 'Feature'.
+        properties:
+          additionalProperties: true
+          type: object
+          title: Properties
+          description: 'Feature properties: `gnaf_pid` and `is_subject`.'
+        geometry:
+          $ref: '#/components/schemas/GeoJsonGeometry'
+          description: Parcel polygon, 6 dp coords.
+      additionalProperties: true
+      type: object
+      required:
+      - type
+      - properties
+      - geometry
+      title: ParcelFeature
+      description: One cadastral parcel as a GeoJSON Feature.
+    ApiResponse_SurroundingParcels_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingParcels'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingParcels]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    SurroundingParcels:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        count:
+          type: integer
+          title: Count
+          description: Number of parcel features returned.
+        parcels:
+          $ref: '#/components/schemas/ParcelFeatureCollection'
+          description: GeoJSON FeatureCollection, one feature per parcel.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - count
+      - parcels
+      title: SurroundingParcels
+      description: Cadastral parcel polygons for every property around the subject.
+      example:
+        count: 127
+        gnaf_pid: GANSW704360755
+        parcels:
+          features:
+          - geometry:
+              coordinates:
+              - - - - 151.221417
+                    - -33.800987
+                  - - 151.221318
+                    - -33.801078
+                  - - 151.221308
+                    - -33.801256
+                  - - 151.221417
+                    - -33.800987
+              type: MultiPolygon
+            properties:
+              gnaf_pid: GANSW704355807
+              is_subject: false
+            type: Feature
+          type: FeatureCollection
+        radius_m: 200
+    SurroundingListingSignals:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        recent_window_years:
+          type: integer
+          title: Recent Window Years
+          description: Recency window used to derive the signals (years).
+        count:
+          type: integer
+          title: Count
+          description: Properties with any listing history (never-listed properties carry no signal and are omitted).
+        signals:
+          items:
+            $ref: '#/components/schemas/ListingHistorySignal'
+          type: array
+          title: Signals
+          description: Per-property signals, sorted by GNAF PID.
+        summary:
+          $ref: '#/components/schemas/ListingSignalSummary'
+          description: Signal counts across the returned properties.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - recent_window_years
+      - count
+      - signals
+      - summary
+      title: SurroundingListingSignals
+      description: Listing-history owner-status signals for properties around the subject.
+      example:
+        count: 97
+        gnaf_pid: GANSW704360755
+        radius_m: 200
+        recent_window_years: 10
+        signals:
+        - gnaf_pid: GANSW704349559
+          last_sold_date: '2021-11-23'
+          last_sold_years_ago: 4.6
+          signal: previously_for_sale
+        - gnaf_pid: GANSW704341221
+          last_sold_date: '2015-01-27'
+          last_sold_years_ago: 11.4
+          signal: no_recent_listings
+        summary:
+          no_recent_listings: 24
+          previously_for_sale: 55
+          previously_rented: 18
+    ApiResponse_SurroundingPublicHousing_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingPublicHousing'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingPublicHousing]
+    ApiResponse_SurroundingTenure_:
+      properties:
+        data:
+          anyOf:
+          - $ref: '#/components/schemas/SurroundingTenure'
+          - type: 'null'
+          description: The endpoint's payload, or `null` when Microburbs has no value.
+        available:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Available
+          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
+        reason:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Reason
+          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+          description: Human-readable explanation. Omitted on success.
+      type: object
+      title: ApiResponse[SurroundingTenure]
+    SurroundingTenure:
+      properties:
+        gnaf_pid:
+          type: string
+          title: Gnaf Pid
+          description: The subject property's GNAF PID.
+        radius_m:
+          type: integer
+          title: Radius M
+          description: Radius of the search box around the subject, metres.
+        as_of:
+          type: string
+          title: As Of
+          description: Census anchor date (YYYY-MM-DD).
+        mbs:
+          items:
+            $ref: '#/components/schemas/MbTenure'
+          type: array
+          title: Mbs
+          description: Per-mesh-block tenure shares, sorted by property count desc.
+      additionalProperties: true
+      type: object
+      required:
+      - gnaf_pid
+      - radius_m
+      - as_of
+      - mbs
+      title: SurroundingTenure
+      description: Tenure mix (own / mortgage / rent / public) around the subject.
+      example:
+        as_of: '2021-08-10'
+        gnaf_pid: GANSW704360755
+        mbs:
+        - mb: '10843090000'
+          mortgaged_pct: 39.9
+          owned_outright_pct: 35.4
+          property_count: 39
+          public_housing_pct: 0.0
+          rented_pct: 15.2
+        - mb: '10842992000'
+          mortgaged_pct: 45.9
+          owned_outright_pct: 36.3
+          property_count: 21
+          public_housing_pct: 0.6
+          rented_pct: 6.6
+        radius_m: 200
     MbTenure:
       properties:
         mb:
@@ -612,161 +1103,6 @@ components:
       - lng
       title: PublicHousingFlag
       description: One property flagged by the public-housing classifier.
-    ApiResponse_SurroundingPublicHousing_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SurroundingPublicHousing'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SurroundingPublicHousing]
-    SurroundingPublicHousing:
-      properties:
-        gnaf_pid:
-          type: string
-          title: Gnaf Pid
-          description: The subject property's GNAF PID.
-        radius_m:
-          type: integer
-          title: Radius M
-          description: Radius of the search box around the subject, metres.
-        property_count:
-          type: integer
-          title: Property Count
-          description: Total properties inside the search box.
-        flagged_count:
-          type: integer
-          title: Flagged Count
-          description: How many of those the classifier flags as public housing.
-        flagged:
-          items:
-            $ref: '#/components/schemas/PublicHousingFlag'
-          type: array
-          title: Flagged
-          description: The flagged properties (empty when none).
-      additionalProperties: true
-      type: object
-      required:
-      - gnaf_pid
-      - radius_m
-      - property_count
-      - flagged_count
-      - flagged
-      title: SurroundingPublicHousing
-      description: Public-housing classifier flags for properties around the subject.
-      example:
-        flagged:
-        - address: 3 The Bulwark
-          gnaf_pid: GANSW704349559
-          lat: -33.80311
-          lng: 151.21899
-          ph_chance: 3.0
-        flagged_count: 1
-        gnaf_pid: GANSW704360755
-        property_count: 128
-        radius_m: 200
-    ApiResponse_SurroundingListingSignals_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SurroundingListingSignals'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SurroundingListingSignals]
-    SurroundingListingSignals:
-      properties:
-        gnaf_pid:
-          type: string
-          title: Gnaf Pid
-          description: The subject property's GNAF PID.
-        radius_m:
-          type: integer
-          title: Radius M
-          description: Radius of the search box around the subject, metres.
-        recent_window_years:
-          type: integer
-          title: Recent Window Years
-          description: Recency window used to derive the signals (years).
-        count:
-          type: integer
-          title: Count
-          description: Properties with any listing history (never-listed properties carry no signal and are omitted).
-        signals:
-          items:
-            $ref: '#/components/schemas/ListingHistorySignal'
-          type: array
-          title: Signals
-          description: Per-property signals, sorted by GNAF PID.
-        summary:
-          $ref: '#/components/schemas/ListingSignalSummary'
-          description: Signal counts across the returned properties.
-      additionalProperties: true
-      type: object
-      required:
-      - gnaf_pid
-      - radius_m
-      - recent_window_years
-      - count
-      - signals
-      - summary
-      title: SurroundingListingSignals
-      description: Listing-history owner-status signals for properties around the subject.
-      example:
-        count: 97
-        gnaf_pid: GANSW704360755
-        radius_m: 200
-        recent_window_years: 10
-        signals:
-        - gnaf_pid: GANSW704349559
-          last_sold_date: '2021-11-23'
-          last_sold_years_ago: 4.6
-          signal: previously_for_sale
-        - gnaf_pid: GANSW704341221
-          last_sold_date: '2015-01-27'
-          last_sold_years_ago: 11.4
-          signal: no_recent_listings
-        summary:
-          no_recent_listings: 24
-          previously_for_sale: 55
-          previously_rented: 18
     SurroundingProperties:
       properties:
         gnaf_pid:
@@ -813,202 +1149,6 @@ components:
           mb: '10843090000'
           is_subject: true
         radius_m: 200
-    ListingHistorySignal:
-      properties:
-        gnaf_pid:
-          type: string
-          title: Gnaf Pid
-          description: GNAF PID of the property.
-        last_sold_date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Sold Date
-          description: Most recent Sold/Buy listing date (YYYY-MM-DD).
-        last_rent_date:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Last Rent Date
-          description: Most recent rental listing date (YYYY-MM-DD).
-        last_sold_years_ago:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Last Sold Years Ago
-          description: Years since the last sale listing (1 dp).
-        last_rent_years_ago:
-          anyOf:
-          - type: number
-          - type: 'null'
-          title: Last Rent Years Ago
-          description: Years since the last rental listing (1 dp).
-        signal:
-          type: string
-          enum:
-          - previously_rented
-          - previously_for_sale
-          - no_recent_listings
-          title: Signal
-          description: 'Likely owner status: recent rent listing → `previously_rented` (likely investor); recent sale → `previously_for_sale` (likely mortgaged); neither within the window → `no_recent_listings` (likely owned outright).'
-      additionalProperties: true
-      type: object
-      required:
-      - gnaf_pid
-      - signal
-      title: ListingHistorySignal
-      description: Derived owner-status signal for one nearby property.
-    ApiResponse_SurroundingTenure_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SurroundingTenure'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SurroundingTenure]
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
-    ListingSignalSummary:
-      properties:
-        previously_rented:
-          type: integer
-          title: Previously Rented
-          description: Properties with a recent rental.
-        previously_for_sale:
-          type: integer
-          title: Previously For Sale
-          description: Properties with a recent sale.
-        no_recent_listings:
-          type: integer
-          title: No Recent Listings
-          description: Properties with no listing inside the window.
-      additionalProperties: true
-      type: object
-      required:
-      - previously_rented
-      - previously_for_sale
-      - no_recent_listings
-      title: ListingSignalSummary
-      description: Counts of each signal across the returned properties.
-    SurroundingTenure:
-      properties:
-        gnaf_pid:
-          type: string
-          title: Gnaf Pid
-          description: The subject property's GNAF PID.
-        radius_m:
-          type: integer
-          title: Radius M
-          description: Radius of the search box around the subject, metres.
-        as_of:
-          type: string
-          title: As Of
-          description: Census anchor date (YYYY-MM-DD).
-        mbs:
-          items:
-            $ref: '#/components/schemas/MbTenure'
-          type: array
-          title: Mbs
-          description: Per-mesh-block tenure shares, sorted by property count desc.
-      additionalProperties: true
-      type: object
-      required:
-      - gnaf_pid
-      - radius_m
-      - as_of
-      - mbs
-      title: SurroundingTenure
-      description: Tenure mix (own / mortgage / rent / public) around the subject.
-      example:
-        as_of: '2021-08-10'
-        gnaf_pid: GANSW704360755
-        mbs:
-        - mb: '10843090000'
-          mortgaged_pct: 39.9
-          owned_outright_pct: 35.4
-          property_count: 39
-          public_housing_pct: 0.0
-          rented_pct: 15.2
-        - mb: '10842992000'
-          mortgaged_pct: 45.9
-          owned_outright_pct: 36.3
-          property_count: 21
-          public_housing_pct: 0.6
-          rented_pct: 6.6
-        radius_m: 200
-    ParcelFeatureCollection:
-      properties:
-        type:
-          type: string
-          const: FeatureCollection
-          title: Type
-          description: Always 'FeatureCollection'.
-        features:
-          items:
-            $ref: '#/components/schemas/ParcelFeature'
-          type: array
-          title: Features
-          description: One feature per parcel.
-      additionalProperties: true
-      type: object
-      required:
-      - type
-      - features
-      title: ParcelFeatureCollection
-      description: RFC 7946 GeoJSON FeatureCollection of parcel polygons.
-    ApiResponse_SurroundingProperties_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SurroundingProperties'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SurroundingProperties]
     SurroundingProperty:
       properties:
         gnaf_pid:
@@ -1048,146 +1188,6 @@ components:
       - is_subject
       title: SurroundingProperty
       description: One property inside the search box.
-    ApiResponse_SurroundingParcels_:
-      properties:
-        data:
-          anyOf:
-          - $ref: '#/components/schemas/SurroundingParcels'
-          - type: 'null'
-          description: The endpoint's payload, or `null` when Microburbs has no value.
-        available:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Available
-          description: '`false` on no-data responses. Omitted on success — branch on `data !== null` if you want a single discriminator.'
-        reason:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Reason
-          description: Machine-readable slug naming the no-data condition (e.g. `no_avm_for_GANSW704074813`). Stable per endpoint. Omitted on success.
-        message:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Message
-          description: Human-readable explanation. Omitted on success.
-      type: object
-      title: ApiResponse[SurroundingParcels]
-    SurroundingParcels:
-      properties:
-        gnaf_pid:
-          type: string
-          title: Gnaf Pid
-          description: The subject property's GNAF PID.
-        radius_m:
-          type: integer
-          title: Radius M
-          description: Radius of the search box around the subject, metres.
-        count:
-          type: integer
-          title: Count
-          description: Number of parcel features returned.
-        parcels:
-          $ref: '#/components/schemas/ParcelFeatureCollection'
-          description: GeoJSON FeatureCollection, one feature per parcel.
-      additionalProperties: true
-      type: object
-      required:
-      - gnaf_pid
-      - radius_m
-      - count
-      - parcels
-      title: SurroundingParcels
-      description: Cadastral parcel polygons for every property around the subject.
-      example:
-        count: 127
-        gnaf_pid: GANSW704360755
-        parcels:
-          features:
-          - geometry:
-              coordinates:
-              - - - - 151.221417
-                    - -33.800987
-                  - - 151.221318
-                    - -33.801078
-                  - - 151.221308
-                    - -33.801256
-                  - - 151.221417
-                    - -33.800987
-              type: MultiPolygon
-            properties:
-              gnaf_pid: GANSW704355807
-              is_subject: false
-            type: Feature
-          type: FeatureCollection
-        radius_m: 200
-    ParcelFeature:
-      properties:
-        type:
-          type: string
-          const: Feature
-          title: Type
-          description: Always 'Feature'.
-        properties:
-          additionalProperties: true
-          type: object
-          title: Properties
-          description: 'Feature properties: `gnaf_pid` and `is_subject`.'
-        geometry:
-          $ref: '#/components/schemas/GeoJsonGeometry'
-          description: Parcel polygon, 6 dp coords.
-      additionalProperties: true
-      type: object
-      required:
-      - type
-      - properties
-      - geometry
-      title: ParcelFeature
-      description: One cadastral parcel as a GeoJSON Feature.
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-    GeoJsonGeometry:
-      properties:
-        type:
-          type: string
-          title: Type
-          description: GeoJSON geometry type, e.g. 'MultiPolygon'.
-        coordinates:
-          title: Coordinates
-          description: Nested coordinate arrays per the GeoJSON spec, lon first.
-      additionalProperties: true
-      type: object
-      required:
-      - type
-      - coordinates
-      title: GeoJsonGeometry
-      description: RFC 7946 GeoJSON geometry (Polygon or MultiPolygon in practice).
   securitySchemes:
     BearerAuth:
       type: http

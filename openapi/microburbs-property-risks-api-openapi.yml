@@ -1297,15 +1297,12 @@ paths:
       x-price-cents: 48
 components:
   schemas:
-    ApiResponse_list_RiskRecord__:
+    ApiResponse_AllRisks_:
       properties:
         data:
           anyOf:
-          - items:
-              $ref: '#/components/schemas/RiskRecord'
-            type: array
+          - $ref: '#/components/schemas/AllRisks'
           - type: 'null'
-          title: Data
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
           anyOf:
@@ -1326,7 +1323,33 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[list[RiskRecord]]
+      title: ApiResponse[AllRisks]
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     RiskRecord:
       properties:
         area_level:
@@ -1451,12 +1474,15 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ApiResponse_AllRisks_:
+    ApiResponse_list_RiskRecord__:
       properties:
         data:
           anyOf:
-          - $ref: '#/components/schemas/AllRisks'
+          - items:
+              $ref: '#/components/schemas/RiskRecord'
+            type: array
           - type: 'null'
+          title: Data
           description: The endpoint's payload, or `null` when Microburbs has no value.
         available:
           anyOf:
@@ -1477,33 +1503,7 @@ components:
           title: Message
           description: Human-readable explanation. Omitted on success.
       type: object
-      title: ApiResponse[AllRisks]
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-        input:
-          title: Input
-        ctx:
-          type: object
-          title: Context
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
+      title: ApiResponse[list[RiskRecord]]
     AllRisks:
       properties:
         bushfire:
