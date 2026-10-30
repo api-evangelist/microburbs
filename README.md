@@ -1,4 +1,4 @@
-# microburbs
+# Microburbs
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,4 +64,149 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Microburbs is an Australian property and location-intelligence API: 173 read-only operations covering property valuations (AVM), sale and rent history, comparable sales, environmental and neighbourhood risk overlays, zoning and development, schools, transport and demographics, keyed to ABS statistical geography and G-NAF addresses, and mirrored as a hosted MCP server of 174 tools with per-call cent metering.
+Microburbs is an Australian property and location-intelligence API: 173 read-only operations spanning property valuations (AVM), sale and rent history, comparable sales, environmental and neighbourhood risk overlays, zoning and development, schools, transport, demographics and suburb screening -- keyed to ABS statistical geography and G-NAF addresses, and mirrored as a hosted MCP server of 174 tools with per-call cent metering.
+
+**Areas:** Property Data · Real Estate · Australia · Demographics · Location Intelligence
+
+## Microburbs on APIs.io
+
+Everything profiled for Microburbs is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/microburbs/](https://apis.io/providers/microburbs/)** — or go straight to one of the APIs or properties below.
+
+### APIs (35)
+
+- [Microburbs Account API](https://apis.io/apis/microburbs/microburbs-account-api/) — Account info — caller identity, prepaid balance and usage.
+- [Microburbs Area Statistics API](https://apis.io/apis/microburbs/microburbs-area-statistics-api/) — The Area Statistics API from Microburbs — 3 operation(s) for area statistics.
+- [Microburbs Geocode API](https://apis.io/apis/microburbs/microburbs-geocode-api/) — Address → GNAF and suburb autocomplete. The entry point before you have an identifier.
+- [Microburbs LGA - Profile API](https://apis.io/apis/microburbs/microburbs-lga-profile-api/) — ABS geo profile for a Local Government Area.
+- [Microburbs Mesh Block - Profile API](https://apis.io/apis/microburbs/microburbs-mesh-block-profile-api/) — ABS geo profile for a mesh block — upward chain.
+- [Microburbs Property - Amenities API](https://apis.io/apis/microburbs/microburbs-property-amenities-api/) — Nearby amenities and transport within 1km.
+- [Microburbs Property - Basics API](https://apis.io/apis/microburbs/microburbs-property-basics-api/) — Bedroom, bathroom, parking, dwelling type, lot size.
+- [Microburbs Property - Comparables API](https://apis.io/apis/microburbs/microburbs-property-comparables-api/) — CMA comp sets and recent nearby sales.
+- [Microburbs Property - Context API](https://apis.io/apis/microburbs/microburbs-property-context-api/) — The 1km around the property — mesh-block stats, street series, nearby listings.
+- [Microburbs Property - Development API](https://apis.io/apis/microburbs/microburbs-property-development-api/) — Zoning code and overlays.
+- [Microburbs Property - History API](https://apis.io/apis/microburbs/microburbs-property-history-api/) — Sale and rental transaction history.
+- [Microburbs Property - Profile API](https://apis.io/apis/microburbs/microburbs-property-profile-api/) — ABS geo profile — mesh block + SA1–SA4 + LGA + state.
+- [Microburbs Property - Risks API](https://apis.io/apis/microburbs/microburbs-property-risks-api/) — Bushfire, flood, heritage, landslide, erosion, etc.
+- [Microburbs Property - Schools API](https://apis.io/apis/microburbs/microburbs-property-schools-api/) — Nearby schools and rankings.
+- [Microburbs Property - Surroundings API](https://apis.io/apis/microburbs/microburbs-property-surroundings-api/) — The 200m around the property — neighbours, tenure, parcels, housing.
+- [Microburbs Property - Title API](https://apis.io/apis/microburbs/microburbs-property-title-api/) — Cadastral attributes — neighbours, owner.
+- [Microburbs Property - Valuation API](https://apis.io/apis/microburbs/microburbs-property-valuation-api/) — Automated valuation model output.
+- [Microburbs SA4 - Profile API](https://apis.io/apis/microburbs/microburbs-sa4-profile-api/) — ABS geo profile for a Statistical Area Level 4.
+- [Microburbs Suburb - Crime API](https://apis.io/apis/microburbs/microburbs-suburb-crime-api/) — Crime benchmark, breakdown and mesh-block map values.
+- [Microburbs Suburb - Demographics API](https://apis.io/apis/microburbs/microburbs-suburb-demographics-api/) — ABS census age, dwelling, household, income.
+- [Microburbs Suburb - Development API](https://apis.io/apis/microburbs/microburbs-suburb-development-api/) — Development applications.
+- [Microburbs Suburb - Ethnicity API](https://apis.io/apis/microburbs/microburbs-suburb-ethnicity-api/) — Ancestry, birthplace, language at home.
+- [Microburbs Suburb - Finder API](https://apis.io/apis/microburbs/microburbs-suburb-finder-api/) — Cross-suburb range-filter search — filter on ~36 metrics, sort, paginate.
+- [Microburbs Suburb - Forecast API](https://apis.io/apis/microburbs/microburbs-suburb-forecast-api/) — 12-month sale-price forecast.
+- [Microburbs Suburb - Hero API](https://apis.io/apis/microburbs/microburbs-suburb-hero-api/) — Headline summary — geography, population, growth, neighbours.
+- [Microburbs Suburb - Lifestyle API](https://apis.io/apis/microburbs/microburbs-suburb-lifestyle-api/) — POIs, livability, landmarks, narrative.
+- [Microburbs Suburb - Listings API](https://apis.io/apis/microburbs/microburbs-suburb-listings-api/) — Current for-sale listings snapshot.
+- [Microburbs Suburb - Market API](https://apis.io/apis/microburbs/microburbs-suburb-market-api/) — Medians, growth, yield, days on market.
+- [Microburbs Suburb - Profile API](https://apis.io/apis/microburbs/microburbs-suburb-profile-api/) — ABS geo profile — admin chain + mesh-block inventory.
+- [Microburbs Suburb - Risks API](https://apis.io/apis/microburbs/microburbs-suburb-risks-api/) — Suburb-aggregated risk coverages.
+- [Microburbs Suburb - Sales API](https://apis.io/apis/microburbs/microburbs-suburb-sales-api/) — Recent sold properties and sales summary.
+- [Microburbs Suburb - Schools API](https://apis.io/apis/microburbs/microburbs-suburb-schools-api/) — Suburb-level school list and catchment.
+- [Microburbs Suburb - Shapes API](https://apis.io/apis/microburbs/microburbs-suburb-shapes-api/) — GeoJSON — boundary, neighbours, mesh blocks, hazard overlays, noise.
+- [Microburbs Suburb - Similar API](https://apis.io/apis/microburbs/microburbs-suburb-similar-api/) — Most-similar suburb recommendations.
+- [Microburbs Suburb - Street Forecasts API](https://apis.io/apis/microburbs/microburbs-suburb-street-forecasts-api/) — Street-level price forecasts.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [Microburbs MCP Server](https://apis.io/servers/microburbs/microburbs-mcp-server/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Microburbs Openapi Overlay](https://apis.io/overlays/microburbs/microburbs-openapi-overlay/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Microburbs Authentication](https://apis.io/security/microburbs/microburbs-authentication/)
+- [Microburbs Domain Security](https://apis.io/security/microburbs/microburbs-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Microburbs Plans Pricing](https://apis.io/plans/microburbs/microburbs-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Microburbs Rate Limits](https://apis.io/rate-limits/microburbs/microburbs-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.microburbs.com.au)
+- [Pricing](https://www.microburbs.com.au/api-access)
+- [Sign up](https://www.microburbs.com.au/developers/keys)
+- [Support](https://www.microburbs.com.au/contact)
+- [Terms of service](https://www.microburbs.com.au/terms)
+- [Privacy policy](https://www.microburbs.com.au/privacy)
+
+## API Evangelist rating
+
+**Kin Score 39.7** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 71.7 |
+| Contract quality | 53.0 |
+| Contract governance | 0.0 |
+| Operational transparency | 0.0 |
+| Developer ergonomics | 44.6 |
+| Access clarity | 44.7 |
+
+**Agent readiness 39.9** — agent-native
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | na |
+| MCP Server | documented (partial credit) |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | na |
+| Error Semantics | verified |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | na |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 24.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/microburbs/](https://apis.io/providers/microburbs/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Microburbs: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/microburbs/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
